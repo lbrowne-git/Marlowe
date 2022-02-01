@@ -23,16 +23,19 @@ namespace Marlowe
         ITokenStream tokens;
         CSharpParser parser;
         #endregion
-        public Analyser()
+        public Analyser(String input)
         {
-            String input = "your text to parse here";
-            ICharStream stream = CharStreams.fromString(input);
-            ITokenSource lexer = new CSharpLexer(stream);
-            ITokenStream tokens = new CommonTokenStream(lexer);
-            CSharpParser parser = new CSharpParser(tokens);
-            parser.BuildParseTree = true;
-            CSharpParser.Argument_listContext argument =  parser.argument_list();
-            Console.WriteLine("Arguments: "+ argument.GetText());
+            stream = CharStreams.fromString(input);
+            lexer = new CSharpLexer(stream);
+            tokens = new CommonTokenStream(lexer);
+            parser = new CSharpParser(tokens);
+        }
+
+        public void HandleRequest()
+        {
+            Logger logger = new Logger(false);
+            logger.CreateLexerLog(lexer);
+            logger.createTokenLog(tokens);
         }
 
 
