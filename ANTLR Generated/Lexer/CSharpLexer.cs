@@ -30,7 +30,9 @@ using DFA = Antlr4.Runtime.Dfa.DFA;
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.9")]
 [System.CLSCompliant(false)]
 public partial class CSharpLexer : CSharpLexerBase {
-	protected static DFA[] decisionToDFA;
+
+    #region Attribs
+    protected static DFA[] decisionToDFA;
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
 		BYTE_ORDER_MARK=1, SINGLE_LINE_DOC_COMMENT=2, EMPTY_DELIMITED_DOC_COMMENT=3, 
@@ -129,8 +131,8 @@ public partial class CSharpLexer : CSharpLexerBase {
 		"UnicodeClassCF", "UnicodeClassPC", "UnicodeClassND"
 	};
 
-
-	public CSharpLexer(ICharStream input)
+    #endregion
+    public CSharpLexer(ICharStream input)
 	: this(input, Console.Out, Console.Error) { }
 
 	public CSharpLexer(ICharStream input, TextWriter output, TextWriter errorOutput)

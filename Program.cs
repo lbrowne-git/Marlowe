@@ -6,8 +6,11 @@ namespace Marlowe
     {
         static void Main(string[] args)
         {
-            Analyser analyser = new Analyser();
-            Console.WriteLine("Hello World!");
+            string input = "Console.Writeline(\"hello\")";
+
+            Console.WriteLine("Input:\t{0}",input);
+            Analyser analyser = new Analyser(input);
+            //analyser.HandleRequest();
         }
     }
 }

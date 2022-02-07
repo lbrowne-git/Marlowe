@@ -21,27 +21,32 @@ namespace Marlowe
         ICharStream stream;
         ITokenSource lexer;
         ITokenStream tokens;
-        CSharpParser parser;
+        Parser parser;
         #endregion
-        public Analyser()
+        public Analyser(String input)
         {
-            String input = "your text to parse here";
-            ICharStream stream = CharStreams.fromString(input);
-            ITokenSource lexer = new CSharpLexer(stream);
-            ITokenStream tokens = new CommonTokenStream(lexer);
-            CSharpParser parser = new CSharpParser(tokens);
-            parser.BuildParseTree = true;
-            CSharpParser.Argument_listContext argument =  parser.argument_list();
-            Console.WriteLine("Arguments: "+ argument.GetText());
+            stream = CharStreams.fromString(input);
+            lexer = new CSharpLexer(stream);
+            tokens = new CommonTokenStream(lexer);
+            parser = new Parser(tokens);
+            parser.RemoveErrorListeners();
+            parser.AddErrorListener(new BaseErrorListener());
+            parser.Root();
+            ParserRuleContext obj = parser.Context;
+            obj.Start = parser.Context.Start;
         }
 
-
+        public void HandleRequest(){
+            Logger logger = new Logger(false);
+            logger.CreateLexerLog(lexer);
+            logger.CreateTokenLog(tokens);
+        }
 
         #region Getter & Setters
             public ICharStream Stream { get => stream; set => stream = value; }
             public ITokenSource Lexer { get => lexer; set => lexer = value; }
             public ITokenStream Tokens { get => tokens; set => tokens = value; }
-            public CSharpParser Parser { get => parser; set => parser = value; }
+            public Parser Parser { get => parser; set => parser = value; }
         #endregion
     }
 }

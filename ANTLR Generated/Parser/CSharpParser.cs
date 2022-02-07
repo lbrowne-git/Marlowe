@@ -33,7 +33,9 @@ using DFA = Antlr4.Runtime.Dfa.DFA;
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.9")]
 [System.CLSCompliant(false)]
 public partial class CSharpParser : CSharpParserBase {
-	protected static DFA[] decisionToDFA;
+
+    #region Attrib
+    protected static DFA[] decisionToDFA;
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
 		BYTE_ORDER_MARK=1, SINGLE_LINE_DOC_COMMENT=2, EMPTY_DELIMITED_DOC_COMMENT=3, 
@@ -280,8 +282,8 @@ public partial class CSharpParser : CSharpParserBase {
 		"DIRECTIVE_NEW_LINE", "TEXT", "DOUBLE_CURLY_CLOSE_INSIDE"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
-
-	[NotNull]
+    #endregion
+    [NotNull]
 	public override IVocabulary Vocabulary
 	{
 		get
