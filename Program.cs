@@ -10,7 +10,7 @@ namespace Marlowe
 
             Console.WriteLine("Input:\t{0}",input);
             Analyser analyser = new Analyser(input);
-            analyser.HandleRequest();
+            //analyser.HandleRequest();
         }
     }
 }

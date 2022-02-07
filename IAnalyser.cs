@@ -20,6 +20,6 @@ namespace Marlowe
         ICharStream Stream { get; set; }
         ITokenSource Lexer { get; set; }
         ITokenStream Tokens { get; set; }
-        CSharpParser Parser { get; set; }
+        Parser Parser { get; set; }
     }
 }

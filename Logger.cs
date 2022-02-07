@@ -58,11 +58,9 @@ namespace Marlowe
             }
         }
 
-        internal void createTokenLog(ITokenStream tokens)
+        internal void CreateTokenLog(ITokenStream tokens)
         {
             CreateHeader("Token");
- 
-
         }
 
         internal void CreateLexerLog(ITokenSource lexer)
