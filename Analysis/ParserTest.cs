@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Marlowe.Analysis;
+using System.IO;
 
 namespace Marlowe.Tests.Analysis
 {
@@ -18,13 +19,32 @@ namespace Marlowe.Tests.Analysis
         }
 
         [TestMethod]
-        public void TestLine()
+        public void FileInput()
+        {
+            string fileName = "dummy.ss";
+            string FileContents = File.ReadAllText(fileName);
+
+            Parser parser = Setup(FileContents);
+            Visitor visitor = new Visitor();
+
+            // Parser Pattern Entry Point
+            var context = parser.compilation_unit();
+            visitor.Visit(context);
+
+            /* The amount of Tokens that should 
+               should be present in:
+                    int x = 2 + 4; //7 */
+            Assert.AreEqual(7, visitor.Variables.Count);
+        }
+        
+        [TestMethod]
+        public void SpecifyInput()
         {
             Parser parser = Setup("int x = 2 + 4;");
             Visitor visitor = new Visitor();
 
             // Parser Pattern Entry Point
-            var context = parser.accessor_body();
+            var context = parser.compilation_unit();
             visitor.Visit(context);
 
             /* The amount of Tokens that should 

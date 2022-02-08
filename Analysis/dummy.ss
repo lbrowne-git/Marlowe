@@ -1,9 +1,4 @@
-﻿using System;
-
-namespace Marlowe.tests
+﻿public class dummy
 {
-    public class dummy
-    {
-        int x = 2 + 4;
-    }
+    int x = 2 + 4;
 }
