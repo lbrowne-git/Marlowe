@@ -15,7 +15,10 @@ compilation_unit
 //B.2 Syntactic grammar
 
 //B.2.1 Basic concepts
-
+type_argument_list 
+	: '<' type_ ( ',' type_)* '>'
+	;
+	
 namespace_or_type_name 
 	: (identifier type_argument_list? | qualified_alias_member) ('.' identifier type_argument_list?)*
 	;
@@ -76,9 +79,6 @@ class_type
 	| STRING
 	;
 
-type_argument_list 
-	: '<' type_ ( ',' type_)* '>'
-	;
 
 //B.2.4 Expressions
 argument_list 
