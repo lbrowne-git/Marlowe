@@ -23,45 +23,17 @@ namespace Marlowe.Analysis
         Parser parser;
         #endregion
 
-        public Dictionary<string,object> Variables { get; private set; }
 
-        public Analyser(string input){
-            stream = new AntlrInputStream(input);
-            try
-            {
-                while(stream != null){
-                    stream.Mark();
-                    lexer = new CSharpLexer(stream);
-                    tokens = new CommonTokenStream(lexer);
-                    tokens = new BufferedTokenStream(lexer);
-                    parser = new Parser(tokens);
-                    visitor = new Visitor();
-                    visitor.VisitAccessor_body(parser.accessor_body());
-                }
-            }
-            catch (Exception ex){
-                Console.WriteLine(ex);
-            }
-        }
 
-        public void GatherVisitorToken()
-        {
-            Variables = visitor.getTokens();
-        }
-
-        internal void OutputVisitorToken()
-        {
-            foreach (var variable in Variables)
-            {
-                Console.WriteLine(variable.Key + "\t: \t" + variable.Value);
-            }
-        }
 
         #region Getter & Setters
         public ICharStream Stream { get => stream; set => stream = value; }
-            public ITokenSource Lexer { get => lexer; set => lexer = value; }
-            public Parser Parser { get => parser; set => parser = value; }
-        public ITokenStream Tokens { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ITokenSource Lexer { get => lexer; }
+        public Parser Parser { get => parser; set => parser = value; }
+        public ITokenStream Tokens { get => tokens; }
+        public Visitor Visitor { get => visitor; set => visitor = value; }
+        public Dictionary<string, object> Variables { get; private set; }
+
         #endregion
     }
 }

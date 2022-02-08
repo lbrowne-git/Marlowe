@@ -16,8 +16,12 @@ namespace Marlowe.Analysis
     interface IAnalyser
     {
         ICharStream Stream { get; set; }
-        ITokenSource Lexer { get; set; }
-        ITokenStream Tokens { get; set; }
+        ITokenSource Lexer { get; }
+        ITokenStream Tokens { get; }
         Parser Parser { get; set; }
+        Dictionary<string, object> Variables { get;  }
+        Visitor Visitor { get; set; }
+        
+
     }
 }

@@ -7,7 +7,6 @@ namespace Marlowe.Tests.Analysis
     [TestClass]
     public class ParserTest
     {
-
         private Parser Setup(string text)
         {
             Antlr4.Runtime.AntlrInputStream inputStream = new Antlr4.Runtime.AntlrInputStream(text);
