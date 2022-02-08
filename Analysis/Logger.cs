@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Marlowe
+namespace Marlowe.Analysis
 {
-    class Logger
+    internal static class Logger
     {
-        public bool writable { get; set; }
+        private static bool writable;
         public enum Levels : ushort
         {
             Info = 0,
@@ -16,22 +16,10 @@ namespace Marlowe
             Error = 4
         };
 
-        private Levels level;
+        private static Levels level = Levels.Info;
 
-        public Logger(bool writable, Levels level = Levels.Info)
-        {
-            this.writable = writable;
-            this.level = level;
-        }
         
-
-        public void CreateLog(string Message,string heading)
-        {
-            CreateHeader();
-            Console.WriteLine(Message);
-        }
-
-        private void CreateHeader(string heading = null)
+        private static void CreateHeader(string heading = null)
         {
             if(heading == null)
             switch (level)
@@ -58,16 +46,13 @@ namespace Marlowe
             }
         }
 
-        internal void CreateTokenLog(ITokenStream tokens)
+        public static void CreateContext(RuleContext context)
         {
-            CreateHeader("Token");
-        }
+            CreateHeader(context.GetText());
+            Console.WriteLine("Invoke State:\t\t {0}", context.invokingState.ToString());
+            Console.WriteLine("Type:\t\t\t {0}", context.GetType().Name);
+            Console.WriteLine("PayLoad:\t\t\t {0}", context.Payload.GetText());
 
-        internal void CreateLexerLog(ITokenSource lexer)
-        {
-            CreateHeader("Lexer");
-            Console.WriteLine("Size: \t\t{0}", lexer.InputStream.Size);
-            Console.WriteLine("Position:\t{0}", lexer.Column);
         }
     }
 }
