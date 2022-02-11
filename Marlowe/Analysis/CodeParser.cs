@@ -6,10 +6,10 @@ using System.Text;
 
 namespace Marlowe.Analysis
 {
-    public class Parser : CSharpParser
+    public class CodeParser : CSharpParser
     {
         ITokenStream tokenStream { get; set; }
-        public Parser(ITokenStream input) : base(input)
+        public CodeParser(ITokenStream input) : base(input)
         {
             tokenStream = input;
         }
