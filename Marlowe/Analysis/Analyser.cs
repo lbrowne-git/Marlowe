@@ -12,29 +12,35 @@ namespace Marlowe.Analysis
      *      Desc:   A class which will be used as a intermediary level             *
      *              between the input source code and the ANTLR lexer and parser   *
      *                                                                             *
-     *     *      *      *      *      *      *      *      *      *      *        */ 
+     *     *      *      *      *      *      *      *      *      *      *        */
     internal class Analyser : IAnalyser
     {
         #region Attribs
-        ICharStream stream;
-        ITokenSource lexer;
-        ITokenStream tokens;
-        Visitor visitor;
-        Parser parser;
+        private AntlrInputStream stream;
+        private CSharpLexer lexer;
+        private CodeParser parser;
+        private CommonTokenStream commonTokenStream;
+        private Visitor visitor;
         #endregion
+        
+        private void Setup(string text){
+            stream = new AntlrInputStream(text);
+            lexer = new CSharpLexer(stream);
+            commonTokenStream = new CommonTokenStream(lexer);
+            parser = new CodeParser(commonTokenStream);
+        }
 
-
-
+        public Analyser(string text){
+            Setup(text);
+        }
 
         #region Getter & Setters
-        public ICharStream Stream { get => stream; set => stream = value; }
-        public ITokenSource Lexer { get => lexer; }
-        public Parser Parser { get => parser; set => parser = value; }
-        public ITokenStream Tokens { get => tokens; }
-        public Visitor Visitor { get => visitor; set => visitor = value; }
-        public Dictionary<string, object> Variables { get; private set; }
-
+        public CSharpLexer Lexer { get => lexer; }
+        public CodeParser Parser { get => parser; }
+        public Visitor Visitor { get => visitor; }
+        public CommonTokenStream CommonTokenStream { get => commonTokenStream; }
         #endregion
+
     }
 }
  
