@@ -1,25 +1,23 @@
-﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
+﻿using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Marlowe.Analysis
 {
-    public class Visitor : CSharpParserBaseVisitor<ITerminalNode>
+    public class Visitor : CSharpParserBaseVisitor<Node>
     {
-        public Dictionary<string, object> Variables { get; } = new Dictionary<string, object>();
+        public Dictionary<string, Node> Variables { get; } = new Dictionary<string, Node>();
 
         /**
          *  By analysing the compilation context returned  by the parser, this 
          *  function creates tokens for the Symbol Tree, Synthiser & Error Handler.
          *
-         *  @param ITerminalNode : a generic Node obejct for to Create ASTs
+         *  @param Node : a generic Node obejct for to Create ASTs
          */
 
 
-        public override ITerminalNode Visit(IParseTree tree)
+        public override Node Visit(IParseTree tree)
         {
             Console.WriteLine();
             return base.Visit(tree);
@@ -30,80 +28,79 @@ namespace Marlowe.Analysis
                 BYTE_ORDER_MARK? extern_alias_directives? using_directives?
                 global_attribute_section* namespace_member_declarations? EOF
                                                                                     */
-        public override ITerminalNode VisitCompilation_unit([NotNull] CSharpParser.Compilation_unitContext context){
-            Console.WriteLine("Inside VisitCompilation_unit");
-            return Visit(context);
+        public override Node VisitCompilation_unit([NotNull] global::CSharpParser.Compilation_unitContext context){
+            //Console.WriteLine("Inside VisitCompilation_unit");
+            if (context.extern_alias_directives() != null){
+                Variables[context.GetType().Name] = VisitExtern_alias_directives(context.extern_alias_directives());
+            }
+            if(context.using_directives() != null){
+                Variables[context.GetType().Name] = VisitUsing_directives(context.using_directives());
+            }
+
+            global::CSharpParser.Global_attribute_sectionContext[] globalContext = context.global_attribute_section();
+            if (context.global_attribute_section().Length > 0){
+                Variables[context.GetType().Name] = VisitGlobal_attribute_section(context.global_attribute_section()[0]);
+            }
+            if(context.namespace_member_declarations() != null){
+                Variables[context.namespace_member_declarations().GetType().Name] = VisitNamespace_member_declarations(context.namespace_member_declarations());
+            }
+            return null;
+        }
+        
+     //   namespace_member_declarations
+	    //:       namespace_member_declaration+
+	    //;                           
+        public override Node VisitNamespace_member_declarations([NotNull] global::CSharpParser.Namespace_member_declarationsContext context){
+            foreach (var NamespaceContext in context.namespace_member_declaration()){
+                if(NamespaceContext != null){
+                    Variables[NamespaceContext.GetType().Name] = VisitNamespace_member_declaration(NamespaceContext);
+                }
+            }
+
+            return null;
         }
 
-        public override ITerminalNode VisitExtern_alias_directives([NotNull] CSharpParser.Extern_alias_directivesContext context)
+        public override Node VisitNamespace_member_declaration([NotNull] global::CSharpParser.Namespace_member_declarationContext context)
         {
-            Console.WriteLine("Inside VisitExtern_alias_directives");
-            return Visit(context);
+            if (context.type_declaration() != null){
+                Variables[context.GetType().Name] = VisitType_declaration(context.type_declaration());
+            }
+            if(context.namespace_declaration() != null)
+            {
+                Variables[context.GetType().Name] = VisitNamespace_declaration(context.namespace_declaration());
+            }
+            return null;
         }
 
-        public override ITerminalNode VisitExtern_alias_directive([NotNull] CSharpParser.Extern_alias_directiveContext context)
+        public override Node VisitType_declaration([NotNull] global::CSharpParser.Type_declarationContext context)
         {
-            Console.WriteLine("Inside VisitExtern_alias_directive");
-            return Visit(context);
+            if (context.attributes() != null){
+                for (int i = 0; i < context.ChildCount; i++){
+                    var child = context.GetChild(i);
+                    switch (child.GetType())
+                    {
+                        //case typeof(global::CSharpParser.AttributeContext) :
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            if (context.all_member_modifiers() != null){
+                Variables[context.all_member_modifiers().GetType().Name] = VisitAll_member_modifiers(context.all_member_modifiers());
+            }
+            return null;
         }
-
-        #region CS.2.1 - Basic concepts
-        public override ITerminalNode VisitType_argument_list([NotNull] CSharpParser.Type_argument_listContext context)
+        public override Node VisitAll_member_modifiers([NotNull] CSharpParser.All_member_modifiersContext context)
         {
-            return base.VisitType_argument_list(context);
-        }
-
-        public override ITerminalNode VisitNamespace_or_type_name([NotNull] CSharpParser.Namespace_or_type_nameContext context)
-        {
-            return base.VisitNamespace_or_type_name(context);
-        }
-        #endregion
-
-        #region CS.2.2 - Types
-        public override ITerminalNode VisitType_([NotNull] CSharpParser.Type_Context context)
-        {
-            return base.VisitType_(context);
-        }
-        public override ITerminalNode VisitBase_type([NotNull] CSharpParser.Base_typeContext context)
-        {
-            return base.VisitBase_type(context);
-        }
-
-        public override ITerminalNode VisitTuple_element([NotNull] CSharpParser.Tuple_elementContext context)
-        {
-            return base.VisitTuple_element(context);
-        }
-
-        public override ITerminalNode VisitSimple_type([NotNull] CSharpParser.Simple_typeContext context)
-        {
-            return base.VisitSimple_type(context);
-        }
-
-        public override ITerminalNode VisitNumeric_type([NotNull] CSharpParser.Numeric_typeContext context)
-        {
-            return base.VisitNumeric_type(context);
-        }
-
-        // Tuple Element Missing
+            foreach (var NamespaceContext in context.all_member_modifier()
+            {
 
 
-
-        #endregion
-        public override ITerminalNode VisitUsing_directives([NotNull] CSharpParser.Using_directivesContext context)
-        {
-            Console.WriteLine("Inside VisitUsing_directives");
-
-            return base.VisitUsing_directives(context);
-        }
-        public override ITerminalNode VisitGlobal_attribute_section([NotNull] CSharpParser.Global_attribute_sectionContext context)
-        {
-            Console.WriteLine("Inside VisitGlobal_attribute_section");
-            return Visit(context);
-        }
-        public override ITerminalNode VisitNamespace_member_declarations([NotNull] CSharpParser.Namespace_member_declarationsContext context)
-        {
-            Console.WriteLine("Inside VisitNameSpace_Member_Declarion");
-            return Visit(context);
+                return null;
         }
     }
+
+
+   
 }
