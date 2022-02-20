@@ -12,7 +12,7 @@ namespace Marlowe.Analysis
     public interface IAnalyser
     {
         CSharpLexer Lexer { get; }
-        CodeParser Parser { get; }
+        CSharpParser Parser { get; }
         CommonTokenStream CommonTokenStream { get; }
         Visitor Visitor { get; }
     }
