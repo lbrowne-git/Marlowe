@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Antlr4.Runtime;
-using Antlr4.Runtime.Tree;
+﻿using Antlr4.Runtime;
 
 namespace Marlowe.Analysis
 {
@@ -13,11 +9,11 @@ namespace Marlowe.Analysis
      *              between multiple classes                                       *
      *                                                                             *
      *     *      *      *      *      *      *      *      *      *      *        */ 
-    interface IAnalyser
+    public interface IAnalyser
     {
-        ICharStream Stream { get; set; }
-        ITokenSource Lexer { get; set; }
-        ITokenStream Tokens { get; set; }
-        Parser Parser { get; set; }
+        CSharpLexer Lexer { get; }
+        CSharpParser Parser { get; }
+        CommonTokenStream CommonTokenStream { get; }
+        Visitor Visitor { get; }
     }
 }
