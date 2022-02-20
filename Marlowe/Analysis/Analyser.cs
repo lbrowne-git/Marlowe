@@ -18,7 +18,7 @@ namespace Marlowe.Analysis
         #region Attribs
         private AntlrInputStream stream;
         private CSharpLexer lexer;
-        private CodeParser parser;
+        private CSharpParser parser;
         private CommonTokenStream commonTokenStream;
         private Visitor visitor;
         #endregion
@@ -27,7 +27,8 @@ namespace Marlowe.Analysis
             stream = new AntlrInputStream(text);
             lexer = new CSharpLexer(stream);
             commonTokenStream = new CommonTokenStream(lexer);
-            parser = new CodeParser(commonTokenStream);
+            parser = new CSharpParser(commonTokenStream);
+            visitor = new Visitor();
         }
 
         public Analyser(string text){
@@ -36,7 +37,7 @@ namespace Marlowe.Analysis
 
         #region Getter & Setters
         public CSharpLexer Lexer { get => lexer; }
-        public CodeParser Parser { get => parser; }
+        public CSharpParser Parser { get => parser; }
         public Visitor Visitor { get => visitor; }
         public CommonTokenStream CommonTokenStream { get => commonTokenStream; }
         #endregion

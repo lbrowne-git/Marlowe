@@ -9,8 +9,7 @@ namespace Marlowe.Analysis
     public class CodeParser : CSharpParser
     {
         ITokenStream tokenStream { get; set; }
-        public CodeParser(ITokenStream input) : base(input)
-        {
+        public CodeParser(ITokenStream input) : base(input){
             tokenStream = input;
         }
     }
