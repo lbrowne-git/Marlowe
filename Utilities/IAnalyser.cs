@@ -15,6 +15,6 @@ namespace Marlowe.Utilities
         Lexer Lexer { get; }
         Parser Parser { get; }
         CommonTokenStream CommonTokenStream { get; }
-        IParseTreeVisitor<Node> Visitor { get; }
+        IParseTreeVisitor<object?> Visitor { get; }
     }
 }

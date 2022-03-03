@@ -2,33 +2,33 @@
 using Antlr4.Runtime.Tree;
 using Marlowe.Utilities;
 
-namespace Marlowe.CSharp
+namespace Marlowe.Cobol
 {
     /*      *      *      *      *      *      *      *      *      *      *       *  
      *      Name:   Lewis Browne                                                   *
-     *      Date:   26/01/2022                                                     * 
+     *      Date:   03/03/2022                                                     * 
      *      Desc:   A class which will be used as a intermediary level             *
      *              between the input source code and the ANTLR lexer and parser   *
      *                                                                             *
      *     *      *      *      *      *      *      *      *      *      *        */
-    public class CSharpAnalyser : IAnalyser
+    public class Cobol85Analyser : IAnalyser
     {
         #region Attribs
         private AntlrInputStream stream;
         private Lexer lexer;
         private Parser parser;
         private CommonTokenStream commonTokenStream;
-        private CSharpVisitor visitor;
+        private Cobol85Visitor visitor;
         #endregion
         
         private void Setup(string text){
             stream = new AntlrInputStream(text);
-            lexer = new CSharpLexer(stream);
+            lexer = new Cobol85Lexer(stream);
             commonTokenStream = new CommonTokenStream(lexer);
-            parser = new CSharpParser(commonTokenStream);
-            visitor = new CSharpVisitor();
+            parser = new Cobol85Parser(commonTokenStream);
+            visitor = new Cobol85Visitor();
         }
-        public CSharpAnalyser(string text){
+        public Cobol85Analyser(string text){
             Setup(text);
         }
 

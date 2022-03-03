@@ -1,9 +1,8 @@
-﻿using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
+﻿using Antlr4.Runtime.Tree;
 using System;
-using System.Collections.Generic;
+using Marlowe.Utilities;
 
-namespace Cobol
+namespace Marlowe.Cobol
 {
     public class Cobol85Visitor : ICobol85Visitor<Node>
     {

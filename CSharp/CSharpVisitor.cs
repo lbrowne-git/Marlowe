@@ -6,9 +6,9 @@ using Marlowe.Utilities;
 
 namespace Marlowe.CSharp
 {
-    public class CSharpVisitor : CSharpParserBaseVisitor<Node>
+    public class CSharpVisitor : CSharpParserBaseVisitor<object?>
     {
-        public Dictionary<string, Node> Variables { get; } = new Dictionary<string, Node>();
+        public Dictionary<string, object?> Variables { get; } = new Dictionary<string, object?>();
 
         /**
          *  By analysing the compilation context returned  by the parser, this 
@@ -16,7 +16,7 @@ namespace Marlowe.CSharp
          *
          *  @param Node : a generic Node obejct for to Create ASTs
          */
-        public override Node Visit(IParseTree tree)
+        public override object? Visit(IParseTree tree)
         {
             Console.WriteLine();
             return base.Visit(tree);
@@ -27,7 +27,7 @@ namespace Marlowe.CSharp
                 BYTE_ORDER_MARK? extern_alias_directives? using_directives?
                 global_attribute_section* namespace_member_declarations? EOF
                                                                                     */
-        public override Node VisitCompilation_unit([NotNull] global::CSharpParser.Compilation_unitContext context){
+        public override object VisitCompilation_unit([NotNull] global::CSharpParser.Compilation_unitContext context){
             //Console.WriteLine("Inside VisitCompilation_unit");
             if (context.extern_alias_directives() != null){
                 return Variables[context.GetType().Name] = VisitExtern_alias_directives(context.extern_alias_directives());
@@ -49,7 +49,7 @@ namespace Marlowe.CSharp
      //   namespace_member_declarations
 	    //:       namespace_member_declaration+
 	    //;                           
-        public override Node VisitNamespace_member_declarations([NotNull] global::CSharpParser.Namespace_member_declarationsContext context){
+        public override object VisitNamespace_member_declarations([NotNull] global::CSharpParser.Namespace_member_declarationsContext context){
             foreach (var NamespaceContext in context.namespace_member_declaration()){
                 if(NamespaceContext != null){
                     Variables[NamespaceContext.GetType().Name] = VisitNamespace_member_declaration(NamespaceContext);
@@ -59,7 +59,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public override Node VisitNamespace_member_declaration([NotNull] global::CSharpParser.Namespace_member_declarationContext context)
+        public override object VisitNamespace_member_declaration([NotNull] global::CSharpParser.Namespace_member_declarationContext context)
         {
             if (context.type_declaration() != null){
                 return Variables[context.GetType().Name] = VisitType_declaration(context.type_declaration());
@@ -71,7 +71,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public override Node VisitType_declaration([NotNull] global::CSharpParser.Type_declarationContext context)
+        public override object VisitType_declaration([NotNull] global::CSharpParser.Type_declarationContext context)
         {
             if (context.attributes() != null){
                 for (int i = 0; i < context.ChildCount; i++){
@@ -90,26 +90,25 @@ namespace Marlowe.CSharp
             }
             return null;
         }
-        public override Node VisitAll_member_modifiers([NotNull] CSharpParser.All_member_modifiersContext context)
+        public override object VisitAll_member_modifiers([NotNull] CSharpParser.All_member_modifiersContext context)
         {
             foreach (var NamespaceContext in context.all_member_modifier())
             {
                 if (NamespaceContext != null)
                 {
-                    VisitAll_member_modifier(NamespaceContext);
+                    return VisitAll_member_modifier(NamespaceContext);
                 }
             }
                 return null;
         }
 
-        public override Node VisitAll_member_modifier([NotNull] CSharpParser.All_member_modifierContext context){
+        public override object VisitAll_member_modifier([NotNull] CSharpParser.All_member_modifierContext context){
             switch (context.Start.Type)
             {
                 case CSharpLexer.NEW:
-                    return Variables[context.GetText()] = new Node(); 
+                    return Variables[context.GetText()] = context;
                 case CSharpLexer.PUBLIC:
-                    return Variables[context.GetText()] = new Node();
-                    break;
+                    return Variables[context.GetText()] = context;
                 case CSharpLexer.PROTECTED:
                     break;
                 case CSharpLexer.INTERNAL:

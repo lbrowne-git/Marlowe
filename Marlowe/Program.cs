@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using Marlowe.CSharp;
-using Marlowe.Utilities;
 
 namespace Marlowe
 {
@@ -17,12 +16,13 @@ namespace Marlowe
                 analyser.CommonTokenStream.Fill();
                 CSharpParser codeParser= (CSharpParser)analyser.Parser;
                 CSharpParser.Compilation_unitContext context = codeParser.compilation_unit();
-                CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
+                CSharpParserBaseVisitor<object?> cSharpVisitor = (CSharpParserBaseVisitor<object?>)analyser.Visitor;
                 if (codeParser.BuildParseTree){
                 }
                 cSharpVisitor.VisitCompilation_unit(context);
+                cSharpVisitor.
                 codeParser.AddErrorListener(new BaseErrorListener());
-                Dictionary<string, Node> keys = cSharpVisitor.Variables;
+                Dictionary<string, object?> keys = cSharpVisitor;
                 foreach (var item in keys){
 
                 }

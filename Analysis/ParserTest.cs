@@ -93,7 +93,7 @@ namespace Marlowe.Tests.CSharp
         #region Getter & Setters
         public Lexer Lexer { get => lexer; }
         public Parser Parser { get => parser; }
-        public IParseTreeVisitor<Node> Visitor { get => (CSharpVisitor)visitor; }
+        public IParseTreeVisitor<object?> Visitor { get => (CSharpVisitor)visitor; }
         public CommonTokenStream CommonTokenStream { get => commonTokenStream; }
         #endregion
     }
