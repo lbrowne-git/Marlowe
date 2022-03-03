@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -12,17 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="grammar\CSharpLexer.interp" />
-    <None Remove="grammar\CSharpLexer.tokens" />
-    <None Remove="grammar\CSharpParser.interp" />
-    <None Remove="grammar\CSharpParser.tokens" />
-    <None Remove="grammar\CSharpPreprocessorParser.interp" />
-    <None Remove="grammar\CSharpPreprocessorParser.tokens" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
+    <ProjectReference Include="..\Cobol\Cobol.csproj" />
+    <ProjectReference Include="..\CSharp\CSharp.csproj" />
+    <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
 
 </Project>

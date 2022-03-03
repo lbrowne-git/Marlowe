@@ -2,10 +2,11 @@
 using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
+using Marlowe.Utilities;
 
-namespace Marlowe.Analysis
+namespace Marlowe.CSharp
 {
-    public class Visitor : CSharpParserBaseVisitor<Node>
+    public class CSharpVisitor : CSharpParserBaseVisitor<Node>
     {
         public Dictionary<string, Node> Variables { get; } = new Dictionary<string, Node>();
 
@@ -15,8 +16,6 @@ namespace Marlowe.Analysis
          *
          *  @param Node : a generic Node obejct for to Create ASTs
          */
-
-
         public override Node Visit(IParseTree tree)
         {
             Console.WriteLine();
@@ -31,18 +30,18 @@ namespace Marlowe.Analysis
         public override Node VisitCompilation_unit([NotNull] global::CSharpParser.Compilation_unitContext context){
             //Console.WriteLine("Inside VisitCompilation_unit");
             if (context.extern_alias_directives() != null){
-                Variables[context.GetType().Name] = VisitExtern_alias_directives(context.extern_alias_directives());
+                return Variables[context.GetType().Name] = VisitExtern_alias_directives(context.extern_alias_directives());
             }
             if(context.using_directives() != null){
-                Variables[context.GetType().Name] = VisitUsing_directives(context.using_directives());
+                return Variables[context.GetType().Name] = VisitUsing_directives(context.using_directives());
             }
 
             global::CSharpParser.Global_attribute_sectionContext[] globalContext = context.global_attribute_section();
             if (context.global_attribute_section().Length > 0){
-                Variables[context.GetType().Name] = VisitGlobal_attribute_section(context.global_attribute_section()[0]);
+                return Variables[context.GetType().Name] = VisitGlobal_attribute_section(context.global_attribute_section()[0]);
             }
             if(context.namespace_member_declarations() != null){
-                Variables[context.namespace_member_declarations().GetType().Name] = VisitNamespace_member_declarations(context.namespace_member_declarations());
+                return Variables[context.namespace_member_declarations().GetType().Name] = VisitNamespace_member_declarations(context.namespace_member_declarations());
             }
             return null;
         }
@@ -63,11 +62,11 @@ namespace Marlowe.Analysis
         public override Node VisitNamespace_member_declaration([NotNull] global::CSharpParser.Namespace_member_declarationContext context)
         {
             if (context.type_declaration() != null){
-                Variables[context.GetType().Name] = VisitType_declaration(context.type_declaration());
+                return Variables[context.GetType().Name] = VisitType_declaration(context.type_declaration());
             }
             if(context.namespace_declaration() != null)
             {
-                Variables[context.GetType().Name] = VisitNamespace_declaration(context.namespace_declaration());
+                return Variables[context.GetType().Name] = VisitNamespace_declaration(context.namespace_declaration());
             }
             return null;
         }
@@ -87,17 +86,60 @@ namespace Marlowe.Analysis
             }
 
             if (context.all_member_modifiers() != null){
-                Variables[context.all_member_modifiers().GetType().Name] = VisitAll_member_modifiers(context.all_member_modifiers());
+                return Variables[context.all_member_modifiers().GetType().Name] = VisitAll_member_modifiers(context.all_member_modifiers());
             }
             return null;
         }
         public override Node VisitAll_member_modifiers([NotNull] CSharpParser.All_member_modifiersContext context)
         {
-            foreach (var NamespaceContext in context.all_member_modifier()
+            foreach (var NamespaceContext in context.all_member_modifier())
             {
-
-
+                if (NamespaceContext != null)
+                {
+                    VisitAll_member_modifier(NamespaceContext);
+                }
+            }
                 return null;
+        }
+
+        public override Node VisitAll_member_modifier([NotNull] CSharpParser.All_member_modifierContext context){
+            switch (context.Start.Type)
+            {
+                case CSharpLexer.NEW:
+                    return Variables[context.GetText()] = new Node(); 
+                case CSharpLexer.PUBLIC:
+                    return Variables[context.GetText()] = new Node();
+                    break;
+                case CSharpLexer.PROTECTED:
+                    break;
+                case CSharpLexer.INTERNAL:
+                    break;
+                case CSharpLexer.PRIVATE:
+                    break;
+                case CSharpLexer.READONLY:
+                    break;
+                case CSharpLexer.VOLATILE:
+                    break;
+                case CSharpLexer.VIRTUAL:
+                    break;
+                case CSharpLexer.SEALED:
+                    break;
+                case CSharpLexer.OVERRIDE:
+                    break;
+                case CSharpLexer.ABSTRACT:
+                    break;
+                case CSharpLexer.STATIC:
+                    break;
+                case CSharpLexer.UNSAFE:
+                    break;
+                case CSharpLexer.EXTERN:
+                    break;
+                case CSharpLexer.PARTIAL:
+                    break;
+                case CSharpLexer.ASYNC:
+                    break;
+            }
+            return null;
         }
     }
 

@@ -2,10 +2,8 @@
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Marlowe.Analysis
+namespace Marlowe.Utilities
 {
     public class Node : ITerminalNode
     {

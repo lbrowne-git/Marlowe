@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Marlowe.Analysis
+namespace Marlowe.Utilities
 {
     internal static class Logger
     {
