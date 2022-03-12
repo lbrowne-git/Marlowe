@@ -361,3 +361,13 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Utilities/grammar/Cobol85Lexer.tokens
+/Utilities/grammar/Cobol85Lexer.interp
+/Utilities/grammar/Cobol85.tokens
+/Utilities/grammar/Cobol85.interp
+/Utilities/grammar/Cobol85.g4
+/Utilities/grammar/antlr.jar
+/Cobol/Cobol85Parser.cs
+/Cobol/Cobol85Lexer.cs
+/Cobol/Cobol85BaseVisitor.cs
+/Cobol/ICobol85Visitor.cs
