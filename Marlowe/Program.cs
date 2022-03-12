@@ -2,35 +2,65 @@
 using System;
 using System.Collections.Generic;
 using Marlowe.CSharp;
+using Marlowe.Utilities;
+using Marlowe.Cobol;
+using System.IO;
+using Antlr4.Runtime.Tree;
 
 namespace Marlowe
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args){
+        public static void Main(){
             string fileName = "dummy.ss";
-            //string FileContents = File.ReadAllText(fileName);
-            string FileContents = "public class dummy{\n\rint x = 2 + 4;}\n\r";
-            CSharpAnalyser analyser = new CSharpAnalyser(FileContents);
+            string FileContents = File.ReadAllText(fileName);
+            string language = "cs";
+            IAnalyser analyser = new CSharpAnalyser(FileContents);
             try{
-                analyser.CommonTokenStream.Fill();
-                CSharpParser codeParser= (CSharpParser)analyser.Parser;
-                CSharpParser.Compilation_unitContext context = codeParser.compilation_unit();
-                CSharpParserBaseVisitor<object?> cSharpVisitor = (CSharpParserBaseVisitor<object?>)analyser.Visitor;
-                if (codeParser.BuildParseTree){
-                }
-                cSharpVisitor.VisitCompilation_unit(context);
-                cSharpVisitor.
-                codeParser.AddErrorListener(new BaseErrorListener());
-                Dictionary<string, object?> keys = cSharpVisitor;
-                foreach (var item in keys){
 
+                if (language == "cs")
+                {
+
+                    analyser.CommonTokenStream.Fill();
+                    CSharpParser codeParser = (CSharpParser)analyser.Parser;
+                    CSharpParser.Compilation_unitContext context = codeParser.compilation_unit();
+                    CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
+                    cSharpVisitor.VisitCompilation_unit(context);
+             
+
+                    codeParser.AddErrorListener(new BaseErrorListener());
+                    Dictionary<string, object?> keys = cSharpVisitor.Variables;
+                    foreach (var item in keys)
+                    {
+                        Console.WriteLine(item.Key + "\t:\t:" + item.Value);
+                    }
+                }
+                else
+                {
+                    analyser = new Cobol85Analyser(FileContents);
+                    analyser.CommonTokenStream.Fill();
+                    CSharpParser codeParser = (CSharpParser)analyser.Parser;
+                    CSharpParser.Compilation_unitContext context = codeParser.compilation_unit();
+                    CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
+                    if (codeParser.BuildParseTree)
+                    {
+                    }
+                    Console.WriteLine(context.ToStringTree().ToLowerInvariant());
+                    cSharpVisitor.VisitCompilation_unit(context);
+                    codeParser.AddErrorListener(new BaseErrorListener());
+                    Dictionary<string, object?> keys = cSharpVisitor.Variables;
+                    foreach (var item in keys)
+                    {
+
+                    }
                 }
             }
             catch (Exception ex){
                 Console.WriteLine("Error: " + ex);
             }
         }
+
+   
   
     }
 }
