@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <None Update="dummy.ss">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
