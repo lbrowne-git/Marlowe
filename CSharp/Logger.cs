@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using System;
+using System.Collections.Generic;
 
 namespace Marlowe.CSharp
 {
@@ -31,26 +32,19 @@ namespace Marlowe.CSharp
         {
             CreateHeader("Namespace");
             Console.WriteLine($"Total: {cSharpVisitor.Namespace.Count}");
+            DictonaryHandler(cSharpVisitor.Namespace);
 
-            foreach (var item in cSharpVisitor.Namespace)
-            {
-                Console.WriteLine(item.Key + "\t:\t:" + item.Value);
-            }
+
             CreateHeader("Variables");
             Console.WriteLine($"Total: {cSharpVisitor.Variables.Count}");
-            foreach (var item in cSharpVisitor.Variables)
-            {
-                Console.WriteLine(item.Key + "\t:\t:" + item.Value);
-            }
+            DictonaryHandler(cSharpVisitor.Variables);
         }
 
-        public static void CreateContext(RuleContext context)
-        {
-            CreateHeader(context.GetText());
-            Console.WriteLine("Invoke State:\t\t {0}", context.invokingState.ToString());
-            Console.WriteLine("Type:\t\t\t {0}", context.GetType().Name);
-            Console.WriteLine("PayLoad:\t\t\t {0}", context.Payload.GetText());
-
+        private static void DictonaryHandler<T,K>(Dictionary<T, K> dictonary){
+            foreach (var item in dictonary)
+            {
+                Console.WriteLine($"{item.Key}\t:\t{item.Value}");
+            }
         }
     }
 }

@@ -4,10 +4,10 @@ using Utilities;
 
 namespace CSharp
 {
-    internal class VisitorTree : ITreeNode
+    public class VisitorTree : ITreeNode
     {
-        public Dictionary<string, object> Variables { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Dictionary<string, object> Functions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Dictionary<string, object> Namespace { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Dictionary<string, object> Variables { get; set; }
+        public Dictionary<string, object> Functions { get; set; }
+        public Dictionary<string, object> Namespace { get; set; }
     }
 }
