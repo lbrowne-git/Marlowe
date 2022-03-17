@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 
-namespace Marlowe.Analysis
+namespace Marlowe.Utilities
 {
     /*      *      *      *      *      *      *      *      *      *      *       *  
      *      Name:   Lewis Browne                                                   *
@@ -11,9 +12,9 @@ namespace Marlowe.Analysis
      *     *      *      *      *      *      *      *      *      *      *        */ 
     public interface IAnalyser
     {
-        CSharpLexer Lexer { get; }
-        CSharpParser Parser { get; }
+        Lexer Lexer { get; }
+        Parser Parser { get; }
         CommonTokenStream CommonTokenStream { get; }
-        Visitor Visitor { get; }
+        IParseTreeVisitor<object?> Visitor { get; }
     }
 }

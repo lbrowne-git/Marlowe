@@ -1,10 +1,12 @@
 using Antlr4.Runtime;
-using Marlowe.Analysis;
+using Antlr4.Runtime.Tree;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.IO;
+using Marlowe.Utilities;
+using Marlowe.CSharp;
 
-namespace Marlowe.Tests.Analysis
+namespace Marlowe.Tests.CSharp
 {
     [TestClass]
     public class ParserTest : IAnalyser
@@ -13,8 +15,8 @@ namespace Marlowe.Tests.Analysis
         #region Attribs
         private AntlrInputStream stream;
         private CSharpLexer lexer;
-        private Marlowe.Analysis.CodeParser parser;
-        private Visitor visitor;
+        private CSharpParser parser;
+        private CSharpVisitor visitor;
         private CommonTokenStream commonTokenStream;
         #endregion
 
@@ -26,8 +28,8 @@ namespace Marlowe.Tests.Analysis
             stream = new AntlrInputStream(text);
             lexer = new CSharpLexer(stream);
             commonTokenStream = new CommonTokenStream(lexer);
-            parser = new Marlowe.Analysis.CodeParser(commonTokenStream);
-            visitor = new Visitor();    
+            parser = new CSharpParser(commonTokenStream);
+            visitor = new CSharpVisitor();    
         }
 
         private List<IToken> FilterTokens(IList<IToken> tokens)
@@ -87,15 +89,12 @@ namespace Marlowe.Tests.Analysis
 
 
 
+
         #region Getter & Setters
-        public AntlrInputStream Stream { get => stream; set => stream = value; }
-        public CSharpLexer Lexer { get => lexer; set => lexer = value; }
-        public Marlowe.Analysis.CodeParser Parser { get => parser; set => parser = value; }
-        public Visitor Visitor { get => visitor; set => visitor = value; }
-
-        public CommonTokenStream CommonTokenStream => commonTokenStream;
-
-        CSharpParser IAnalyser.Parser => throw new System.NotImplementedException();
+        public Lexer Lexer { get => lexer; }
+        public Parser Parser { get => parser; }
+        public IParseTreeVisitor<object?> Visitor { get => (CSharpVisitor)visitor; }
+        public CommonTokenStream CommonTokenStream { get => commonTokenStream; }
         #endregion
     }
 }

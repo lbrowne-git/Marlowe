@@ -1,10 +1,8 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Marlowe.Utilities;
 
-namespace Marlowe.Analysis
+namespace Marlowe.CSharp
 {
     /*      *      *      *      *      *      *      *      *      *      *       *  
      *      Name:   Lewis Browne                                                   *
@@ -13,14 +11,14 @@ namespace Marlowe.Analysis
      *              between the input source code and the ANTLR lexer and parser   *
      *                                                                             *
      *     *      *      *      *      *      *      *      *      *      *        */
-    internal class Analyser : IAnalyser
+    public class CSharpAnalyser : IAnalyser
     {
         #region Attribs
         private AntlrInputStream stream;
-        private CSharpLexer lexer;
-        private CSharpParser parser;
+        private Lexer lexer;
+        private Parser parser;
         private CommonTokenStream commonTokenStream;
-        private Visitor visitor;
+        private CSharpVisitor visitor;
         #endregion
         
         private void Setup(string text){
@@ -28,17 +26,16 @@ namespace Marlowe.Analysis
             lexer = new CSharpLexer(stream);
             commonTokenStream = new CommonTokenStream(lexer);
             parser = new CSharpParser(commonTokenStream);
-            visitor = new Visitor();
+            visitor = new CSharpVisitor();
         }
-
-        public Analyser(string text){
+        public CSharpAnalyser(string text){
             Setup(text);
         }
 
         #region Getter & Setters
-        public CSharpLexer Lexer { get => lexer; }
-        public CSharpParser Parser { get => parser; }
-        public Visitor Visitor { get => visitor; }
+        public Lexer Lexer { get => lexer; }
+        public Parser Parser { get => parser; }
+        public IParseTreeVisitor<object?> Visitor { get => visitor; }
         public CommonTokenStream CommonTokenStream { get => commonTokenStream; }
         #endregion
 

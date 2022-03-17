@@ -91,18 +91,13 @@ argument
 
 expression
 	: assignment
-	| non_assignment_expression
-	| REF non_assignment_expression
+
 	;
 
-non_assignment_expression
-	: lambda_expression
-	| query_expression
-	| conditional_expression
-	;
+
 
 assignment
-	: unary_expression assignment_operator expression
+	: unary_expression assignment_operator? expression
 	| unary_expression '??=' throwable_expression
 	;
 
@@ -192,8 +187,7 @@ unary_expression
 	;
 
 primary_expression  // Null-conditional operators C# 6: https://msdn.microsoft.com/en-us/library/dn986595.aspx
-	: pe=primary_expression_start '!'? bracket_expression* '!'?
-	  (((member_access | method_invocation | '++' | '--' | '->' identifier) '!'?) bracket_expression* '!'?)*
+	: primary_expression_start
 	;
 
 primary_expression_start
@@ -279,8 +273,7 @@ collection_initializer
 	;
 
 element_initializer
-	: non_assignment_expression
-	| OPEN_BRACE expression_list CLOSE_BRACE
+	: OPEN_BRACE expression_list CLOSE_BRACE
 	;
 
 anonymous_object_initializer
