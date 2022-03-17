@@ -1,28 +1,22 @@
-﻿using Antlr4.Runtime;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using Marlowe.CSharp;
 using Marlowe.Utilities;
-using Marlowe.Cobol;
 using System.IO;
-using Antlr4.Runtime.Tree;
-using Utilities;
 
 namespace Marlowe
 {
     public class Program
     {
-        public static void Main(){
+        public static void Main(string[] args){
             string fileName = "dummy.ss";
             string FileContents = File.ReadAllText(fileName);
-           // string FileContents = "int x = 4";
+            // string FileContents = "int x = 4";
             IAnalyser analyser = new CSharpAnalyser(FileContents);
             try{
                 analyser.CommonTokenStream.Fill();
                 CSharpParser codeParser = (CSharpParser)analyser.Parser;
-                CSharpParser.Compilation_unitContext context = codeParser.compilation_unit();
                 CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
-                cSharpVisitor.VisitCompilation_unit(context);
+                cSharpVisitor.VisitCompilation_unit(codeParser.compilation_unit());
                 Logger.GenerateContext(cSharpVisitor);
 
             }

@@ -8,7 +8,7 @@ options { tokenVocab=CSharpLexer; superClass = CSharpParserBase; }
 
 // entry point
 compilation_unit
-	: BYTE_ORDER_MARK? using_directives?
+	: BYTE_ORDER_MARK? extern_alias_directives? using_directives?
 	  global_attribute_section* namespace_member_declarations? EOF
 	;
 
@@ -91,18 +91,13 @@ argument
 
 expression
 	: assignment
-	| non_assignment_expression
-	| REF non_assignment_expression
+
 	;
 
-non_assignment_expression
-	: lambda_expression
-	| query_expression
-	| conditional_expression
-	;
+
 
 assignment
-	: unary_expression assignment_operator expression
+	: unary_expression assignment_operator? expression
 	| unary_expression '??=' throwable_expression
 	;
 
@@ -192,8 +187,7 @@ unary_expression
 	;
 
 primary_expression  // Null-conditional operators C# 6: https://msdn.microsoft.com/en-us/library/dn986595.aspx
-	: pe=primary_expression_start '!'? bracket_expression* '!'?
-	  (((member_access | method_invocation | '++' | '--' | '->' identifier) '!'?) bracket_expression* '!'?)*
+	: primary_expression_start
 	;
 
 primary_expression_start
@@ -279,8 +273,7 @@ collection_initializer
 	;
 
 element_initializer
-	: non_assignment_expression
-	| OPEN_BRACE expression_list CLOSE_BRACE
+	: OPEN_BRACE expression_list CLOSE_BRACE
 	;
 
 anonymous_object_initializer
@@ -555,20 +548,32 @@ resource_acquisition
 
 //B.2.6 Namespaces;
 namespace_declaration
-	: NAMESPACE  namespace_body ';'?
+	: NAMESPACE qi=qualified_identifier namespace_body ';'?
+	;
+
+qualified_identifier
+	: identifier ( '.'  identifier )*
 	;
 
 namespace_body
-	: OPEN_BRACE using_directives? namespace_member_declarations? CLOSE_BRACE
+	: OPEN_BRACE extern_alias_directives? using_directives? namespace_member_declarations? CLOSE_BRACE
 	;
 
+extern_alias_directives
+	: extern_alias_directive+
+	;
+
+extern_alias_directive
+	: EXTERN ALIAS identifier ';'
+	;
 
 using_directives
 	: using_directive+
 	;
 
 using_directive
-	: USING namespace_or_type_name ';'                           #usingNamespaceDirective
+	: USING identifier '=' namespace_or_type_name ';'            #usingAliasDirective
+	| USING namespace_or_type_name ';'                           #usingNamespaceDirective
 	// C# 6: https://msdn.microsoft.com/en-us/library/ms228593.aspx
 	| USING STATIC namespace_or_type_name ';'                    #usingStaticDirective
 	;
