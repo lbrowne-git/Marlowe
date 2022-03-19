@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using Marlowe.Utilities;
 using Marlowe.CSharp;
+using Marlowe.Visitor;
 
 namespace Marlowe.Tests.CSharp
 {

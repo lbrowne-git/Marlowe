@@ -2,6 +2,7 @@
 using Marlowe.CSharp;
 using Marlowe.Utilities;
 using System.IO;
+using Marlowe.Visitor;
 
 namespace Marlowe
 {
@@ -18,7 +19,6 @@ namespace Marlowe
                 CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
                 cSharpVisitor.VisitCompilation_unit(codeParser.compilation_unit());
                 Logger.GenerateContext(cSharpVisitor);
-
             }
             catch (Exception ex){
                 Console.WriteLine("Error: " + ex);

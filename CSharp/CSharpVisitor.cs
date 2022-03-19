@@ -4,14 +4,15 @@ using CSharp;
 using System;
 using System.Collections.Generic;
 
-namespace Marlowe.CSharp
+namespace Marlowe.Visitor
 {
-    public class CSharpVisitor : VisitorNamespace_Member_Declarations
+    public class CSharpVisitor : NamespaceVisitor
     {
         public VisitorTree visitorTree = new VisitorTree();
         public Dictionary<string, object> Variables = new Dictionary<string, object>();
         public Dictionary<string, object> Functions =   new Dictionary<string, object>();
         public Dictionary<string, object> Namespace =   new Dictionary<string, object>();
+        private Type type;
         /**
      *  By analysing the compilation context returned  by the parser, this 
      *  function creates tokens for the Symbol Tree, Synthiser & Error Handler.
@@ -30,22 +31,27 @@ namespace Marlowe.CSharp
                 BYTE_ORDER_MARK? extern_alias_directives? using_directives?
                 global_attribute_section* namespace_member_declarations? EOF
                                                                                     */
-        public override object? VisitCompilation_unit([NotNull] CSharpParser.Compilation_unitContext context){
+        public override object? VisitCompilation_unit([NotNull] CSharpParser.Compilation_unitContext context)
+        {
 
-            if(context.BYTE_ORDER_MARK() != null){
+            if (context.BYTE_ORDER_MARK() != null)
+            {
                 Variables[context.BYTE_ORDER_MARK().GetText()] = context.BYTE_ORDER_MARK();
             }
-            else if(context.using_directives() != null){
+            else if (context.using_directives() != null)
+            {
                 VisitUsing_directives(context.using_directives());
             }
 
-            else if (context.global_attribute_section().Length > 0){
+            else if (context.global_attribute_section().Length > 0)
+            {
                 foreach (var globalContext in context.global_attribute_section())
                 {
                     VisitGlobal_attribute_section(globalContext);
                 }
             }
-            else if(context.namespace_member_declarations() != null){
+            else if (context.namespace_member_declarations() != null)
+            {
                 VisitNamespace_member_declarations(context.namespace_member_declarations());
             }
             else
@@ -53,91 +59,7 @@ namespace Marlowe.CSharp
                 throw new Exception($"No namepsace declared in file");
             }
             return null;
-
-        #region Namespace
         }
-        //   namespace_member_declarations
-        //:       namespace_member_declaration                      
-        public override object? VisitNamespace_member_declarations([NotNull] CSharpParser.Namespace_member_declarationsContext context)
-        {
-
-            foreach (var NamespaceContext in context.namespace_member_declaration())
-            {
-                if (NamespaceContext != null)
-                {
-                    VisitNamespace_member_declaration(NamespaceContext);
-                }
-            }
-
-            return null;
-        }
-
-        //namespace_member_declaration
-        //: namespace_declaration
-        //| type_declaration
-        //;
-        public override object? VisitNamespace_member_declaration([NotNull] CSharpParser.Namespace_member_declarationContext context)
-        {
-
-            if (context.namespace_declaration() != null)
-            {
-                VisitNamespace_declaration(context.namespace_declaration());
-            }
-            else if (context.type_declaration() != null)
-            {
-                VisitType_declaration(context.type_declaration());
-            }
-            return null;
-        }
-
-
-        //namespace_declaration
-	    //: NAMESPACE qi = qualified_identifier namespace_body ';'?
-        public override object? VisitNamespace_declaration([NotNull] CSharpParser.Namespace_declarationContext context)
-        {
-             if (context.NAMESPACE() != null){
-                if (context.namespace_body() != null){
-                    Variables[context.namespace_body().GetText()] = context.namespace_body();
-                }
-                else{
-                    throw new Exception($"No Namespace Body Present");
-                }
-            }
-            else
-            {
-                throw new Exception($"No Namespace Present");
-            }
-            return null;
-        }
-
-        // namespace_body
-         // OPEN_BRACE extern_alias_directives? using_directives? namespace_member_declarations? CLOSE_BRACE
-        public override object? VisitNamespace_body([NotNull] CSharpParser.Namespace_bodyContext context)
-        {
-            if (context.OPEN_BRACE() != null){
-                if (context.CLOSE_BRACE() != null){
-                    if (context.extern_alias_directives() != null){
-                        VisitExtern_alias_directives(context.extern_alias_directives());
-                    }
-                    if (context.using_directives() != null){
-                        VisitUsing_directives(context.using_directives());
-                    }
-                    if (context.namespace_member_declarations() != null){
-                        VisitNamespace_member_declarations(context.namespace_member_declarations());
-                    }
-                }
-                else{
-                    throw new System.Exception($"Namespace Body does not contain a closing bracket");
-                }
-            }
-            else{
-                throw new System.Exception($"Namespace Body does not contain an openning bracket");
-            }
-            return null;
-        }
-
-        #endregion
-
         #region Class
         //class_definition
         //: CLASS identifier type_parameter_list? class_base? type_parameter_constraints_clauses?
@@ -526,8 +448,7 @@ namespace Marlowe.CSharp
 
         public override object VisitShift_expression([NotNull] CSharpParser.Shift_expressionContext context){
             if (context.additive_expression().Length > 1){
-                if (context.OP_LEFT_SHIFT() != null || context.right_shift() != null)
-                {
+                if (context.OP_LEFT_SHIFT() != null || context.right_shift() != null){
                     foreach (var item in context.additive_expression()){
                         VisitAdditive_expression(item);
                     }
@@ -548,9 +469,14 @@ namespace Marlowe.CSharp
             {
                 if (context.MINUS() != null || context.PLUS() != null)
                 {
-                    foreach (var item in context.multiplicative_expression())
+                    if (context.PLUS().Length > 0)
                     {
-                        VisitMultiplicative_expression(item);
+                        return (int)VisitMultiplicative_expression(context.multiplicative_expression()[0]) + (int)VisitMultiplicative_expression(context.multiplicative_expression()[1]);
+
+                    }
+                    else if (context.MINUS().Length > 0)
+                    {
+                        return (int)VisitMultiplicative_expression(context.multiplicative_expression()[0]) - (int)VisitMultiplicative_expression(context.multiplicative_expression()[1]);
                     }
                 }
                 else
@@ -571,9 +497,14 @@ namespace Marlowe.CSharp
             {
                 if (context.STAR() != null || context.PERCENT() != null || context.DIV() != null)
                 {
-                    foreach (var item in context.switch_expression())
+                    if (context.STAR().Length > 0)
                     {
-                        VisitSwitch_expression(item);
+                        return (int)VisitSwitch_expression(context.switch_expression()[0]) * (int)VisitSwitch_expression(context.switch_expression()[1]);
+                    }
+                    else if (context.DIV().Length > 0)
+                    {
+                        return (int)VisitSwitch_expression(context.switch_expression()[0]) / (int)VisitSwitch_expression(context.switch_expression()[1]);
+
                     }
                 }
                 else
@@ -664,8 +595,51 @@ namespace Marlowe.CSharp
             return base.VisitPrimary_expression(context);
         }
 
-        public object VisitPrimary_expression_start(CSharpParser.Primary_expression_startContext context){
-            return context.Start.Text;
+        public object VisitPrimary_expression_start([NotNull] CSharpParser.Primary_expression_startContext context) {
+
+            string value = context.Start.Text;
+            if (int.TryParse(value, out int intValue))
+            {
+                if (intValue != 0)
+                {
+                    return intValue;
+                }
+            }
+            else if (double.TryParse(value, out double doubleValue))
+            {
+                if (doubleValue != 0)
+                {
+                    return doubleValue;
+                }
+            }
+            else if (float.TryParse(value, out float floatValue))
+            {
+                if (floatValue != 0)
+                {
+                    return floatValue;
+                }
+            }
+            else 
+            {
+                if (value[0] == '"' && value[value.Length - 1] == '"')
+                {
+                    return value.Substring(1, (value.Length-2));
+
+                }
+                else
+                {
+                    try
+                    {
+                        return Variables[value];
+                    }
+                    catch
+                    {
+                        throw new Exception($"value is valid");
+                    }
+                }
+            }
+            
+            return null;
         }
 
         #endregion
@@ -705,7 +679,6 @@ namespace Marlowe.CSharp
             {
                 if (context.STAR() != null)
                 {
-                    Variables[context.GetText()] = context.STAR();
                 }
             }
             return base.VisitBase_type(context);
@@ -719,7 +692,6 @@ namespace Marlowe.CSharp
             }
             else if(context.OBJECT() != null || context.DYNAMIC() != null || context.STRING() != null)
             {
-                Variables[context.GetText()] = context.GetType();
             }
 
             return base.VisitClass_type(context);
@@ -735,7 +707,6 @@ namespace Marlowe.CSharp
             }
             else if(context.BOOL() != null)
             {
-               Variables[context.GetText()] = context.BOOL();
             }
             return base.VisitSimple_type(context);
         }
@@ -752,7 +723,6 @@ namespace Marlowe.CSharp
             }
             else if(context.DECIMAL() != null)
             {
-                Variables[context.GetText()] = context.DECIMAL();
             }
             return base.VisitNumeric_type(context);
         }
@@ -763,7 +733,7 @@ namespace Marlowe.CSharp
             {
                 if(context.INT() != null)
                 {
-                    Variables[context.INT().GetText()] = context.INT().GetType();
+                    type = typeof(int);
                 }
             }
             return base.VisitIntegral_type(context);
@@ -876,6 +846,8 @@ namespace Marlowe.CSharp
         {
             if (context.Start.Text != null)
             {
+                Variables[context.Start.Text] = context.Start.Type;
+
                 return context.Start.Text;
             }
             return base.VisitIdentifier(context);
