@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime;
+﻿using Marlowe.Utilities;
+using Marlowe.Visitor;
 using System;
 using System.Collections.Generic;
 
@@ -21,7 +22,7 @@ namespace Marlowe.CSharp
         private static void CreateHeader(string heading = null)
         {
             if (heading != null){
-                Console.WriteLine("*******************************************\n\t\t{0}\n*******************************************", heading);
+                Console.WriteLine($"*******************************************\n\t\t{heading}\n*******************************************");
             }
             else{
                 Console.WriteLine($"*******************************************\n\t\t{level}\n*******************************************");
