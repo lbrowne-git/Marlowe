@@ -6,7 +6,7 @@ using System.IO;
 namespace Marlowe.Tests
 {
     [TestClass]
-    internal class LexicalTesting : TestAnalyser
+    internal class SyntaxicalTesting : TestAnalyser
     {
         private List<IToken> FilterTokens(IList<IToken> tokens)
         {
