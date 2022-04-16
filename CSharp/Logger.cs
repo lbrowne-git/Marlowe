@@ -27,11 +27,11 @@ namespace Marlowe.CSharp
             Console.WriteLine($"*******************************************\n\t\t{heading}\n*******************************************");
         }
 
-        public static void LogSymbolTable(SymbolTable cSharpVisitor)
+        public static void LogSymbolTable(SymbolTable symbolTable)
         {
-            HandleSymbolNode(cSharpVisitor.Variables, "Variables");
-            HandleSymbolNode(cSharpVisitor.Functions, "Functions");
-            HandleSymbolNode(cSharpVisitor.Directives, "");
+            HandleSymbolNode(symbolTable.Variables, "Variables");
+            HandleSymbolNode(symbolTable.Functions, "Functions");
+            HandleSymbolNode(symbolTable.Directives, "");
         }
 
         private static void HandleSymbolNode(IDictionary<string, ISymbolNode> dictonary, string header = ""){
