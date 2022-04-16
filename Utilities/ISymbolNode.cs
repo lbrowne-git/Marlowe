@@ -1,5 +1,4 @@
-﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Tree;
+﻿using System;
 
 namespace Marlowe.Utilities
 {
@@ -10,6 +9,8 @@ namespace Marlowe.Utilities
         public string Namespace { get; set; }
 
         public string ClassName { get; set; }
+        
+        public Type Type { get; set; }
 
 
     }

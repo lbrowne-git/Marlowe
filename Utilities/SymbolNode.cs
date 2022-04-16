@@ -14,12 +14,15 @@ namespace Marlowe.Utilities
         private string nodeNamespace { get; set; }
 
         private string className { get; set; }
+        
+        private Type type { get; set; }
 
 
         #region Getters & Setters
         public object Variable { get => variable; set => variable = value; }
         public string Namespace { get => nodeNamespace; set => nodeNamespace = value; }
         public string ClassName { get => className; set => className = value; }
+        public Type Type { get => type; set => type = value; }
 
         public void HandleArthimatic(ParserRuleContext[] multiplicative_expressionContexts, string arthmatic)
         {
@@ -42,7 +45,7 @@ namespace Marlowe.Utilities
 
         public override string ToString()
         {
-            return $"{variable}\t:\t{className}\t:\t{nodeNamespace}"; 
+            return $"{variable}\t:\t{className}\t:\t{nodeNamespace}\t:\t{Type}"; 
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿   namespace example{
    
    class dummy{
-        string x = "hello";
+        private string x = "hello";
         int y = 4;
-        int z = x + y;  // 19
+        long z = y;
 
         public string test(){
             return "hello";
@@ -12,6 +12,6 @@
 
 
     public class dumm2{
-            string t = 4;
+    string t = 4;
 }
 }
