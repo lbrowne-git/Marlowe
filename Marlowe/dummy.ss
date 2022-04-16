@@ -1,5 +1,7 @@
-﻿public class dummy{
-        int x = 8 + 7; //15
+﻿using System;
+
+public class dummy{
+        string x = "hello";
         int y = 4;
         int z = x + y;  // 19
 }
