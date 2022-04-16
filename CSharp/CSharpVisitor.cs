@@ -7,15 +7,13 @@ using Marlowe.Utilities;
 
 namespace Marlowe.Visitor
 {
-    public class CSharpVisitor : ICSharpVisitor
+    public class CSharpVisitor : SymbolTable, ICSharpVisitor
     { 
         private enum Type { TypeString, TypeInt, TypeLong, TypeFloat, TypeBool, TypeEnum };
 
         private Type type = default(Type);
 
-        public IDictionary<string, ISymbolNode> Variables = new Dictionary<string, ISymbolNode>();
-        public IDictionary<string, ISymbolNode> Functions = new Dictionary<string, ISymbolNode>();
-        public IDictionary<string, ISymbolNode> Directives = new Dictionary<string, ISymbolNode>();
+
         private string ClassName;
         private string Namespace;
 
@@ -44,11 +42,6 @@ namespace Marlowe.Visitor
                 Variables[context.BYTE_ORDER_MARK().GetText()] = new SymbolNode() { Variable = context.BYTE_ORDER_MARK() };
             }
 
-            if (context.using_directives() != null)
-            {
-                VisitUsing_directives(context.using_directives());
-            }
-
             if (context.global_attribute_section().Length > 0)
             {
                 foreach (var globalContext in context.global_attribute_section())
@@ -65,10 +58,12 @@ namespace Marlowe.Visitor
             {
                 throw new Exception($"No namepsace declared in file");
             }
-     
-     
 
-       
+            if (context.using_directives() != null)
+            {
+                VisitUsing_directives(context.using_directives());
+            }
+
             return null;
         }
 
@@ -97,24 +92,22 @@ namespace Marlowe.Visitor
         public ISymbolNode VisitNamespace_member_declaration([NotNull] CSharpParser.Namespace_member_declarationContext context)
         {
 
-            if (context.namespace_declaration() != null)
-            {
+            if (context.namespace_declaration() != null){
                 VisitNamespace_declaration(context.namespace_declaration());
             }
-            else if (context.type_declaration() != null)
-            {
+            else if (context.type_declaration() != null){
                 VisitType_declaration(context.type_declaration());
             }
-            return null;        }
-
+            return null;        
+        }
 
         public ISymbolNode VisitNamespace_declaration([NotNull] CSharpParser.Namespace_declarationContext context)
         {
             if (context.NAMESPACE() != null)
             {
+                Namespace = context.NAMESPACE().GetText();
                 if (context.namespace_body() != null)
                 {
-                    Namespace = context.NAMESPACE().GetText();
                     VisitNamespace_body(context.namespace_body());
                 }
             }
@@ -155,11 +148,6 @@ namespace Marlowe.Visitor
 
 
         #endregion
-
-
-
-
-
 
         #region Class
         //class_definition
@@ -274,7 +262,8 @@ namespace Marlowe.Visitor
                     VisitField_declaration(context.field_declaration());
                 }
             }
-            return null;        }
+            return null;      
+        }
 
         public ISymbolNode VisitField_declaration([NotNull] CSharpParser.Field_declarationContext context)
         {
@@ -880,7 +869,8 @@ namespace Marlowe.Visitor
             foreach (var attribute in context.attribute_section()){
                 VisitAttribute_section(attribute);
             }
-            return null;        }
+            return null;      
+        }
         public ISymbolNode VisitAttribute_section([NotNull] CSharpParser.Attribute_sectionContext context){
             if (context.OPEN_BRACKET().GetText() != null){
                 if (context.attribute_target() != null){
@@ -902,7 +892,8 @@ namespace Marlowe.Visitor
             }
             
             
-            return null;        }
+            return null;  
+        }
         #endregion
 
         #region All Members
@@ -926,23 +917,12 @@ namespace Marlowe.Visitor
         #endregion
 
 
-
-
-        public object VisitIdentifier(CSharpParser.IdentifierContext context)
-        {
-            if (context.Start.Text != null){
-                //Variables[context.Start.Text] = context.Start.Type;
-                return context.Start.Text;
-            }
-            return null;
-        }
-
-
-        #region Not Implemented Context
+        #region Using Directives
         public ISymbolNode VisitUsing_directives([NotNull] CSharpParser.Using_directivesContext context)
         {
-            foreach (CSharpParser.Using_directiveContext usingContext in context.using_directive()){
-               VisitUsingNamespaceDirective((CSharpParser.UsingNamespaceDirectiveContext)usingContext);
+            foreach (CSharpParser.Using_directiveContext usingContext in context.using_directive())
+            {
+                VisitUsingNamespaceDirective((CSharpParser.UsingNamespaceDirectiveContext)usingContext);
             }
             return default;
         }
@@ -979,25 +959,30 @@ namespace Marlowe.Visitor
         //	(identifier type_argument_list? | qualified_alias_member) ('.' identifier type_argument_list?)*
         public ISymbolNode VisitNamespace_or_type_name([NotNull] CSharpParser.Namespace_or_type_nameContext context)
         {
-            if(context.identifier().Length == 1){
-                if(context.type_argument_list().Length > 0){
+            if (context.identifier().Length == 1)
+            {
+                if (context.type_argument_list().Length > 0)
+                {
                     /**Casting for using references should be handled here
                      *  however, is beyond the scope of this current implementation.
                      */
                 }
                 else
                 {
-                    Directives[context.identifier(0).GetText()] = new SymbolNode() { Namespace = Namespace,
-                                                                                     ClassName = ClassName, 
-                                                                                     Variable = VisitIdentifier(context.identifier(0)) };
+                    Directives[context.identifier(0).GetText()] = new SymbolNode()
+                    {
+                        Namespace = Namespace,
+                        ClassName = ClassName,
+                        Variable = VisitIdentifier(context.identifier(0))
+                    };
 
                 }
             }
-            else if(context.identifier().Length > 1)
+            else if (context.identifier().Length > 1)
             {
 
             }
-                
+
             {
                 /**Sub Namespaces should be handled here
                  *      i.e using System.Collections.Generic;
@@ -1008,6 +993,18 @@ namespace Marlowe.Visitor
         }
 
 
+        #endregion
+        public object VisitIdentifier(CSharpParser.IdentifierContext context)
+        {
+            if (context.IDENTIFIER().GetText()!= null){
+                return context.IDENTIFIER().GetText();
+            }
+            return null;
+        }
+
+
+        #region Not Implemented Context
+   
 
 
         public ISymbolNode VisitTuple_type([NotNull] CSharpParser.Tuple_typeContext context)

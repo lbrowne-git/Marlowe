@@ -27,7 +27,7 @@ namespace Marlowe.CSharp
             Console.WriteLine($"*******************************************\n\t\t{heading}\n*******************************************");
         }
 
-        public static void LogSymbolTable(CSharpVisitor cSharpVisitor)
+        public static void LogSymbolTable(SymbolTable cSharpVisitor)
         {
             HandleSymbolNode(cSharpVisitor.Variables, "Variables");
             HandleSymbolNode(cSharpVisitor.Functions, "Functions");
@@ -41,7 +41,7 @@ namespace Marlowe.CSharp
             foreach (KeyValuePair<string, ISymbolNode> node in dictonary)
             {
                 Console.WriteLine($"{node.Key}\t:" +
-                    $"\t{node.Value.ClassName}");
+                    $"\t{node.Value}");
             }
             Console.WriteLine("\n");
         }

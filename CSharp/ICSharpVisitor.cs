@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Marlowe.Visitor
 {
-    internal interface ICSharpVisitor : ICSharpParserVisitor<ISymbolNode>, ISymbolTable
+    public interface ICSharpVisitor : ICSharpParserVisitor<ISymbolNode>
     {
     }
 }

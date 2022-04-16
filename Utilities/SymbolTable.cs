@@ -4,11 +4,11 @@ using System.Text;
 
 namespace Marlowe.Utilities
 {
-    public interface ISymbolTable
+    public abstract class SymbolTable
     {
-        public IDictionary<string, ISymbolNode> Variables => new Dictionary<string, ISymbolNode>();
-        public IDictionary<string, ISymbolNode> Functions => new Dictionary<string, ISymbolNode>();
-        public IDictionary<string, ISymbolNode> Directives => new Dictionary<string, ISymbolNode>();
+        public  Dictionary<string, ISymbolNode> Variables = new Dictionary<string, ISymbolNode>();
+        public  Dictionary<string, ISymbolNode> Functions = new Dictionary<string, ISymbolNode>();
+        public  Dictionary<string, ISymbolNode> Directives = new Dictionary<string, ISymbolNode>();
 
     }
 }

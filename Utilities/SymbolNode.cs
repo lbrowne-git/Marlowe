@@ -42,7 +42,7 @@ namespace Marlowe.Utilities
 
         public override string ToString()
         {
-            return variable.ToString();
+            return $"{variable}\t:\t{className}\t:\t{nodeNamespace}"; 
         }
     }
 }

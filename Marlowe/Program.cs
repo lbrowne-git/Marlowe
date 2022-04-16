@@ -13,11 +13,11 @@ namespace Marlowe
         public static void Main(string[] args)
         {
             timer.Start();
+            // Loads files that are passed through cli args
             string fileName = "dummy.ss";
             if (args.Length > 0){
                 foreach (string argument in args){
-                    if (argument.StartsWith("--fn="))
-                    {
+                    if (argument.StartsWith("--fn=")){
                         fileName = argument.Remove(0, 5);
                     }
                     else if (argument.StartsWith("--fl=")){
@@ -31,6 +31,8 @@ namespace Marlowe
                     }
                 }
             }
+            
+            // Parser Content
             string FileContents = File.ReadAllText(fileName);
          // string FileContents = "int x = 4";
             IAnalyser analyser = new CSharpAnalyser(FileContents);
