@@ -19,33 +19,31 @@ namespace Marlowe.CSharp
         private static Levels level = Levels.Info;
 
         
-        private static void CreateHeader(string heading = null)
+        private static void CreateHeader(string heading = "")
         {
-            if (heading != null){
-                Console.WriteLine($"*******************************************\n\t\t{heading}\n*******************************************");
+            if (heading == ""){
+                heading = level.ToString();
             }
-            else{
-                Console.WriteLine($"*******************************************\n\t\t{level}\n*******************************************");
-            }
+            Console.WriteLine($"*******************************************\n\t\t{heading}\n*******************************************");
         }
 
-        public static void GenerateContext(CSharpVisitor cSharpVisitor)
+        public static void LogSymbolTable(CSharpVisitor cSharpVisitor)
         {
-            CreateHeader("Namespace");
-            Console.WriteLine($"Total: {cSharpVisitor.Namespace.Count}");
-            DictonaryHandler(cSharpVisitor.Namespace);
-
-
-            CreateHeader("Variables");
-            Console.WriteLine($"Total: {cSharpVisitor.Variables.Count}");
-            DictonaryHandler(cSharpVisitor.Variables);
+            HandleSymbolNode(cSharpVisitor.Variables, "Variables");
+            HandleSymbolNode(cSharpVisitor.Functions, "Functions");
+            HandleSymbolNode(cSharpVisitor.Directives, "");
         }
 
-        private static void DictonaryHandler<T,K>(Dictionary<T, K> dictonary){
-            foreach (var item in dictonary)
+        private static void HandleSymbolNode(IDictionary<string, ISymbolNode> dictonary, string header = ""){
+            
+            CreateHeader(header);
+            Console.WriteLine($"Total:\t {dictonary.Count}");
+            foreach (KeyValuePair<string, ISymbolNode> node in dictonary)
             {
-                Console.WriteLine($"{item.Key}\t:\t{item.Value}");
+                Console.WriteLine($"{node.Key}\t:" +
+                    $"\t{node.Value.ClassName}");
             }
+            Console.WriteLine("\n");
         }
     }
 }
