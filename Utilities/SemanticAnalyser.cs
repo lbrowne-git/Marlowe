@@ -7,52 +7,91 @@ namespace Marlowe.Utilities
     {
 
         public enum Operators { PLUS, MINUS, MOD, MULT, DIV, FLOAT };
+        private static ISymbolNode symbolNode = new SymbolNode();
 
-        private static Type type;
 
-        public static ISymbolNode OperationExpression(ParserRuleContext[] contexts, Operators operation)
-        {
-            foreach (ParserRuleContext context in contexts)
+
+        //
+        // Summary:
+        //      Using LR parsing this function check if two nodes are off the 
+        //      same primative type and performs an operation merging both of these expressions.
+        //
+        // Parameters:
+        //   LNode:
+        //     The Left-hand expression, which the operation is happening to.
+        //   RNode:
+        //      The Right-hand expression, which is performing an action against the left-hand node.
+        //   OP:
+        //      A Operation provided by the SemanticAnalyser to be used by this function.
+        //
+        // Returns:
+        //      A SymbolNode comprising of the input Left and Right SymbolNode.
+        // 
+        //
+        public static ISymbolNode OperationExpression(ISymbolNode LNode, ISymbolNode RNode, Operators OP){
+            symbolNode = LNode;
+            try
             {
-                GatherTextContent(context.GetText());
-                if (contexts.Length > 1)
+                if(IsNumericType(LNode.Variable) && IsNumericType(RNode.Variable))
                 {
-                    switch (operation){
+                    switch (OP)
+                    {
                         case Operators.PLUS:
-                            //GatherTextContent(context.GetText()). + GatherTextContent(context.GetText());
+                            symbolNode.Variable = Convert.ToDouble(LNode.Variable) + Convert.ToDouble(RNode.Variable);
+                            break;
+                        case Operators.MINUS:
+                            symbolNode.Variable = Convert.ToDouble(LNode.Variable) - Convert.ToDouble(RNode.Variable);
+                            break;
+                        case Operators.MULT:
+                            symbolNode.Variable = Convert.ToDouble(LNode.Variable) * Convert.ToDouble(RNode.Variable);
+                            break;
+                        case Operators.DIV:
+                            symbolNode.Variable = Convert.ToDouble(LNode.Variable) / Convert.ToDouble(RNode.Variable);
+                            break;
+                        case Operators.MOD:
+                            symbolNode.Variable = Convert.ToDouble(LNode.Variable) % Convert.ToDouble(RNode.Variable);
                             break;
                     }
                 }
+                else if(LNode.Type == typeof(string) && RNode.Type == typeof(string)){
+                    symbolNode.Variable = "" + LNode.Variable + RNode.Variable;
+                }
+                else {
+                    throw new Exception($"{LNode.Variable} and {RNode.Variable} are different types");
+                }
+                return symbolNode;
             }
-            return null;
-
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
-        private static ISymbolNode GatherTextContent(object? contextText)
+        /*
+         * Summary:
+         *      Determines if an object is capable of numeric computation. Through 
+         *      converting the object to type double and using the value in an equation.
+         *  Parameters:
+         *      t:
+         *          an object of generic type.
+         *  Returns:
+         *      True if the input object is capable of numeric computation.
+         *      False if it is not or if null;
+         */      
+
+        private static bool IsNumericType(object t)
         {
-            string value = contextText.ToString();
-            if (int.TryParse(value, out int intValue))
+            double doubleOutput;
+            try
             {
-                if (intValue != 0)
-                {
-                    return new SymbolNode() { Variable = intValue };
-                }
+                doubleOutput = Convert.ToDouble((string)t);
+                doubleOutput += 1;
+                return true;
             }
-            else if (double.TryParse(value, out double doubleValue))
+            catch
             {
-                if (doubleValue != 0)
-                {
-                    return new SymbolNode() { Variable = doubleValue };
-                }
+                return false;
             }
-            else if (float.TryParse(value, out float floatValue))
-            {
-                if (floatValue != 0)
-                {
-                    return new SymbolNode() { Variable = floatValue };
-                }
-            }
-            return new SymbolNode() { Variable = null };
         }
     }
 }
