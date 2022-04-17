@@ -7,7 +7,7 @@ namespace Marlowe.Utilities
     {
 
         public enum Operators { PLUS, MINUS, MOD, MULT, DIV, FLOAT };
-        private static ISymbolNode symbolNode = new SymbolNode();
+        private static ISymbolNode symbolNode;
 
 
 
@@ -29,10 +29,15 @@ namespace Marlowe.Utilities
         // 
         //
         public static ISymbolNode OperationExpression(ISymbolNode LNode, ISymbolNode RNode, Operators OP){
-            symbolNode = LNode;
+            symbolNode = new SymbolNode{ // Node must created this way to illiminate object referencing.
+                                ClassName = LNode.ClassName,
+                                Namespace = LNode.Namespace, 
+                                Type = LNode.Type, 
+                                Variable = LNode.Variable
+            };
             try
             {
-                if(IsNumericType(LNode.Variable) && IsNumericType(RNode.Variable))
+                if (IsNumericType(LNode.Variable) && IsNumericType(RNode.Variable))
                 {
                     switch (OP)
                     {
@@ -53,11 +58,26 @@ namespace Marlowe.Utilities
                             break;
                     }
                 }
-                else if(LNode.Type == typeof(string) && RNode.Type == typeof(string)){
+                else if (LNode.Type == typeof(string) && RNode.Type == typeof(string))
+                {// concatenates two strings
                     symbolNode.Variable = "" + LNode.Variable + RNode.Variable;
                 }
-                else {
-                    throw new Exception($"{LNode.Variable} and {RNode.Variable} are different types");
+                else if (LNode.Type == typeof(string) || RNode.Type == typeof(string))
+                {// concatenates a string and another type
+                    symbolNode.Variable = "" + LNode.Variable + RNode.Variable.ToString();
+                }
+                else
+                {
+                    if (LNode.Type == typeof(bool) && RNode.Type == typeof(bool))
+                    {
+                        throw new Exception($"{LNode.Variable} and {RNode.Variable} are both booleans and cannot be added together");
+                    }
+                    else
+                    {
+                        throw new Exception($"{LNode.Variable}({LNode.Type.Name}) and {RNode.Variable}({RNode.Type.Name}) are different types");
+
+                    }
+
                 }
                 return symbolNode;
             }

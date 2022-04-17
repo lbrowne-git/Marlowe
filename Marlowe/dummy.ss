@@ -2,14 +2,14 @@
 
 namespace Tester{
     public class dummy{
-        int x = 21;
-        int y = 4;
-        double z = x % y;  // 26
+        string x = "hello";
+        int y = "world";
+        double z = x + y;  // 26
 
 
-        string TEst = "Hello";
-        string Case = " World";
-        string TestCase = TEst + Case;
+        string TEst = "hi";
+        string Case = "m";
+        string tred = TEst + Case;
 
         public string test(){
             return "hello";
