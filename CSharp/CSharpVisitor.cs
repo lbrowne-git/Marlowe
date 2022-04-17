@@ -4,6 +4,7 @@ using CSharp;
 using System;
 using System.Collections.Generic;
 using Marlowe.Utilities;
+using System.Reflection;
 
 namespace Marlowe.Visitor
 {
@@ -19,6 +20,9 @@ namespace Marlowe.Visitor
         private Type Type = default(Type);
         private string ClassName;
         private string Namespace;
+        private string Accessbility;
+
+        private ISymbolNode VisitorSymbolNode;
 
         public ISymbolNode Visit(IParseTree tree){return null;}
 
@@ -208,6 +212,15 @@ namespace Marlowe.Visitor
                         VisitClass_member_declarations(context.class_member_declarations());
                     }
                 }
+                else
+                {
+                    throw new Exception($"No closing bracket for class {ClassName}");
+                }
+            }
+            else
+            {
+                throw new Exception($"No openning bracket for class {ClassName}");
+
             }
             return null;       
         }
@@ -225,8 +238,16 @@ namespace Marlowe.Visitor
             if (context.attributes() != null){
                 VisitAttributes(context.attributes());
             }
+            if(context.all_member_modifiers() != null)
+            {
+                VisitAll_member_modifiers(context.all_member_modifiers());
+            }
             if (context.common_member_declaration() != null){
-                VisitCommon_member_declaration(context.common_member_declaration());
+                return VisitCommon_member_declaration(context.common_member_declaration());
+            }
+            else if (context.destructor_definition() != null)
+            {
+                return VisitDestructor_definition(context.destructor_definition());
             }
 
             return default;
@@ -253,45 +274,277 @@ namespace Marlowe.Visitor
                 VisitClass_definition(context.class_definition());
             }
 
-            return null;      
+            return null;
         }
 
         #endregion
 
         #region Variable
 
-        /**
-         * typed_member_declaration
-	        : (REF | READONLY REF | REF READONLY)? type_
-	          ( namespace_or_type_name '.' indexer_declaration
-	          | method_declaration
-	          | property_declaration
-	          | indexer_declaration
-	          | operator_declaration
-	          | field_declaration
-	          )
-	        ;
-         * 
-         * 
-         */
+        // typed_member_declaration
+	        // : (REF | READONLY REF | REF READONLY)? type_
+            //   (namespace_or_type_name '.' indexer_declaration
+	        //   | method_declaration
+	        //   | property_declaration
+	        //   | indexer_declaration
+	        //   | operator_declaration
+	        //   | field_declaration)
+            //             
         public ISymbolNode VisitTyped_member_declaration([NotNull] CSharpParser.Typed_member_declarationContext context)
         {
             if(context.type_() != null){
                 VisitType_(context.type_());
                 if (context.namespace_or_type_name() != null)
                 {
-                   // Missing '.' indexer_declaration
-                   // Used 
-                   // VisitNamespace_or_type_name(context.namespace_or_type_name());
+                   if(context.DOT() != null)
+                    {
+                        VisitNamespace_or_type_name(context.namespace_or_type_name());
+                        if(context.indexer_declaration() != null)
+                        {
+                            VisitIndexer_declaration(context.indexer_declaration());
+                        }
+                        else
+                        {
+                            throw new Exception($"Mising sub namespace for ${Namespace}");
+                        }
+                   }
+                }
+                else if(context.method_declaration() != null)
+                {
+                    return VisitMethod_declaration(context.method_declaration());
                 }
                 else if(context.field_declaration() != null)
                 {
-                    VisitField_declaration(context.field_declaration());
+                    return VisitField_declaration(context.field_declaration());
                 }
             }
             return null;      
         }
 
+
+        #region Methods
+        //   method_declaration
+        //: method_member_name type_parameter_list? OPEN_PARENS formal_parameter_list? CLOSE_PARENS
+        //       type_parameter_constraints_clauses? (method_body | right_arrow throwable_expression ';')
+        //;
+        public ISymbolNode VisitMethod_declaration([NotNull] CSharpParser.Method_declarationContext context)
+        {
+            if(context.OPEN_PARENS() != null)
+            {
+                if(context.CLOSE_PARENS() != null)
+                {
+                    if (context.method_member_name() != null)
+                    {
+                        if(context.method_body() != null){
+                            Functions[VisitIdentifier(context.method_member_name().identifier()[0]).ToString()] = VisitMethod_body(context.method_body());
+                        }
+                        else
+                        {
+                            throw new Exception($"No body for function");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                throw new Exception($"method is missing openning paranethesis");
+            }
+            return null;
+        }
+
+        public ISymbolNode VisitMethod_body([NotNull] CSharpParser.Method_bodyContext context)
+        {
+            if(context.block() != null){
+                return VisitBlock(context.block());
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public ISymbolNode VisitBlock([NotNull] CSharpParser.BlockContext context){
+            if (context.OPEN_BRACE()!=null){
+                if(context.CLOSE_BRACE() != null){
+                    if(context.statement_list() != null)
+                    {
+                        return VisitStatement_list(context.statement_list());
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Missing closing brace to function");
+                }
+            }
+            else
+            {
+                throw new Exception($"Missing closing brace to function");
+            }
+        }
+
+        public ISymbolNode VisitStatement_list([NotNull] CSharpParser.Statement_listContext context)
+        {
+            if (context.statement().Length >= 1)
+            {
+                foreach (var statement_context in context.statement())
+                {
+                    return VisitStatement(statement_context);
+
+                }
+            }
+            return null;
+        }
+         //   statement
+	        //: labeled_Statement
+	        //| declarationStatement
+	        //| embedded_statement
+	        //;
+        public ISymbolNode VisitStatement([NotNull] CSharpParser.StatementContext context)
+        {
+            if (context.labeled_Statement() != null)
+            {
+                return VisitLabeled_Statement(context.labeled_Statement());
+            }
+            else if(context.declarationStatement() != null)
+            {
+                return VisitDeclarationStatement(context.declarationStatement());
+            }
+            else if (context.embedded_statement() != null)
+            {
+                return VisitEmbedded_statement(context.embedded_statement());
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public ISymbolNode VisitEmbedded_statement([NotNull] CSharpParser.Embedded_statementContext context)
+        {
+            return null;
+        }
+
+        #region declaration
+        //declarationStatement
+        // : local_variable_declaration ';'
+        // | local_constant_declaration ';'
+        // | local_function_declaration
+        // ;
+        public ISymbolNode VisitDeclarationStatement([NotNull] CSharpParser.DeclarationStatementContext context)
+        {
+            if(context.SEMICOLON() != null)
+            {
+                if(context.local_variable_declaration() != null){
+                    return VisitLocal_variable_declaration(context.local_variable_declaration());
+                }
+                else if(context.local_constant_declaration() != null)
+                {
+                    return VisitLocal_constant_declaration(context.local_constant_declaration());
+                }
+            }
+            else if(context.local_function_declaration() != null)
+            {
+                return VisitLocal_function_declaration(context.local_function_declaration());
+            }
+            else
+            {
+                throw new Exception($"missing semicolon");
+            }
+            return null;
+        }
+
+        //local_variable_declaration
+           // (USING | REF | REF READONLY)? local_variable_type local_variable_declarator( ','  local_variable_declarator { this.IsLocalVariableDeclaration() }? )*
+	       // | FIXED pointer_type fixed_pointer_declarators
+	       // ;
+        public ISymbolNode VisitLocal_variable_declaration([NotNull] CSharpParser.Local_variable_declarationContext context)
+        {
+            if(context.USING() != null || context.REF() != null || (context.READONLY() != null && context.REF() != null)){
+                // Beyond scope of interpeter
+            }
+            if(context.local_variable_type() != null)
+            {
+                if(context.local_variable_declarator() != null)
+                {
+                    return VisitLocal_variable_declarator(context.local_variable_declarator()[0]);
+                }
+                else{
+                    throw new Exception($"variable declarator missing");
+                }
+            }
+            else
+            {
+                throw new Exception($"variable type missing");
+            }
+        }
+
+        //local_variable_declarator
+	       // : identifier('=' REF? local_variable_initializer)?
+	       // ;
+        public ISymbolNode VisitLocal_variable_declarator([NotNull] CSharpParser.Local_variable_declaratorContext context){
+            if(context.identifier() != null){
+                VisitIdentifier(context.identifier());
+                if(context.ASSIGNMENT() != null){
+                    if(context.local_variable_initializer() != null)
+                    {
+                        return VisitLocal_variable_initializer(context.local_variable_initializer());
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+            else
+            {
+            }
+            return null;
+
+        }
+
+         //   local_variable_initializer
+	        //: expression
+	        //| array_initializer
+	        //| stackalloc_initializer
+	        //;
+        public ISymbolNode VisitLocal_variable_initializer([NotNull] CSharpParser.Local_variable_initializerContext context)
+        {
+            if(context.expression()  != null){
+                return VisitExpression(context.expression());
+            }
+            else if(context.array_initializer() != null)
+            {
+                return VisitArray_initializer(context.array_initializer());
+            }
+            else if(context.stackalloc_initializer() != null){
+                return VisitStackalloc_initializer(context.stackalloc_initializer());
+            }
+            else
+            {
+                return null;
+            }
+        }
+        #endregion
+
+        public ISymbolNode VisitMethod_member_name([NotNull] CSharpParser.Method_member_nameContext context)
+        {
+            if(context.identifier().Length > 1){
+                return null;
+            }
+            else if(context.identifier().Length == 1){
+                VisitorSymbolNode.Variable = VisitIdentifier(context.identifier()[0]);
+                return null;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        #endregion 
         public ISymbolNode VisitField_declaration([NotNull] CSharpParser.Field_declarationContext context)
         {
             if(context != null)
@@ -587,10 +840,27 @@ namespace Marlowe.Visitor
                     ISymbolNode LNode = VisitMultiplicative_expression(context.multiplicative_expression()[0]);
                     ISymbolNode RNode = VisitMultiplicative_expression(context.multiplicative_expression()[1]);
                     if (context.PLUS().Length > 0){
-                        return SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.PLUS);
+
+                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.PLUS);
+                        VisitorSymbolNode.Type = Type;
                     }
                     else if (context.MINUS().Length > 0){
-                        return SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MINUS);
+                        
+                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MINUS);
+                        VisitorSymbolNode.Type = Type;
+                    }
+                    else
+                    {
+                        VisitorSymbolNode = null;
+                    }
+
+                    if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode))
+                    {
+                        return VisitorSymbolNode;
+                    }
+                    else
+                    {
+                        return null;
                     }
                 }
                 else
@@ -602,7 +872,6 @@ namespace Marlowe.Visitor
             {
                 return VisitMultiplicative_expression(context.multiplicative_expression()[0]);
             }
-            return null;
         }
 
         public ISymbolNode VisitMultiplicative_expression([NotNull] CSharpParser.Multiplicative_expressionContext context)
@@ -615,15 +884,27 @@ namespace Marlowe.Visitor
                     ISymbolNode RNode = VisitSwitch_expression(context.switch_expression()[1]);
                     if (context.STAR().Length > 0)
                     {
-                        return SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MULT);
+                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MULT);
+                        VisitorSymbolNode.Type = Type;
                     }
                     else if (context.DIV().Length > 0)
                     {
-                        return SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.DIV);
+                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.DIV);
+                        VisitorSymbolNode.Type = Type;
                     }
                     else if(context.PERCENT().Length > 0)
                     {
-                        return SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MOD);
+                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MOD);
+                        VisitorSymbolNode.Type = Type;
+                    }
+                    else
+                    {// clears visitor node
+                        VisitorSymbolNode = null;
+                    }
+
+                    if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode))
+                    {
+                        return VisitorSymbolNode;
                     }
                     else
                     {
@@ -726,21 +1007,28 @@ namespace Marlowe.Visitor
         public ISymbolNode VisitPrimary_expression_start([NotNull] CSharpParser.Primary_expression_startContext context) {
             string value = context.Start.Text;
             if (Variables.ContainsKey(value)){
-                ISymbolNode sn = Variables[value];
-                return sn;
+                VisitorSymbolNode = Variables[value];
+                return VisitorSymbolNode;
             }
             else
             {
                 if (value[0] == '"' && value[value.Length - 1] == '"'){
                     value = value.Substring(1, (value.Length - 2));
                 }
-                return new SymbolNode()
-                {
+                VisitorSymbolNode = new SymbolNode(){
                     ClassName = ClassName,
                     Namespace = Namespace,
                     Type = Type,
                     Variable = value
                 };
+                if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode))
+                {
+                    return VisitorSymbolNode;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -757,7 +1045,8 @@ namespace Marlowe.Visitor
             if (context.base_type() != null) { 
                 VisitBase_type(context.base_type());
             }
-            return null;        }
+            return null;
+        }
 
         // base_type
 	        //: simple_type
@@ -765,7 +1054,6 @@ namespace Marlowe.Visitor
 	        //| VOID '*'
 	        //| tuple_type
 	        //;
-
         public ISymbolNode VisitBase_type([NotNull] CSharpParser.Base_typeContext context)
         {
             if (context.simple_type() != null) 
@@ -995,9 +1283,33 @@ namespace Marlowe.Visitor
         }
 
         public ISymbolNode VisitAll_member_modifier([NotNull] CSharpParser.All_member_modifierContext context){
-     
 
-            return default;
+            if (!context.IsEmpty)
+            {
+                switch (context.Start.Text.ToLower())
+                {
+                    case "public":
+                    case "private":
+                    case "protected":
+                    case "internal":
+                        Accessbility = context.Start.Text;
+                        break;
+                    case "static":
+                    case "abstract":
+                    case "virtual":
+                    case "override":
+
+                    case "unsafe":
+                    case "readonly":
+                    case "volatile":
+                        break;
+
+                    default:
+                        Accessbility = null;
+                        break;
+                }
+            }
+            return null;
         }
         #endregion
 
@@ -1407,16 +1719,6 @@ namespace Marlowe.Visitor
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitStatement([NotNull] CSharpParser.StatementContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitDeclarationStatement([NotNull] CSharpParser.DeclarationStatementContext context)
-        {
-            throw new NotImplementedException();
-        }
-
         public ISymbolNode VisitLocal_function_declaration([NotNull] CSharpParser.Local_function_declarationContext context)
         {
             throw new NotImplementedException();
@@ -1442,10 +1744,7 @@ namespace Marlowe.Visitor
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitEmbedded_statement([NotNull] CSharpParser.Embedded_statementContext context)
-        {
-            throw new NotImplementedException();
-        }
+   
 
         public ISymbolNode VisitTheEmptyStatement([NotNull] CSharpParser.TheEmptyStatementContext context)
         {
@@ -1552,30 +1851,13 @@ namespace Marlowe.Visitor
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitBlock([NotNull] CSharpParser.BlockContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitLocal_variable_declaration([NotNull] CSharpParser.Local_variable_declarationContext context)
-        {
-            throw new NotImplementedException();
-        }
 
         public ISymbolNode VisitLocal_variable_type([NotNull] CSharpParser.Local_variable_typeContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitLocal_variable_declarator([NotNull] CSharpParser.Local_variable_declaratorContext context)
-        {
-            throw new NotImplementedException();
-        }
 
-        public ISymbolNode VisitLocal_variable_initializer([NotNull] CSharpParser.Local_variable_initializerContext context)
-        {
-            throw new NotImplementedException();
-        }
 
         public ISymbolNode VisitLocal_constant_declaration([NotNull] CSharpParser.Local_constant_declarationContext context)
         {
@@ -1602,10 +1884,6 @@ namespace Marlowe.Visitor
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitStatement_list([NotNull] CSharpParser.Statement_listContext context)
-        {
-            throw new NotImplementedException();
-        }
 
         public ISymbolNode VisitFor_initializer([NotNull] CSharpParser.For_initializerContext context)
         {
@@ -1743,10 +2021,6 @@ namespace Marlowe.Visitor
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitMethod_body([NotNull] CSharpParser.Method_bodyContext context)
-        {
-            throw new NotImplementedException();
-        }
 
         public ISymbolNode VisitFormal_parameter_list([NotNull] CSharpParser.Formal_parameter_listContext context)
         {
@@ -2072,16 +2346,6 @@ namespace Marlowe.Visitor
         }
 
         public ISymbolNode VisitConstructor_declaration([NotNull] CSharpParser.Constructor_declarationContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitMethod_declaration([NotNull] CSharpParser.Method_declarationContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitMethod_member_name([NotNull] CSharpParser.Method_member_nameContext context)
         {
             throw new NotImplementedException();
         }

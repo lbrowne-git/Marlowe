@@ -29,7 +29,7 @@ namespace Marlowe.Utilities
         // 
         //
         public static ISymbolNode OperationExpression(ISymbolNode LNode, ISymbolNode RNode, Operators OP){
-            symbolNode = new SymbolNode{ // Node must created this way to illiminate object referencing.
+            symbolNode = new SymbolNode{// Node must be created this way to eliminate object referencing.
                                 ClassName = LNode.ClassName,
                                 Namespace = LNode.Namespace, 
                                 Type = LNode.Type, 
@@ -37,8 +37,7 @@ namespace Marlowe.Utilities
             };
             try
             {
-                if (IsNumericType(LNode.Variable) && IsNumericType(RNode.Variable))
-                {
+                if (IsNumericType(LNode.Variable) && IsNumericType(RNode.Variable)){
                     switch (OP)
                     {
                         case Operators.PLUS:
@@ -60,17 +59,33 @@ namespace Marlowe.Utilities
                 }
                 else if (LNode.Type == typeof(string) && RNode.Type == typeof(string))
                 {// concatenates two strings
-                    symbolNode.Variable = "" + LNode.Variable + RNode.Variable;
+                    if (OP == Operators.PLUS)
+                    {
+                        symbolNode.Variable = "" + LNode.Variable + RNode.Variable.ToString();
+                    }
+                    else
+                    {
+                        throw new Exception($"{LNode.Variable} and {RNode.Variable} are strings that can only be added together.");
+                    }
                 }
                 else if (LNode.Type == typeof(string) || RNode.Type == typeof(string))
                 {// concatenates a string and another type
-                    symbolNode.Variable = "" + LNode.Variable + RNode.Variable.ToString();
+                    if(OP == Operators.PLUS){
+                        symbolNode.Variable = "" + LNode.Variable + RNode.Variable.ToString();
+                    }
+                    else
+                    {
+                        throw new Exception($"{LNode.Variable} and {RNode.Variable} can only be concatenated using the + operator.");
+                    }
                 }
                 else
                 {
                     if (LNode.Type == typeof(bool) && RNode.Type == typeof(bool))
                     {
                         throw new Exception($"{LNode.Variable} and {RNode.Variable} are both booleans and cannot be added together");
+                    }
+                    else if (LNode.Type == typeof(object) && RNode.Type == typeof(object)){
+                        throw new Exception($"{LNode.Variable} and {RNode.Variable} are both objects of generic type and cannot be added together");
                     }
                     else
                     {
@@ -98,7 +113,6 @@ namespace Marlowe.Utilities
          *      True if the input object is capable of numeric computation.
          *      False if it is not or if null;
          */      
-
         private static bool IsNumericType(object t)
         {
             double doubleOutput;
@@ -110,6 +124,30 @@ namespace Marlowe.Utilities
             }
             catch
             {
+                return false;
+            }
+        }
+
+        /*
+         * Summary:
+         *      Determines if an object stored in a SymbolNode is 
+         *            the type it was declared as.
+         *  Parameters:
+         *      sn:
+         *          A SymbolNode with a variable and type.
+         *  Returns:
+         *      True if the input object is the specified type.
+         *      False if it is not or if null;
+         */
+        public static bool IsCorrectVariableType(ISymbolNode sn)
+        {
+            try{
+                Convert.ChangeType(sn.Variable, sn.Type);
+                return true;
+            }
+            catch
+            {
+                Console.WriteLine($"{sn.Variable} is not an object of type {sn.Type}");
                 return false;
             }
         }
