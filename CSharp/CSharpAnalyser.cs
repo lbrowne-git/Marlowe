@@ -5,13 +5,12 @@ using Marlowe.Visitor;
 
 namespace Marlowe.CSharp
 {
-    /*      *      *      *      *      *      *      *      *      *      *       *  
-     *      Name:   Lewis Browne                                                   *
-     *      Date:   26/01/2022                                                     * 
-     *      Desc:   A class which will be used as a intermediary level             *
-     *              between the input source code and the ANTLR lexer and parser   *
-     *                                                                             *
-     *     *      *      *      *      *      *      *      *      *      *        */
+    /**
+     * Summary:
+     *      The CSharp implementation of the IAnalyser interface, which acts as a
+     *      contoller for the CSharp Lexer and Parser with the input source code.
+     * 
+     */
     public class CSharpAnalyser : IAnalyser
     {
         #region Attribs

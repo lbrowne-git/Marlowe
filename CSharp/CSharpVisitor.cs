@@ -8,7 +8,7 @@ using Marlowe.Utilities;
 namespace Marlowe.Visitor
 {
     /**
-     * summary:
+     * Summary:
      *      The CSharpVisitor provides a way of accessing the data analysed by the CSharpParser. 
      *      This is done by analysing the context generated from thhe parser to perform sythnaxical
      *      analysis on these contexts. This allows for the creation of a symbol tree from the source code.
@@ -23,7 +23,7 @@ namespace Marlowe.Visitor
         public ISymbolNode Visit(IParseTree tree){return null;}
 
 
-        /* Entry point into source.
+        /* Entry point into parser generated context.
             References:
                 BYTE_ORDER_MARK? extern_alias_directives? using_directives?
                 global_attribute_section* namespace_member_declarations? EOF

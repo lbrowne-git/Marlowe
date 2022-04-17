@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Example{
+namespace Tester{
     public class dummy{
-        string x = "hello";
+        int x = 22;
         int y = 4;
         int z = x + y;  // 19
 
