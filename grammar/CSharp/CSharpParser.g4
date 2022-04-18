@@ -191,7 +191,7 @@ primary_expression  // Null-conditional operators C# 6: https://msdn.microsoft.c
 	;
 
 primary_expression_start
-	: literal                                   #literalExpression
+	: literal                                   #literalExpression2
 	| identifier type_argument_list?            #simpleNameExpression
 	| OPEN_PARENS expression CLOSE_PARENS       #parenthesisExpressions
 	| predefined_type                           #memberAccessExpression
