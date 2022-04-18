@@ -7,12 +7,11 @@ namespace Marlowe.Utilities
 {
     public class ConsoleLogger : ILogger
     {
-  
-        private ILogger.Levels Level { set => this.Level = value; }
 
+        private readonly ILogger.Levels Level;
 
-        public ConsoleLogger(bool write, ILogger.Levels levels, string dir){
-
+        public ConsoleLogger(ILogger.Levels levels = ILogger.Levels.Error){
+            Level= levels;
         }
         
         public void WriteHeader(string heading = "")
@@ -20,11 +19,22 @@ namespace Marlowe.Utilities
             Console.WriteLine($"*******************************************\n\t\t{heading}\n*******************************************");
         }
 
-        public void WriterContent(string content)
+        public void WriteHeader(string heading, ILogger.Levels level)
         {
+            if (level >= Level)
+            {
+                Console.WriteLine($"*******************************************\n\t\t{heading}\n*******************************************");
+            }
+        }
+        public void WriteContent(string content){
 
             Console.WriteLine($"{content}");
+        }
 
+        public void WriteContent(string content, ILogger.Levels level){
+            if (level >= Level) {
+                Console.WriteLine($"{content}");
+            }
         }
 
 
@@ -40,8 +50,11 @@ namespace Marlowe.Utilities
             Console.WriteLine($"Total:\t {dictonary.Count}");
             foreach (KeyValuePair<string, ISymbolNode> node in dictonary)
             {
-                WriterContent($"{node.Key}\t:" + $"\t{node.Value}");
+                WriteContent($"{node.Key}\t:" + $"\t{node.Value}");
             }
         }
+
+     
+
     }
 }

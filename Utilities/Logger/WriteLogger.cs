@@ -34,7 +34,7 @@ namespace Marlowe.Utilities
             Console.WriteLine($"*******************************************\n\t\t{heading}\n*******************************************");
         }
 
-        public void WriterContent(string content)
+        public void WriteContent(string content)
         {
 
             Console.WriteLine($"{content}");
@@ -54,7 +54,7 @@ namespace Marlowe.Utilities
             Console.WriteLine($"Total:\t {dictonary.Count}");
             foreach (KeyValuePair<string, ISymbolNode> node in dictonary)
             {
-                WriterContent($"{node.Key}\t:" + $"\t{node.Value}");
+                WriteContent($"{node.Key}\t:" + $"\t{node.Value}");
             }
         }
     }
