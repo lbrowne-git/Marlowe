@@ -18,7 +18,7 @@ namespace Marlowe.CSharp
         private Lexer lexer;
         private Parser parser;
         private CommonTokenStream commonTokenStream;
-        private CSharpVisitor visitor;
+        private CSharpSemanticAnalyser visitor;
         #endregion
         
         private void Setup(string text){
@@ -26,7 +26,7 @@ namespace Marlowe.CSharp
             lexer = new CSharpLexer(stream);
             commonTokenStream = new CommonTokenStream(lexer);
             parser = new CSharpParser(commonTokenStream);
-            visitor = new CSharpVisitor();
+            visitor = new CSharpSemanticAnalyser();
         }
         public CSharpAnalyser(string text){
             Setup(text);

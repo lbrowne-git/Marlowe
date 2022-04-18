@@ -10,11 +10,11 @@ namespace Marlowe.Visitor
 {
     /**
      * Summary:
-     *      The CSharpVisitor provides a way of accessing the data analysed by the CSharpParser. 
+     *      The CSharpSemanticAnalyser provides a way of accessing the data analysed by the CSharpParser. 
      *      This is done by analysing the context generated from thhe parser to perform sythnaxical
      *      analysis on these contexts. This allows for the creation of a symbol tree from the source code.
      */
-    public class CSharpVisitor : SymbolTable, ICSharpVisitor
+    public class CSharpSemanticAnalyser : SymbolTable, ICSharpVisitor
     { 
 
         private Type Type = default(Type);
@@ -27,11 +27,10 @@ namespace Marlowe.Visitor
         public ISymbolNode Visit(IParseTree tree){return null;}
 
 
-        /* Entry point into parser generated context.
-            References:
-                BYTE_ORDER_MARK? extern_alias_directives? using_directives?
-                global_attribute_section* namespace_member_declarations? EOF
-                                                                                    */
+        //Entry point into parser generated context.
+         //   References:
+         //       BYTE_ORDER_MARK? extern_alias_directives? using_directives?
+         //       global_attribute_section* namespace_member_declarations? EOF
         public ISymbolNode VisitCompilation_unit([NotNull] CSharpParser.Compilation_unitContext context)
         {
             if (context.BYTE_ORDER_MARK() != null)
@@ -43,7 +42,7 @@ namespace Marlowe.Visitor
             {
                 foreach (var globalContext in context.global_attribute_section())
                 {
-                    //VisitGlobal_attribute_section(globalContext);
+                    VisitGlobal_attribute_section(globalContext);
                 }
             }
 
@@ -273,6 +272,12 @@ namespace Marlowe.Visitor
             if (context.class_definition() != null) { 
                 VisitClass_definition(context.class_definition());
             }
+            if(context.VOID() != null)
+            {
+                if(context.method_declaration() != null){
+                    VisitMethod_declaration(context.method_declaration());
+                }
+            }
 
             return null;
         }
@@ -425,7 +430,28 @@ namespace Marlowe.Visitor
 
         public ISymbolNode VisitEmbedded_statement([NotNull] CSharpParser.Embedded_statementContext context)
         {
-            return null;
+            if (context.block() != null)
+            {
+                return VisitBlock(context.block());
+            }
+            else if (context.simple_embedded_statement() != null)
+            {
+                return VisitSimple_embedded_statement(context.simple_embedded_statement());
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private ISymbolNode VisitSimple_embedded_statement([NotNull] CSharpParser.Simple_embedded_statementContext context)
+        {
+
+            CSharpParser.ExpressionContext content = context.GetRuleContext<CSharpParser.ExpressionContext>(0);
+            if(content != null)
+            {
+
+            }
         }
 
         #region declaration
@@ -841,12 +867,12 @@ namespace Marlowe.Visitor
                     ISymbolNode RNode = VisitMultiplicative_expression(context.multiplicative_expression()[1]);
                     if (context.PLUS().Length > 0){
 
-                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.PLUS);
+                        VisitorSymbolNode = SyntaxAnalyser.OperationExpression(LNode, RNode, SyntaxAnalyser.Operators.PLUS);
                         VisitorSymbolNode.Type = Type;
                     }
                     else if (context.MINUS().Length > 0){
                         
-                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MINUS);
+                        VisitorSymbolNode = SyntaxAnalyser.OperationExpression(LNode, RNode, SyntaxAnalyser.Operators.MINUS);
                         VisitorSymbolNode.Type = Type;
                     }
                     else
@@ -854,7 +880,7 @@ namespace Marlowe.Visitor
                         VisitorSymbolNode = null;
                     }
 
-                    if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode))
+                    if (SyntaxAnalyser.IsCorrectVariableType(VisitorSymbolNode))
                     {
                         return VisitorSymbolNode;
                     }
@@ -884,17 +910,17 @@ namespace Marlowe.Visitor
                     ISymbolNode RNode = VisitSwitch_expression(context.switch_expression()[1]);
                     if (context.STAR().Length > 0)
                     {
-                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MULT);
+                        VisitorSymbolNode = SyntaxAnalyser.OperationExpression(LNode, RNode, SyntaxAnalyser.Operators.MULT);
                         VisitorSymbolNode.Type = Type;
                     }
                     else if (context.DIV().Length > 0)
                     {
-                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.DIV);
+                        VisitorSymbolNode = SyntaxAnalyser.OperationExpression(LNode, RNode, SyntaxAnalyser.Operators.DIV);
                         VisitorSymbolNode.Type = Type;
                     }
                     else if(context.PERCENT().Length > 0)
                     {
-                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MOD);
+                        VisitorSymbolNode = SyntaxAnalyser.OperationExpression(LNode, RNode, SyntaxAnalyser.Operators.MOD);
                         VisitorSymbolNode.Type = Type;
                     }
                     else
@@ -902,7 +928,7 @@ namespace Marlowe.Visitor
                         VisitorSymbolNode = null;
                     }
 
-                    if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode))
+                    if (SyntaxAnalyser.IsCorrectVariableType(VisitorSymbolNode))
                     {
                         return VisitorSymbolNode;
                     }
@@ -1021,7 +1047,7 @@ namespace Marlowe.Visitor
                     Type = Type,
                     Variable = value
                 };
-                if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode))
+                if (SyntaxAnalyser.IsCorrectVariableType(VisitorSymbolNode))
                 {
                     return VisitorSymbolNode;
                 }

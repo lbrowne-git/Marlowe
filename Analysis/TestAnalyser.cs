@@ -9,7 +9,7 @@ namespace Marlowe.Tests
         private AntlrInputStream stream;
         private CSharpLexer lexer;
         private CSharpParser parser;
-        private CSharpVisitor visitor;
+        private CSharpSemanticAnalyser visitor;
         private CommonTokenStream commonTokenStream;
         #endregion
 
@@ -19,14 +19,14 @@ namespace Marlowe.Tests
             lexer = new CSharpLexer(stream);
             commonTokenStream = new CommonTokenStream(lexer);
             parser = new CSharpParser(commonTokenStream);
-            visitor = new CSharpVisitor();
+            visitor = new CSharpSemanticAnalyser();
         }
 
 
         #region Getter & Setters
         public CSharpLexer Lexer { get => lexer; }
         public CSharpParser Parser { get => parser; }
-        public CSharpVisitor Visitor { get => visitor; }
+        public CSharpSemanticAnalyser Visitor { get => visitor; }
         public CommonTokenStream CommonTokenStream { get => commonTokenStream; }
         #endregion
     }

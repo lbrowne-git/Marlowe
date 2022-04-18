@@ -3,7 +3,7 @@ using System;
 
 namespace Marlowe.Utilities
 {
-    public static class SemanticAnalyser
+    public static class SyntaxAnalyser
     {
 
         public enum Operators { PLUS, MINUS, MOD, MULT, DIV, FLOAT };

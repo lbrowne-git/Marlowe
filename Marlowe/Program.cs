@@ -17,6 +17,7 @@ namespace Marlowe
     public class Program
     {
         private static Stopwatch timer = new Stopwatch();
+        public string test = "hello";
         public static void Main(string[] args)
         {
             timer.Start();
@@ -58,7 +59,8 @@ namespace Marlowe
                  *  
                  */
                 CSharpParser codeParser = (CSharpParser)analyser.Parser;
-                CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
+                codeParser.RemoveErrorListeners();
+                CSharpSemanticAnalyser cSharpVisitor = (CSharpSemanticAnalyser)analyser.Visitor;
                 cSharpVisitor.VisitCompilation_unit(codeParser.compilation_unit());
 
 
