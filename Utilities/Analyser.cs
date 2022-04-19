@@ -17,6 +17,5 @@ namespace Marlowe.Utilities
         public virtual IParseTreeVisitor<object?> Visitor { set;get ; }
         public virtual CommonTokenStream CommonTokenStream { set; get ; }
 
-        public int MyProperty { get; set; }
     }
 }
