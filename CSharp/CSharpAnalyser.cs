@@ -13,7 +13,6 @@ namespace Marlowe.CSharp
      */
     public class CSharpAnalyser : Analyser
     {
-        private CSharpSemanticAnalyser visitor;
 
         private void Setup(string text){
             
@@ -21,7 +20,7 @@ namespace Marlowe.CSharp
             Lexer = new CSharpLexer(Stream);
             CommonTokenStream = new CommonTokenStream(Lexer);
             Parser = new CSharpParser(CommonTokenStream);
-            Visitor = new CSharpSemanticAnalyser();
+            Visitor = new CSharpVisitor();
         }
         public CSharpAnalyser(string text){
             Setup(text);

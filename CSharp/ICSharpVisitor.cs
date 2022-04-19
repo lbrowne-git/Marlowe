@@ -3,15 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Marlowe.Visitor
+namespace Marlowe.CSharp
 {
-    /**
-     * summary:
-     *      This interface acts a layer of abstraction for the CSharpVistor.
-     *      which allows for the seamless conversion of generic types between
-     *      the generated antlr visitor and the Marlowe's implementation.
-     */
-    public interface ICSharpVisitor : ICSharpParserVisitor<ISymbolNode>
+    
+     ///
+     /// summary:
+     ///     This interface acts a layer of abstraction for the CSharpVistor.
+     ///     which allows for the seamless conversion of generic types between
+     ///     the generated antlr visitor and the Marlowe's implementation.
+    public interface ICSharpVisitor<Result> : ICSharpParserVisitor<Result>
     {
     }
 }
