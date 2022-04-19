@@ -1,44 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Marlowe.Utilities
 {
     public class WriteLogger : ILogger
     {
-        public enum Levels : ushort
-        {
-            Info = 0,
-            Notice = 1,
-            Warring = 2,
-            Error = 4
-        };
 
-        private bool Writeable { get => Writeable; set => Writeable = value; }
-
-        private Levels Level { set => this.Level = value; }
-        private string Dir { set => this.Dir = value; }
-
+        private readonly ILogger.Levels Level;
         private string FileName = "log.txt";
 
-        public WriteLogger(bool write, Levels lvl)
-        {
-            this.Writeable = write;
+        public WriteLogger(ILogger.Levels lvl){
             this.Level = lvl;
         }
-        public WriteLogger(bool write, Levels levels, string dir){
-
+        public WriteLogger(ILogger.Levels level, string dir){
+            this.Level = level;
+            FileName = dir + FileName;
         }
-        
-        public void WriteHeader(string heading = "")
+
+        public void WriteHeader(string heading)
         {
-            Console.WriteLine($"*******************************************\n\t\t{heading}\n*******************************************");
+            File.WriteAllText(FileName,$"|{DateTime.Now}|");
         }
 
+        public void WriteHeader(string heading, ILogger.Levels level)
+        {
+            if (level >= Level){
+                Console.WriteLine($"|{DateTime.Now}|");
+            }
+        }
         public void WriteContent(string content)
         {
 
-            Console.WriteLine($"{content}");
+            File.WriteAllText(FileName,$"{content}");
 
+        }
+        public void WriteContent(string content, ILogger.Levels level)
+        {
+            if(level >= Level)
+            {
+                Console.WriteLine($"{content}");
+            }
         }
 
 
@@ -57,5 +59,6 @@ namespace Marlowe.Utilities
                 WriteContent($"{node.Key}\t:" + $"\t{node.Value}");
             }
         }
+
     }
 }

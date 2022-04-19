@@ -45,6 +45,13 @@ namespace Marlowe.Utilities
             WriteSymbolNode(symbolTable.Directives, "");
         }
 
+        public void LogSymbolTable(SymbolTable symbolTable, string heading)
+        {
+            WriteSymbolNode(symbolTable.Variables, heading);
+            WriteSymbolNode(symbolTable.Functions, "Functions");
+            WriteSymbolNode(symbolTable.Directives, "");
+        }
+
         public void WriteSymbolNode(IDictionary<string, ISymbolNode> dictonary, string header = ""){
             WriteHeader(header);
             Console.WriteLine($"Total:\t {dictonary.Count}");
