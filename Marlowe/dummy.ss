@@ -1,23 +1,21 @@
 ﻿using System;
 
 namespace Tester{
-    public class dummy{
-        string x = "hello";
-        int y = "world";
-        double z = x + y;  // 26
+
+	public class program
+	{
+		public string greeting = "hello";
+		public string name = " world";
+		public string introduction = greeting + y;
 
 
-        string TEst = "hi";
-        string Case = "m";
-        string tred = TEst + Case;
+		public int x = 4;
+		public double y = 2.23;
+		private double z = x + y;
 
-        public string test(){
-            return "hello";
-        }
-    }
+		public string example(){
+			return "hello";
+		}
+	}
 
-
-    public class dumm2{
-            string t = 4;
-    }
 }
