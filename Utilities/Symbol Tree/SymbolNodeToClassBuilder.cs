@@ -51,7 +51,8 @@ namespace Marlowe.Utilities
             {
                 if (typeSignature != keyValuePair.Value.ClassName)
                 {
-                    tb = GetTypeBuilder(keyValuePair.Value.ClassName);
+                    typeSignature = keyValuePair.Value.ClassName;
+                    tb = GetTypeBuilder(typeSignature);
                 }
                 CreateProperty(tb, keyValuePair.Key, keyValuePair.Value.Type);
 
@@ -91,13 +92,13 @@ namespace Marlowe.Utilities
             fieldBuilder = tb.DefineField("_" + propertyName, propertyType, FieldAttributes.Private);
 
 
-            HandleSetter(tb, propertyName, propertyType);
-            HandlerGetter(tb, propertyName, propertyType);
+            CreateSetterFromProperty(tb, propertyName, propertyType);
+            CreateGetterFromProperty(tb, propertyName, propertyType);
 
 
         }
 
-        private static void HandleSetter(TypeBuilder tb, string propertyName, Type propertyType)
+        private static void CreateSetterFromProperty(TypeBuilder tb, string propertyName, Type propertyType)
         {
             MethodBuilder getPropMthdBldr = tb.DefineMethod("get_" + propertyName,
                                                 MethodAttributes.Public |
@@ -113,7 +114,7 @@ namespace Marlowe.Utilities
             propertyBuilder.SetGetMethod(getPropMthdBldr);
 
         }
-        private static void HandlerGetter(TypeBuilder tb, string propertyName, Type propertyType)
+        private static void CreateGetterFromProperty(TypeBuilder tb, string propertyName, Type propertyType)
         {
 
             MethodBuilder setPropMthdBldr =
