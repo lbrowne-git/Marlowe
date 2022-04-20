@@ -5,6 +5,11 @@ using System.Configuration;
 
 namespace Marlowe.Utilities
 {
+
+    /// <summary>
+    ///     Allows For the writing of logging information to the console.
+    ///     Implements <seealso cref="ILogger"/>.
+    /// </summary>
     public class ConsoleLogger : ILogger
     {
 

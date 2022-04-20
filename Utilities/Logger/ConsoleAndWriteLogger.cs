@@ -4,6 +4,10 @@ using System.Text;
 
 namespace Marlowe.Utilities
 {
+    /// <summary>
+    ///     Acts as a controller for both <see cref="ConsoleLogger"/> and <see cref="WriteLogger"/>.
+    ///     Implements <seealso cref="ILogger"/>.
+    /// </summary>
     public class ConsoleAndWriteLogger : ILogger
     {
         private readonly ConsoleLogger consoleLogger;

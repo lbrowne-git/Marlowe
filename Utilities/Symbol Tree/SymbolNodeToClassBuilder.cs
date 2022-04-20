@@ -7,25 +7,22 @@ using System.Reflection;
 namespace Marlowe.Utilities
 {
     /// <summary>
-    ///  Dynamically Creates classes out of <see cref="ISymbolNode"/>s this is taken from <see href="https://stackoverflow.com/questions/3862226/how-to-dynamically-create-a-class">stackoverflow</see>.
+    ///  Dynamically creates classes out of <see cref="ISymbolNode"/>s this is taken from <see href="https://stackoverflow.com/questions/3862226/how-to-dynamically-create-a-class">stackoverflow</see>.
     /// </summary>
     public static class SymbolNodeToClassBuilder
     {
         /// <summary>
-        ///     Using the collections gathered by <see cref="SymbolTable"/> defines a class by making off <see cref="System.Reflection"/>l
+        ///     Defines a class by making use off the <see cref="System.Reflection"/> library and the context gathered by the collections contained in a <see cref="SymbolTable"/>.
         /// </summary>
-        /// <param name="symbolNodes"></param>
-        /// <returns></returns>
+        /// <param name="symbolNodes">The properties of the object</param>
+        /// <returns>A new object of the class type provided by the <see cref="SymbolNode"/>.</returns>
         public static object CreateNewObject(Dictionary<string, ISymbolNode> symbolNodes)
         {
             var myType = CompileResultType(symbolNodes);
             var myObject = Activator.CreateInstance(myType);
             return myObject;
         }
-        public static Type CompileResultType(Dictionary<string, ISymbolNode> symbolNodes)
-        {
-
-
+        private static Type CompileResultType(Dictionary<string, ISymbolNode> symbolNodes){
             TypeBuilder tb = null;
 
             //ConstructorBuilder constructor = tb.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);

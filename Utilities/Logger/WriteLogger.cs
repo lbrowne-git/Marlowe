@@ -4,6 +4,11 @@ using System.IO;
 
 namespace Marlowe.Utilities
 {
+
+    /// <summary>
+    ///     Allows For the writing of logging information to a specified file or defaults to a file in the build location.
+    ///     Implements <seealso cref="ILogger"/>.
+    /// </summary>
     public class WriteLogger : ILogger
     {
 

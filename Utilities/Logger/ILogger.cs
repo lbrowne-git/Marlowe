@@ -3,7 +3,7 @@
 namespace Marlowe.Utilities
 {
     /// <summary>
-    /// Abstract logging <see langword="interface"/>, extended for use by different logging systems. Provides access to the <see cref="ILogger.Levels"/> for debug purposes.
+    /// Logging <see langword="interface"/>, extendable for use by different logging systems. Provides access to the <see cref="ILogger.Levels"/> for debug purposes.
     /// </summary>
     public interface ILogger
     {
