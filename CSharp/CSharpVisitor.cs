@@ -527,11 +527,105 @@ namespace Marlowe.CSharp
         }
 
         private ISymbolNode VisitSimple_embedded_statement([NotNull] CSharpParser.Simple_embedded_statementContext context)
-        {
-
-            return null;
+        {   // Contexts of Simple Embedded Statement extend this class and must be dynamcically cast. 
+            switch (context)
+            {
+                case CSharpParser.IfStatementContext ifContext:
+                    return VisitIfStatement(ifContext);
+                case CSharpParser.WhileStatementContext whileContext:
+                    return VisitWhileStatement(whileContext);
+                case CSharpParser.ReturnStatementContext returnContext:
+                    return VisitReturnStatement(returnContext);
+                default:
+                    return null;
+            }
         }
 
+        #region Method Related Logical Operators
+        public ISymbolNode VisitReturnStatement([NotNull] CSharpParser.ReturnStatementContext context)
+        {
+            if (context.RETURN() != null)
+            {
+                if (context.SEMICOLON() != null)
+                {
+                    return VisitExpression(context.expression());
+                }
+                
+            }
+            return null;
+        }
+        public ISymbolNode VisitIfStatement([NotNull] CSharpParser.IfStatementContext context)
+        {
+            if(context.IF() != null)
+            {
+                if(context.OPEN_PARENS() != null)
+                {
+                    if(context.CLOSE_PARENS() != null)
+                    {
+                        if(context.expression() != null)
+                        {
+                            object ifOperation = VisitExpression(context.expression()).Variable;
+                            if (ifOperation.Equals(true))
+                            {
+                                return VisitIf_body(context.if_body(0));
+                            }
+                            else if (!ifOperation.Equals(true))
+                            {
+                                if (context.ELSE() != null)
+                                {
+                                    return VisitIf_body(context.if_body(1));
+                                }
+                                else
+                                {
+                                    return null;
+                                }
+                            }
+                            else
+                            {
+                                throw new Exception($"If operation cannot be used to perform logical validation.");
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception($"If statment missing logical operation");
+                        }
+
+                    }
+                    else
+                    {
+                        throw new Exception($"Missing closing parentheses");
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Missing opening parentheses");
+                }
+            }
+            else
+            {
+                throw new Exception($"Missing Keyword IF");
+            }
+        }
+
+        public ISymbolNode VisitIf_body([NotNull] CSharpParser.If_bodyContext context)
+        {
+            if(context.block() != null)
+            {
+                return VisitBlock(context.block());
+            }
+            else if(context.simple_embedded_statement() != null)
+            {
+                return VisitSimple_embedded_statement(context.simple_embedded_statement());
+            }
+            else
+            {
+                throw new Exception($"error handling if statement");
+            }
+        }
+
+
+
+        #endregion
         public ISymbolNode VisitLabeled_Statement([NotNull] CSharpParser.Labeled_StatementContext context)
         {
             if (context.identifier() != null)
@@ -853,10 +947,9 @@ namespace Marlowe.CSharp
             {
                 if (context.OP_EQ() != null || context.OP_NE() != null)
                 {
-                    foreach (var item in context.relational_expression())
-                    {
-                        VisitRelational_expression(item);
-                    }
+                    ISymbolNode LNode = VisitRelational_expression(context.relational_expression()[0]);
+                    ISymbolNode RNode = VisitRelational_expression(context.relational_expression()[1]);
+                    return SemanticAnalyser.LogicalOperationExpression(LNode, RNode, SemanticAnalyser.Logical.EQ);
                 }
                 else
                 {
@@ -915,12 +1008,12 @@ namespace Marlowe.CSharp
                     ISymbolNode RNode = VisitMultiplicative_expression(context.multiplicative_expression()[1]);
                     if (context.PLUS().Length > 0){
 
-                        VisitorSymbolNode = SyntaxAnalyser.OperationExpression(LNode, RNode, SyntaxAnalyser.Operators.PLUS);
+                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.PLUS);
                         VisitorSymbolNode.Type = Type;
                     }
                     else if (context.MINUS().Length > 0){
                         
-                        VisitorSymbolNode = SyntaxAnalyser.OperationExpression(LNode, RNode, SyntaxAnalyser.Operators.MINUS);
+                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MINUS);
                         VisitorSymbolNode.Type = Type;
                     }
                     else
@@ -928,7 +1021,7 @@ namespace Marlowe.CSharp
                         VisitorSymbolNode = null;
                     }
 
-                    if (SyntaxAnalyser.IsCorrectVariableType(VisitorSymbolNode))
+                    if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode))
                     {
                         return VisitorSymbolNode;
                     }
@@ -958,17 +1051,17 @@ namespace Marlowe.CSharp
                     ISymbolNode RNode = VisitSwitch_expression(context.switch_expression()[1]);
                     if (context.STAR().Length > 0)
                     {
-                        VisitorSymbolNode = SyntaxAnalyser.OperationExpression(LNode, RNode, SyntaxAnalyser.Operators.MULT);
+                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MULT);
                         VisitorSymbolNode.Type = Type;
                     }
                     else if (context.DIV().Length > 0)
                     {
-                        VisitorSymbolNode = SyntaxAnalyser.OperationExpression(LNode, RNode, SyntaxAnalyser.Operators.DIV);
+                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.DIV);
                         VisitorSymbolNode.Type = Type;
                     }
                     else if(context.PERCENT().Length > 0)
                     {
-                        VisitorSymbolNode = SyntaxAnalyser.OperationExpression(LNode, RNode, SyntaxAnalyser.Operators.MOD);
+                        VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MOD);
                         VisitorSymbolNode.Type = Type;
                     }
                     else
@@ -976,7 +1069,7 @@ namespace Marlowe.CSharp
                         VisitorSymbolNode = null;
                     }
 
-                    if (SyntaxAnalyser.IsCorrectVariableType(VisitorSymbolNode))
+                    if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode))
                     {
                         return VisitorSymbolNode;
                     }
@@ -1116,7 +1209,7 @@ namespace Marlowe.CSharp
                     Type = Type,
                     Variable = value
                 };
-                if (SyntaxAnalyser.IsCorrectVariableType(VisitorSymbolNode)) // Casts the varaible to the type it was declared as
+                if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode)) // Casts the varaible to the type it was declared as
                 {
                     
                     return VisitorSymbolNode;
@@ -1863,11 +1956,6 @@ namespace Marlowe.CSharp
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitIfStatement([NotNull] CSharpParser.IfStatementContext context)
-        {
-            throw new NotImplementedException();
-        }
-
         public ISymbolNode VisitSwitchStatement([NotNull] CSharpParser.SwitchStatementContext context)
         {
             throw new NotImplementedException();
@@ -1908,10 +1996,7 @@ namespace Marlowe.CSharp
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitReturnStatement([NotNull] CSharpParser.ReturnStatementContext context)
-        {
-            throw new NotImplementedException();
-        }
+ 
 
         public ISymbolNode VisitThrowStatement([NotNull] CSharpParser.ThrowStatementContext context)
         {
@@ -1967,11 +2052,6 @@ namespace Marlowe.CSharp
 
 
         public ISymbolNode VisitLocal_constant_declaration([NotNull] CSharpParser.Local_constant_declarationContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitIf_body([NotNull] CSharpParser.If_bodyContext context)
         {
             throw new NotImplementedException();
         }

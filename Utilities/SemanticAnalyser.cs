@@ -7,6 +7,8 @@ namespace Marlowe.Utilities
     {
 
         public enum Operators { PLUS, MINUS, MOD, MULT, DIV, FLOAT };
+        public enum Logical { EQ, NEQ, OR, AND , DIV, FLOAT };
+
         private static ISymbolNode symbolNode;
 
         /// <summary>
@@ -15,7 +17,7 @@ namespace Marlowe.Utilities
         /// <param name="LNode">The Left-hand expression, which the operation is happening to.</param>
         /// <param name="RNode"> The Right-hand expression, which is performing an action against the left-hand node.</param>
         /// <param name="OP"> A Operation provided by the SemanticAnalyser to be used by this function.</param>
-        /// <returns>A SymbolNode comprising of the input Left and Right SymbolNode.</returns>
+        /// <returns>A new <see cref="ISymbolNode"/> comprising of the input Left and Right <see cref="ISymbolNode"/></returns>
         public static ISymbolNode OperationExpression(ISymbolNode LNode, ISymbolNode RNode, Operators OP){
             symbolNode = new SymbolNode{// Node must be created this way to eliminate object referencing.
                                 ClassName = LNode.ClassName,
@@ -91,6 +93,7 @@ namespace Marlowe.Utilities
         }
 
 
+
         /// <summary>
         ///         Determines if an object is capable of numeric computation. 
         ///     Through converting the object to type double and using the value in an equation.
@@ -131,6 +134,29 @@ namespace Marlowe.Utilities
                 Console.WriteLine($"{sn.Variable} is not an object of type {sn.Type}");
                 return false;
             }
+        }
+
+        public static ISymbolNode LogicalOperationExpression(ISymbolNode lNode, ISymbolNode rNode, Logical logic)
+        {
+            SymbolNode bufferNode = new SymbolNode()
+            {
+                ClassName = lNode.ClassName,
+                Variable = lNode.Variable,
+                Namespace = lNode.Namespace,
+                Type = typeof(bool)
+            };
+            switch (logic)
+            {
+                case Logical.EQ:
+                    bufferNode.Variable = (string)lNode.Variable == (string)rNode.Variable;
+                    break;
+                case Logical.NEQ:
+                    bufferNode.Variable = lNode.Variable != rNode.Variable;
+                    break;
+                default:
+                    break;
+            }
+            return bufferNode;
         }
     }
 }
