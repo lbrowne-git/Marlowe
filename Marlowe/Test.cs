@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace Tester{
+namespace Tester {
 
 	public class program
 	{
 		public string greeting = "hello";
 		public string name = " world";
-		public string introduction = greeting + y;
+		public double y = 2.23;
+
 
 
 		public int x = 4;
-		public double y = 2.23;
-		private double z = x + y;
+		private int z = x + y;
 
 		public string example(){
 			return "hello";

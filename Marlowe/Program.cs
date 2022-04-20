@@ -2,35 +2,35 @@
 using Marlowe.CSharp;
 using Marlowe.Utilities;
 using System.IO;
-using Marlowe.Visitor;
 using System.Diagnostics;
 using CommandLine;
 using System.Collections.Generic;
 
+
 namespace Marlowe
 {
     
-    /**
-     * Summary: 
-     *      The entry point of this application. Reads HLL 
-     *      source code and passes it onto the Analyser.
-     * 
-     */
+    
+     ///<summary>
+     ///      The entry point of this application. Reads HLL 
+     ///      source code and passes it onto the Analyser.
+     ///      
+     ///</summary>
     public class Program
     {
         private static readonly Stopwatch Timer = new Stopwatch();
         private static ILogger.Levels Level = ILogger.Levels.Error;
-        private static ILogger Logger = new ConsoleLogger(Level);
+        private static ILogger Logger;
         private static bool ShowSymbolTable = false;
         private static List<string> Files;
 
         public static void Main(string[] args){
             #region CLI Handler
+            Timer.Start();
             Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>{
                        // Logging
                        if (o.Loggable){
-                           Timer.Start();
                            if (o.Writeable){
                                Level = Options.LogHandler();
                                Logger = new ConsoleAndWriteLogger(Level);
@@ -69,7 +69,7 @@ namespace Marlowe
                    });
             #endregion
             
-            string fileName = "dummy.ss";
+            string fileName = "Test.cs";
 
 
             string FileContents = File.ReadAllText(fileName);
@@ -77,6 +77,7 @@ namespace Marlowe
             Analyser analyser = new CSharpAnalyser(FileContents);
             try
             {
+
                 analyser.CommonTokenStream.Fill();
 
                 /** Accesses abstract parser generator and casts to CSharp implemenation.
@@ -96,8 +97,11 @@ namespace Marlowe
                     }
 
                 }
+                SymbolTable symbolTable = cSharpVisitor;
                 TimeSpan timeSpan = Timer.Elapsed;
                 Console.WriteLine($"the application took {timeSpan.Milliseconds}ms to complete this run");
+                object test = SymbolNodeToClassBuilder.CreateNewObject(symbolTable.Variables);
+                Console.WriteLine(test.GetType());
             }
             catch (Exception ex)
             {
@@ -105,10 +109,9 @@ namespace Marlowe
             }
         }
 
-
-        /** Handles the CLI of this applicaiton
-          * 
-          */
+        /// <summary>
+        ///Handles the CLI of this applicaiton
+        /// </summary>
         public class Options
         {
             [Option('f', "file", Required = false, HelpText = "The name of the file that will be interpeted.")]
@@ -121,7 +124,7 @@ namespace Marlowe
             public bool SymbolTable { get; set; }
 
             [Option('l', "Log", Required = false, HelpText = "Toggleable logger, accepts true or false. This is on by default")]
-            public bool Loggable { get; set; }
+            public bool Loggable { get; set; } = true;
 
             [Option('w', "Write", Required = false, HelpText = "Toggleable writer, accepts true or false and writes to a .txt within Marlowe ")]
             public bool Writeable { get; set; }
