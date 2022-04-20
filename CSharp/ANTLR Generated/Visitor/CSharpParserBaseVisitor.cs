@@ -2623,5 +2623,5 @@ public abstract class CSharpParserBaseVisitor<Result> : AbstractParseTreeVisitor
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitIdentifier([NotNull] CSharpParser.IdentifierContext context) { return VisitChildren(context); }
+	public virtual object VisitIdentifier([NotNull] CSharpParser.IdentifierContext context) { return VisitChildren(context); }
 }

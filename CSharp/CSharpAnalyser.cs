@@ -1,45 +1,28 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Marlowe.Utilities;
-using Marlowe.Visitor;
 
 namespace Marlowe.CSharp
 {
-    /*      *      *      *      *      *      *      *      *      *      *       *  
-     *      Name:   Lewis Browne                                                   *
-     *      Date:   26/01/2022                                                     * 
-     *      Desc:   A class which will be used as a intermediary level             *
-     *              between the input source code and the ANTLR lexer and parser   *
-     *                                                                             *
-     *     *      *      *      *      *      *      *      *      *      *        */
-    public class CSharpAnalyser : IAnalyser
+
+    /// <summary>
+    /// The CSharp implementation of the <see langword="abstract"/> <see cref="Analyser"/>, which acts as a
+    /// contoller for the <see cref="CSharpLexer"/> and <see cref="CSharpParser"/> passing it an input stream.
+    /// </summary>
+    public class CSharpAnalyser : Analyser
     {
-        #region Attribs
-        private AntlrInputStream stream;
-        private Lexer lexer;
-        private Parser parser;
-        private CommonTokenStream commonTokenStream;
-        private CSharpVisitor visitor;
-        #endregion
-        
+
         private void Setup(string text){
-            stream = new AntlrInputStream(text);
-            lexer = new CSharpLexer(stream);
-            commonTokenStream = new CommonTokenStream(lexer);
-            parser = new CSharpParser(commonTokenStream);
-            visitor = new CSharpVisitor();
+            
+            Stream = new AntlrInputStream(text);
+            Lexer = new CSharpLexer(Stream);
+            CommonTokenStream = new CommonTokenStream(Lexer);
+            Parser = new CSharpParser(CommonTokenStream);
+            Visitor = new CSharpVisitor();
         }
         public CSharpAnalyser(string text){
             Setup(text);
         }
-
-        #region Getter & Setters
-        public Lexer Lexer { get => lexer; }
-        public Parser Parser { get => parser; }
-        public IParseTreeVisitor<object?> Visitor { get => visitor; }
-        public CommonTokenStream CommonTokenStream { get => commonTokenStream; }
-        #endregion
-
     }
 }
  

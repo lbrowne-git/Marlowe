@@ -1599,5 +1599,5 @@ public interface ICSharpParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitIdentifier([NotNull] CSharpParser.IdentifierContext context);
+	object VisitIdentifier([NotNull] CSharpParser.IdentifierContext context);
 }

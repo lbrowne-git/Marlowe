@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Marlowe": {
+      "commandName": "Project",
+      "commandLineArgs": "-st"
+    }
+  }
+}

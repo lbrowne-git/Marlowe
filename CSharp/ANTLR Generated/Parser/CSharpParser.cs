@@ -31,7 +31,11 @@ using Antlr4.Runtime.Tree;
 using DFA = Antlr4.Runtime.Dfa.DFA;
 
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.9")]
-[System.CLSCompliant(false)]
+
+/// <summary>
+///			An <see href="https://www.antlr.org/">ANTLR4</see> generated Parser for the C# programming language generated 
+///			using grammar <see href="https://github.com/antlr/grammars-v4/tree/master/csharp">provided by ANTLR</see>.
+/// </summary>
 public partial class CSharpParser : CSharpParserBase {
 
     #region Attrib
@@ -305,7 +309,13 @@ public partial class CSharpParser : CSharpParserBase {
 		}
 	}
 
-		public CSharpParser(ITokenStream input) : this(input, Console.Out, Console.Error) { }
+	///
+	/// <summary>
+	///			An <see href="https://www.antlr.org/">ANTLR4</see> generated Lexer for the C# programming language generated 
+	///			using grammar <see href="https://github.com/antlr/grammars-v4/tree/master/csharp">provided by ANTLR</see>.
+	/// </summary>
+	///
+	public CSharpParser(ITokenStream input) : this(input, Console.Out, Console.Error) { }
 
 		public CSharpParser(ITokenStream input, TextWriter output, TextWriter errorOutput)
 		: base(input, output, errorOutput)
@@ -3367,6 +3377,27 @@ public partial class CSharpParser : CSharpParserBase {
 		public virtual void CopyFrom(Primary_expression_startContext context) {
 			base.CopyFrom(context);
 		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public LiteralExpressionContext LiteralExpressionContext()
+		{
+			return GetRuleContext<LiteralExpressionContext>(0);
+		}
+
+		public SimpleNameExpressionContext SimpleNameExpressionContext()
+        {
+			return GetRuleContext<SimpleNameExpressionContext>(0);
+		}
+
+		public ParenthesisExpressionsContext ParenthesisExpressionsContext(){
+			return GetRuleContext<ParenthesisExpressionsContext>(0);
+        }
+
+		public MemberAccessExpressionContext MemberAccessExpressionContext()
+        {
+			return GetRuleContext<MemberAccessExpressionContext>(0);
+        }
+
+
 	}
 	public partial class LiteralAccessExpressionContext : Primary_expression_startContext {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode LITERAL_ACCESS() { return GetToken(CSharpParser.LITERAL_ACCESS, 0); }
