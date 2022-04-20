@@ -16,15 +16,16 @@ namespace Marlowe
      ///      source code and passes it onto the Analyser.
      ///      
      ///</summary>
-    public class Program
+    public class API
     {
         private static readonly Stopwatch Timer = new Stopwatch();
-        private static ILogger.Levels Level = ILogger.Levels.Error;
-        private static ILogger Logger;
-        private static bool ShowSymbolTable = false;
-        private static List<string> Files;
+        public static ILogger.Levels Level = ILogger.Levels.Error;
+        public static ILogger Logger;
+        public static bool ShowSymbolTable = false;
+        private List<object> NodeObjects = new List<object>();
 
-        public static void Main(string[] args){
+        private static void Main(string[] args){
+            List<string> files = new List<string>();
             #region CLI Handler
             Timer.Start();
             Parser.Default.ParseArguments<Options>(args)
@@ -54,60 +55,80 @@ namespace Marlowe
 
                        // File Handling
                        if(o.File != null){
-                           Files.Add(o.File);
+                           files.Add(o.File);
                        }
                        else if(o.Directory != null){
                            foreach (string file in Directory.GetFiles(@o.Directory, "*.cs"))
                            {
                                if (File.Exists(file))
                                {
-                                   Files.Add(file);
+                                   files.Add(file);
                                }
                            }
                        }
 
                    });
             #endregion
-            
-            string fileName = "Test.cs";
 
+            files.Add("Test.cs");
+            Execute(files);
+        }
 
-            string FileContents = File.ReadAllText(fileName);
-
-            Analyser analyser = new CSharpAnalyser(FileContents);
-            try
+        /// <summary>
+        ///     Generates A list of class objects that can be gotten using <see cref="GetClassObject(string)"/> or <see cref="GetClassObjects(List{string})"/>.
+        ///     By reading the files content at a directory that shave been passed to it. This is <see langword="static"/> so it can be used with <see cref="Main(string[])"/>.
+        /// </summary>
+        /// <param name="files">A collection of files that will analysed by the system</param>.
+        public static void Execute(List<string> files)
+        {
+            foreach (string file in files)
             {
+                try{
+                    string FileContents = File.ReadAllText(file);
 
-                analyser.CommonTokenStream.Fill();
+                    Analyser analyser = new CSharpAnalyser(FileContents);
+                    analyser.CommonTokenStream.Fill();
 
-                /** Accesses abstract parser generator and casts to CSharp implemenation.
-                 *  Allowing for substituion with other  parsers and visitors.
-                 *  
-                 */
-                CSharpParser codeParser = (CSharpParser)analyser.Parser;
-                codeParser.RemoveErrorListeners();
-                CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
-                cSharpVisitor.VisitCompilation_unit(codeParser.compilation_unit());
-
-                if(Logger != null)
-                {
-                    if (ShowSymbolTable)
+           
+                    CSharpParser codeParser = (CSharpParser)analyser.Parser;
+                    codeParser.RemoveErrorListeners();
+                    CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
+                    cSharpVisitor.VisitCompilation_unit(codeParser.compilation_unit());
+                    if (Logger != null)
                     {
-                        Logger.LogSymbolTable(cSharpVisitor);
+                        if (ShowSymbolTable)
+                        {
+                            Logger.LogSymbolTable(cSharpVisitor);
+                        }
+
                     }
+                    SymbolTable symbolTable = cSharpVisitor;
+                    TimeSpan timeSpan = Timer.Elapsed;
+                    Console.WriteLine($"the application took {timeSpan.Milliseconds}ms to complete this run");
+                    object test = SymbolNodeToClassBuilder.CreateNewObject(symbolTable.Variables);
+                    Console.WriteLine(test.GetType());
 
                 }
-                SymbolTable symbolTable = cSharpVisitor;
-                TimeSpan timeSpan = Timer.Elapsed;
-                Console.WriteLine($"the application took {timeSpan.Milliseconds}ms to complete this run");
-                object test = SymbolNodeToClassBuilder.CreateNewObject(symbolTable.Variables);
-                Console.WriteLine(test.GetType());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: " + ex);
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex);
+                }
             }
         }
+
+
+        public List<object> GetClassObjects(List<string> files)
+        {
+            Execute(files);
+            return NodeObjects;
+        }
+
+        public List<object> GetClassObject(string file)
+        {
+            Execute(new List<string>() { file });
+            return NodeObjects;
+        }
+
 
         /// <summary>
         ///Handles the CLI of this applicaiton
