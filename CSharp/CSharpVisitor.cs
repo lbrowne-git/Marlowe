@@ -5,12 +5,13 @@ using Marlowe.Utilities;
 
 namespace Marlowe.CSharp
 {
-    /**
-     * Summary:
-     *      The CSharpSemanticAnalyser provides a way of accessing the data analysed by the CSharpParser. 
-     *      This is done by analysing the context generated from thhe parser to perform sythnaxical
-     *      analysis on these contexts. This allows for the creation of a symbol tree from the source code.
-     */
+
+    ///<summary>
+    ///     The CSharpVisitor provides a way of accessing the data analysed by the CSharpParser. 
+    ///     This is done by analysing the context generated from thhe parser to perform sythnaxical
+    ///     analysis on these contexts.This allows for the creation of a symbol tree from the source code.
+    /// </summary>
+
     public class CSharpVisitor : SymbolTable, ICSharpVisitor<ISymbolNode>
     { 
 
@@ -1117,6 +1118,7 @@ namespace Marlowe.CSharp
                 };
                 if (SyntaxAnalyser.IsCorrectVariableType(VisitorSymbolNode)) // Casts the varaible to the type it was declared as
                 {
+                    
                     return VisitorSymbolNode;
                 }
                 else

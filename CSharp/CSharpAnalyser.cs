@@ -1,16 +1,14 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Marlowe.Utilities;
-using Marlowe.Visitor;
 
 namespace Marlowe.CSharp
 {
-    /**
-     * Summary:
-     *      The CSharp implementation of the abstract Analyser, which acts as a
-     *      contoller for the CSharp Lexer and Parser with the input source code.
-     * 
-     */
+
+    /// <summary>
+    /// The CSharp implementation of the <see langword="abstract"/> <see cref="Analyser"/>, which acts as a
+    /// contoller for the <see cref="CSharpLexer"/> and <see cref="CSharpParser"/> passing it an input stream.
+    /// </summary>
     public class CSharpAnalyser : Analyser
     {
 

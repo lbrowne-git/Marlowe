@@ -29,6 +29,13 @@ using DFA = Antlr4.Runtime.Dfa.DFA;
 
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.9")]
 [System.CLSCompliant(false)]
+
+///
+/// <summary>
+///			An <see href="https://www.antlr.org/">ANTLR4</see> generated Lexer for the C# programming language generated 
+///			using grammar <see href="https://github.com/antlr/grammars-v4/tree/master/csharp">provided by ANTLR</see>
+/// </summary>
+///
 public partial class CSharpLexer : CSharpLexerBase {
 
     #region Attribs
@@ -131,8 +138,15 @@ public partial class CSharpLexer : CSharpLexerBase {
 		"UnicodeClassCF", "UnicodeClassPC", "UnicodeClassND"
 	};
 
-    #endregion
-    public CSharpLexer(ICharStream input)
+	#endregion
+
+	///
+	/// <summary>
+	///			An <see href="https://www.antlr.org/">ANTLR4</see> generated Lexer for the C# programming language generated 
+	///			using grammar <see href="https://github.com/antlr/grammars-v4/tree/master/csharp">provided by ANTLR</see>
+	/// </summary>
+	///
+	public CSharpLexer(ICharStream input)
 	: this(input, Console.Out, Console.Error) { }
 
 	public CSharpLexer(ICharStream input, TextWriter output, TextWriter errorOutput)
