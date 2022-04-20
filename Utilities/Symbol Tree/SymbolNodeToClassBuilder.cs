@@ -17,7 +17,7 @@ namespace Marlowe.Utilities
         ///     Defines a class by making use off the <see cref="System.Reflection"/> library and the context gathered by the collections contained in a <see cref="SymbolTable"/>.
         /// </summary>
         /// <param name="symbolNodes">The properties of the object</param>
-        /// <returns>A new object of the class type provided by the <see cref="SymbolNode"/>.</returns>
+        /// <returns>A new object of the class type provided by the <see cref="SymbolVariableNode"/>.</returns>
         public static object CreateNewObject(SymbolTable symbolTable)
         {
             var myType = CompileResultType(symbolTable);

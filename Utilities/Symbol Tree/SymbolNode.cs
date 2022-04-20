@@ -12,7 +12,7 @@ namespace Marlowe.Utilities
     /// <remarks>
     ///     Extends <see cref="ISymbolNode"/>
     /// </remarks>
-    public class SymbolNode : ISymbolNode
+    public abstract class SymbolNode : ISymbolNode
     {
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Marlowe.Utilities
 
         public void HandleArthimatic(ParserRuleContext[] multiplicative_expressionContexts, string arthmatic)
         {
-            SymbolNode buffer = new SymbolNode();
+            SymbolVariableNode buffer = new SymbolVariableNode();
             switch (arthmatic)
             {
                 case "-":
