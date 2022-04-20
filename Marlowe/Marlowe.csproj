@@ -28,12 +28,16 @@
 
   <ItemGroup>
     <Compile Remove="Test.cs" />
+    <Compile Remove="Test2.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
+    </None>
+    <None Include="Test2.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Test.cs" />
   </ItemGroup>

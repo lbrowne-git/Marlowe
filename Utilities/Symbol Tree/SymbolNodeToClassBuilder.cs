@@ -11,24 +11,43 @@ namespace Marlowe.Utilities
     /// </summary>
     public static class SymbolNodeToClassBuilder
     {
+        private static PropertyBuilder propertyBuilder;
+        private static FieldBuilder fieldBuilder;
         /// <summary>
         ///     Defines a class by making use off the <see cref="System.Reflection"/> library and the context gathered by the collections contained in a <see cref="SymbolTable"/>.
         /// </summary>
         /// <param name="symbolNodes">The properties of the object</param>
         /// <returns>A new object of the class type provided by the <see cref="SymbolNode"/>.</returns>
-        public static object CreateNewObject(Dictionary<string, ISymbolNode> symbolNodes)
+        public static object CreateNewObject(SymbolTable symbolTable)
         {
-            var myType = CompileResultType(symbolNodes);
+            var myType = CompileResultType(symbolTable);
             var myObject = Activator.CreateInstance(myType);
             return myObject;
         }
-        private static Type CompileResultType(Dictionary<string, ISymbolNode> symbolNodes){
+
+        /// <summary>
+        ///     By making use of a collection of <see cref="SymbolTable"/> this function calls the <see cref="CreateNewObject(SymbolTable)"/>. 
+        ///     
+        /// </summary>
+        /// <param name="symbolTables"></param>
+        /// <returns>A collection of created objects created out of the <see cref="SymbolTable"/> colllection.</returns>
+        private static List<object> CreateNewObjects(List<SymbolTable> symbolTables)
+        {
+            List<object> classObjects = new List<object>();
+            foreach (SymbolTable symbolTable in symbolTables)
+            {
+                classObjects.Add(CreateNewObject(symbolTable));
+            }
+            return classObjects;
+        }
+
+        private static Type CompileResultType(SymbolTable symbolTable){
             TypeBuilder tb = null;
 
             //ConstructorBuilder constructor = tb.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
 
             string typeSignature = "";
-            foreach (KeyValuePair<string, ISymbolNode> keyValuePair in symbolNodes)
+            foreach (KeyValuePair<string, ISymbolNode> keyValuePair in symbolTable.Variables)
             {
                 if (typeSignature != keyValuePair.Value.ClassName)
                 {
@@ -58,30 +77,51 @@ namespace Marlowe.Utilities
             return tb;
         }
 
+
+        /// <summary>
+        ///     Works by making use of the <see cref="System.Reflection.Emit.ILGenerator"/> to conjure setters and getters for all properties of this class
+        /// </summary>
+        /// <param name="tb"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="propertyType"></param>
         private static void CreateProperty(TypeBuilder tb, string propertyName, Type propertyType)
         {
-            FieldBuilder fieldBuilder = tb.DefineField("_" + propertyName, propertyType, FieldAttributes.Private);
 
-            PropertyBuilder propertyBuilder = tb.DefineProperty(propertyName, PropertyAttributes.HasDefault, propertyType, null);
+            propertyBuilder = tb.DefineProperty(propertyName, PropertyAttributes.HasDefault, propertyType, null);
+            fieldBuilder = tb.DefineField("_" + propertyName, propertyType, FieldAttributes.Private);
+
+
+            HandleSetter(tb, propertyName, propertyType);
+            HandlerGetter(tb, propertyName, propertyType);
+
+
+        }
+
+        private static void HandleSetter(TypeBuilder tb, string propertyName, Type propertyType)
+        {
             MethodBuilder getPropMthdBldr = tb.DefineMethod("get_" + propertyName,
-                                                MethodAttributes.Public | 
-                                                MethodAttributes.SpecialName | 
-                                                MethodAttributes.HideBySig, 
-                                                propertyType, 
+                                                MethodAttributes.Public |
+                                                MethodAttributes.SpecialName |
+                                                MethodAttributes.HideBySig,
+                                                propertyType,
                                                 Type.EmptyTypes);
             ILGenerator getIl = getPropMthdBldr.GetILGenerator();
 
             getIl.Emit(OpCodes.Ldarg_0);
             getIl.Emit(OpCodes.Ldfld, fieldBuilder);
             getIl.Emit(OpCodes.Ret);
+            propertyBuilder.SetGetMethod(getPropMthdBldr);
+
+        }
+        private static void HandlerGetter(TypeBuilder tb, string propertyName, Type propertyType)
+        {
 
             MethodBuilder setPropMthdBldr =
-                tb.DefineMethod("set_" + propertyName,
-                  MethodAttributes.Public |
-                  MethodAttributes.SpecialName |
-                  MethodAttributes.HideBySig,
-                  null, new[] { propertyType });
-
+             tb.DefineMethod("set_" + propertyName,
+               MethodAttributes.Public |
+               MethodAttributes.SpecialName |
+               MethodAttributes.HideBySig,
+               null, new[] { propertyType });
             ILGenerator setIl = setPropMthdBldr.GetILGenerator();
             Label modifyProperty = setIl.DefineLabel();
             Label exitSet = setIl.DefineLabel();
@@ -94,10 +134,11 @@ namespace Marlowe.Utilities
             setIl.Emit(OpCodes.Nop);
             setIl.MarkLabel(exitSet);
             setIl.Emit(OpCodes.Ret);
-
-            propertyBuilder.SetGetMethod(getPropMthdBldr);
             propertyBuilder.SetSetMethod(setPropMthdBldr);
+
+
         }
+
     }
 
 }

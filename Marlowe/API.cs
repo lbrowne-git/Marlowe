@@ -22,7 +22,8 @@ namespace Marlowe
         public static ILogger.Levels Level = ILogger.Levels.Error;
         public static ILogger Logger;
         public static bool ShowSymbolTable = false;
-        private List<object> NodeObjects = new List<object>();
+        private static readonly List<SymbolTable> symbolTables = new List<SymbolTable>();
+        private readonly List<object> NodeObjects = new List<object>();
 
         private static void Main(string[] args){
             List<string> files = new List<string>();
@@ -58,7 +59,7 @@ namespace Marlowe
                            files.Add(o.File);
                        }
                        else if(o.Directory != null){
-                           foreach (string file in Directory.GetFiles(@o.Directory, "*.cs"))
+                           foreach (string file in Directory.GetFiles(o.Directory, "*.cs"))
                            {
                                if (File.Exists(file))
                                {
@@ -70,7 +71,6 @@ namespace Marlowe
                    });
             #endregion
 
-            files.Add("Test.cs");
             Execute(files);
         }
 
@@ -102,11 +102,7 @@ namespace Marlowe
                         }
 
                     }
-                    SymbolTable symbolTable = cSharpVisitor;
-                    TimeSpan timeSpan = Timer.Elapsed;
-                    Console.WriteLine($"the application took {timeSpan.Milliseconds}ms to complete this run");
-                    object test = SymbolNodeToClassBuilder.CreateNewObject(symbolTable.Variables);
-                    Console.WriteLine(test.GetType());
+                    symbolTables.Add(cSharpVisitor);
 
                 }
                 catch (Exception ex)
@@ -114,6 +110,17 @@ namespace Marlowe
                     Console.WriteLine("Error: " + ex);
                 }
             }
+            foreach (SymbolTable symbolTable in symbolTables){
+                object test = SymbolNodeToClassBuilder.CreateNewObject(symbolTable);
+                Console.WriteLine("Sucessfully created class \t" + test.GetType() + " \nIt has the following properities:");
+                foreach (var item in test.GetType().GetProperties())
+                {
+                    Console.WriteLine(item.Name + "\t" + item.PropertyType);
+                }
+            }
+            TimeSpan timeSpan = Timer.Elapsed;
+            Console.WriteLine($"the application took {timeSpan.Milliseconds}ms to complete this run");
+
         }
 
 
