@@ -371,3 +371,4 @@ FodyWeavers.xsd
 /Cobol/Cobol85Lexer.cs
 /Cobol/Cobol85BaseVisitor.cs
 /Cobol/ICobol85Visitor.cs
+/nuget.exe
