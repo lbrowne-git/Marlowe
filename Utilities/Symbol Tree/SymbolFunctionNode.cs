@@ -18,12 +18,13 @@ namespace Marlowe.Utilities
             string buffer = "Paramaters:\n(";
             foreach (KeyValuePair<string, ISymbolNode> param in this.Paramaters)
             {
-                buffer += param.Value.Type + " "+ param.Key;
+                buffer += param.Value.Type.Name + " " + param.Key + ",";
                 if(param.Value.Variable != null)
                 {
                     buffer += "=" + param.Value.Variable;
                 }
             }
+            buffer = buffer.TrimEnd(',');
             buffer += ")\n"+base.ToString()+"\n";
             return buffer;
         }

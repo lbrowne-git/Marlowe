@@ -19,7 +19,7 @@ namespace Marlowe.Utilities
         /// <param name="OP"> A Operation provided by the SemanticAnalyser to be used by this function.</param>
         /// <returns>A new <see cref="ISymbolNode"/> comprising of the input Left and Right <see cref="ISymbolNode"/></returns>
         public static ISymbolNode OperationExpression(ISymbolNode LNode, ISymbolNode RNode, Operators OP){
-            symbolNode = new SymbolNode{// Node must be created this way to eliminate object referencing.
+            symbolNode = new SymbolVariableNode{// Node must be created this way to eliminate object referencing.
                                 ClassName = LNode.ClassName,
                                 Namespace = LNode.Namespace, 
                                 Type = LNode.Type, 
@@ -51,7 +51,7 @@ namespace Marlowe.Utilities
                 {// concatenates two strings
                     if (OP == Operators.PLUS)
                     {
-                        symbolNode.Variable = "" + LNode.Variable + RNode.Variable.ToString();
+                        symbolNode.Variable = "" + LNode.Variable.ToString().TrimEnd('"') + RNode.Variable.ToString().TrimStart('"');
                     }
                     else
                     {
@@ -138,7 +138,7 @@ namespace Marlowe.Utilities
 
         public static ISymbolNode LogicalOperationExpression(ISymbolNode lNode, ISymbolNode rNode, Logical logic)
         {
-            SymbolNode bufferNode = new SymbolNode()
+            SymbolVariableNode bufferNode = new SymbolVariableNode()
             {
                 ClassName = lNode.ClassName,
                 Variable = lNode.Variable,
