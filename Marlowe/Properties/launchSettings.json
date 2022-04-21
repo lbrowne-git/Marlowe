@@ -2,7 +2,7 @@
   "profiles": {
     "Marlowe": {
       "commandName": "Project",
-      "commandLineArgs": "-st -d \"F:\\Libraries\\Libraries\\College\\FYP\\Marlowe\\Marlowe\\bin\\Debug\\netcoreapp3.1\""
+      "commandLineArgs": "-f \"F:\\Libraries\\Libraries\\College\\FYP\\Marlowe\\Marlowe\\bin\\Debug\\netcoreapp3.1\\Test.cs\""
     }
   }
 }

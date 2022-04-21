@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <StartupObject>Marlowe.API</StartupObject>
+    <StartupObject></StartupObject>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/lbrowne-git/Marlowe</RepositoryUrl>
     <AssemblyVersion>0.8</AssemblyVersion>

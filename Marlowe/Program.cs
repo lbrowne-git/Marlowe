@@ -13,7 +13,7 @@ namespace Marlowe{
      ///      source code and passes it onto the Analyser.
      ///      
      ///</summary>
-    public class API
+    public class Program
     {
         private static readonly Stopwatch Timer = new Stopwatch();
         public static ILogger.Levels Level = ILogger.Levels.Error;
@@ -74,7 +74,7 @@ namespace Marlowe{
             ExecuteAnalyser(files);
 
             Interpeter interpeter = new Interpeter(symbolTables,Logger);
-            interpeter.Execute();
+             interpeter.Execute();
             //List<object> test = interpeter.GenerateClassContext();
             //foreach (var item in test.GetType().GetProperties())
             //{
@@ -110,14 +110,10 @@ namespace Marlowe{
                     codeParser.RemoveErrorListeners();
                     CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
                     cSharpVisitor.VisitCompilation_unit(codeParser.compilation_unit());
-                    if (Logger != null){
-                        if (ShowSymbolTable){
-                            Logger.LogSymbolTable(cSharpVisitor);
-                        }
-
-                    }
+         
 
                     //Populates with a file's SymbolTable.
+                    cSharpVisitor.Analyser = analyser;
                     symbolTables.Add(cSharpVisitor);
 
                 }

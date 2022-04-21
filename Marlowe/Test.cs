@@ -9,10 +9,11 @@ namespace Tester
 
 		public string z = x + y;
 
-		public void Main(string args, int test)
+		public static void Main(string args)
 		{
+			string hello = FindName();
 			string args = "hello";
-			if(x == "fdfd" || y == "harry"){
+			if(x == "hello " || y == "harry"){
 				return "goodbye " + y;
 
 			}
@@ -21,5 +22,10 @@ namespace Tester
 				return "hello ";
             }
 		}
+
+		public string FindName()
+        {
+			return x;
+        }
 	}
 }
