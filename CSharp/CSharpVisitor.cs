@@ -20,7 +20,7 @@ namespace Marlowe.CSharp
         private string Namespace;
         private string Accessbility;
         private string VarName = "";
-
+        public EntryPointCriteria criteria = new EntryPointCriteria();
         private SymbolNode VisitorSymbolNode;
 
         public SymbolNode Visit(IParseTree tree){return null;}
@@ -206,13 +206,23 @@ namespace Marlowe.CSharp
         public SymbolNode VisitClass_body([NotNull] CSharpParser.Class_bodyContext context){
 
             if (context.OPEN_BRACE() != null){
-                if(context.class_member_declarations() != null){
+                if (context.CLOSE_BRACE() != null)
+                {
+
+                    if (context.class_member_declarations() != null)
+                    {
                         VisitClass_member_declarations(context.class_member_declarations());
-                 }
+                    }
+                }
+                else
+                {
+                    throw new Exception($"No closing brace for class {ClassName}");
+
+                }
             }
             else
             {
-                throw new Exception($"No openning bracket for class {ClassName}");
+                throw new Exception($"No opening brace for class {ClassName}");
 
             }
             return null;       
@@ -369,6 +379,13 @@ namespace Marlowe.CSharp
             {
                 if(context.variable_initializer() == null){
                     VisitIdentifier(context.identifier());
+                    Variables[VisitIdentifier(context.identifier()).ToString()] = new SymbolVariableNode()
+                    {// Blank Symbol Value for no variable assignment
+                        ClassName = ClassName,
+                        Namespace = Namespace,
+                        Type = Type,
+                        RuleContext = context.variable_initializer()
+                    }; 
                 }
                 else
                 {
@@ -377,7 +394,7 @@ namespace Marlowe.CSharp
                     }
                     else
                     {
-                        Variables[VisitIdentifier(context.identifier()).ToString()] = new SymbolVariableNode(); // Blank Symbol Value for no variable assignment
+                        throw new Exception($"error handling assignment:\t {context.Start.Line},{context.Start.Column}");
                     }
                 }
             }
@@ -416,7 +433,10 @@ namespace Marlowe.CSharp
                     {
                         if (context.method_body() != null)
                         {
-                            VisitorSymbolNode = VisitMethod_body(context.method_body());
+                            if (criteria.EntryPointFound())
+                            {
+                                VisitMethod_body(context.method_body());
+                            }
                             SymbolFunctionNode functionNode = null;
                             if (context.formal_parameter_list() != null)
                             {
@@ -426,12 +446,13 @@ namespace Marlowe.CSharp
                             {
                                 functionNode = new SymbolFunctionNode()
                                 {
-                                    ClassName = VisitorSymbolNode.ClassName,
-                                    Variable = VisitorSymbolNode.Variable,
-                                    Namespace = VisitorSymbolNode.Namespace,
-                                    Type = VisitorSymbolNode.Type
-                                };
+                                    ClassName = ClassName,
+                                    Variable = null,
+                                    Namespace = Namespace,
+                                    Type = Type
+                                };             
                             }
+                            functionNode.RuleContext = context.method_body();
                             Functions[(string)VisitIdentifier(context.method_member_name().identifier()[0])] = functionNode;
                         }
                         else
@@ -482,10 +503,10 @@ namespace Marlowe.CSharp
             {
                 SymbolFunctionNode functionNode = new SymbolFunctionNode()
                 {
-                    ClassName = VisitorSymbolNode.ClassName,
-                    Namespace = VisitorSymbolNode.Namespace,
-                    Type = VisitorSymbolNode.Type,
-                    Variable = VisitorSymbolNode.Variable,
+                    ClassName = ClassName,
+                    Namespace = Namespace,
+                    Type = Type,
+                    Variable = null,
                 };
                 if(context.fixed_parameter().Length == 1)
                 {
@@ -600,7 +621,7 @@ namespace Marlowe.CSharp
                 }
                 else
                 {
-                    throw new Exception($"Missing closing brace to function");
+                    throw new Exception($"Missing closing brace for ");
                 }
             }
             else
@@ -615,7 +636,7 @@ namespace Marlowe.CSharp
             {
                 foreach (var statement_context in context.statement())
                 {
-                    return VisitStatement(statement_context);
+                    VisitStatement(statement_context);
 
                 }
             }
@@ -666,6 +687,10 @@ namespace Marlowe.CSharp
         {   // Contexts of Simple Embedded Statement extend this class and must be dynamcically cast. 
             switch (context)
             {
+                case CSharpParser.TheEmptyStatementContext emptyStatemet:
+                    return VisitTheEmptyStatement(emptyStatemet);
+                case CSharpParser.ExpressionStatementContext statementContext:
+                    return VisitExpressionStatement(statementContext);
                 case CSharpParser.IfStatementContext ifContext:
                     return VisitIfStatement(ifContext);
                 case CSharpParser.WhileStatementContext whileContext:
@@ -678,6 +703,27 @@ namespace Marlowe.CSharp
         }
 
         #region Method Related Logical Operators
+
+        public SymbolNode VisitExpressionStatement([NotNull] CSharpParser.ExpressionStatementContext context)
+        {
+            if (context.SEMICOLON() != null)
+            {
+                if (context.expression() != null)
+                {
+                    return VisitExpression(context.expression());
+                }
+                else
+                {
+                    throw new Exception($"no expression on line:{context.Start.Line},{context.Start.Column}");
+                }
+            }
+            else
+            {
+                throw new Exception($"missing semicolon on line:{context.Start.Line},{context.Start.Column}");
+            }
+        }
+
+
         public SymbolNode VisitReturnStatement([NotNull] CSharpParser.ReturnStatementContext context)
         {
             if (context.RETURN() != null)
@@ -921,11 +967,15 @@ namespace Marlowe.CSharp
         //   ;
         public SymbolNode VisitExpression([NotNull] CSharpParser.ExpressionContext context){
             if(context.assignment() != null){
-                return VisitAssignment(context.assignment());
+                VisitorSymbolNode = VisitAssignment(context.assignment());
+                VisitorSymbolNode.Variable = context.Stop.Text;
+                return VisitorSymbolNode;
             }
             if (context.non_assignment_expression() != null)
             {
-                return VisitNon_assignment_expression(context.non_assignment_expression());
+                VisitorSymbolNode = VisitNon_assignment_expression(context.non_assignment_expression());
+                VisitorSymbolNode.Variable = context.Stop.Text;
+                return VisitorSymbolNode;
             }
             return null;    
         }
@@ -1337,33 +1387,109 @@ namespace Marlowe.CSharp
         public SymbolNode VisitPrimary_expression_start([NotNull] CSharpParser.Primary_expression_startContext context) {
             string value = context.Start.Text;
 
-            if (Variables.ContainsKey(value)){
-                VisitorSymbolNode = Variables[value];
-                return VisitorSymbolNode;
+
+            switch (context)
+            {
+                case CSharpParser.LiteralExpressionContext literalContext:
+                    return VisitLiteralExpression(literalContext);
+
+                case CSharpParser.SimpleNameExpressionContext simpleNameContext:
+                    return VisitSimpleNameExpression(simpleNameContext);
+
+                case CSharpParser.ParenthesisExpressionsContext paranthesisContext:
+                    return VisitParenthesisExpressions(paranthesisContext);
+
+                default:
+                    if (Variables.ContainsKey(value))
+                    {
+                        VisitorSymbolNode = Variables[value];
+                        return VisitorSymbolNode;
+                    }
+                    else
+                    {
+
+                        //if (value[0] == '"' && value[value.Length - 1] == '"'){ // String Handler
+                        //    value = value.Substring(1, (value.Length - 2));
+                        //}
+                        VisitorSymbolNode = new SymbolVariableNode()
+                        {
+                            ClassName = ClassName,
+                            Namespace = Namespace,
+                            Type = Type,
+                            Variable = value
+                        };
+                        if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode)) // Casts the varaible to the type it was declared as
+                        {
+
+                            return VisitorSymbolNode;
+                        }
+                        else
+                        {
+                            throw new Exception($"error handling line{context.Start.Line},{context.Start.Column}");
+                        }
+                    }
+            }
+        }
+        public SymbolNode VisitSimpleNameExpression([NotNull] CSharpParser.SimpleNameExpressionContext context)
+        {
+            if (context.identifier()!= null)
+            {
+                string existingObjectCall = (string)VisitIdentifier(context.identifier());
+                return SearchSymbolTable(existingObjectCall);
+            }
+
+            return null;
+        }
+
+        public SymbolNode VisitLiteralExpression([NotNull] CSharpParser.LiteralExpressionContext context)
+        {
+            if(context != null)
+            {
+                return VisitLiteral(context.literal());
             }
             else
             {
+                return null;
+            }
 
-                //if (value[0] == '"' && value[value.Length - 1] == '"'){ // String Handler
-                //    value = value.Substring(1, (value.Length - 2));
-                //}
-                VisitorSymbolNode = new SymbolVariableNode(){
+        }
+        public SymbolNode VisitLiteral([NotNull] CSharpParser.LiteralContext context)
+        {
+            if(context.boolean_literal() != null)
+            {
+                return VisitBoolean_literal(context.boolean_literal());
+            }
+            else if(context.string_literal() != null)
+            {
+                return VisitString_literal(context.string_literal());
+            }
+            else if(context.INTEGER_LITERAL() != null)
+            {
+                VisitorSymbolNode = new SymbolVariableNode()
+                { 
                     ClassName = ClassName,
-                    Namespace = Namespace,
-                    Type = Type,
-                    Variable = value
+                    Namespace = Namespace, 
+                    Type = typeof(double),
+                    Variable = context.Start.Text
                 };
-                if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode)) // Casts the varaible to the type it was declared as
+                if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode))
                 {
-                    
                     return VisitorSymbolNode;
                 }
                 else
                 {
-                    throw new Exception($"error handling line{context.ToString()}");
+                    return null;
                 }
             }
+            else
+            {
+                return null;
+            }
+
         }
+
+
+
 
         #endregion
 
@@ -1794,16 +1920,6 @@ namespace Marlowe.CSharp
             throw new NotImplementedException();
         }
 
-        public SymbolNode VisitLiteralExpression([NotNull] CSharpParser.LiteralExpressionContext context)
-        {
-            return null;
-        }
-
-        public SymbolNode VisitSimpleNameExpression([NotNull] CSharpParser.SimpleNameExpressionContext context)
-        {
-            throw new NotImplementedException();
-        }
-
         public SymbolNode VisitParenthesisExpressions([NotNull] CSharpParser.ParenthesisExpressionsContext context)
         {
             throw new NotImplementedException();
@@ -2089,11 +2205,6 @@ namespace Marlowe.CSharp
             throw new NotImplementedException();
         }
         public SymbolNode VisitTheEmptyStatement([NotNull] CSharpParser.TheEmptyStatementContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public SymbolNode VisitExpressionStatement([NotNull] CSharpParser.ExpressionStatementContext context)
         {
             throw new NotImplementedException();
         }
@@ -2573,11 +2684,6 @@ namespace Marlowe.CSharp
             throw new NotImplementedException();
         }
 
-        public SymbolNode VisitLiteral([NotNull] CSharpParser.LiteralContext context)
-        {
-            throw new NotImplementedException();
-        }
-
         public SymbolNode VisitBoolean_literal([NotNull] CSharpParser.Boolean_literalContext context)
         {
             throw new NotImplementedException();
@@ -2585,7 +2691,34 @@ namespace Marlowe.CSharp
 
         public SymbolNode VisitString_literal([NotNull] CSharpParser.String_literalContext context)
         {
-            throw new NotImplementedException();
+            if (context.interpolated_regular_string() != null)
+            {
+                return VisitInterpolated_regular_string(context.interpolated_regular_string());
+            }
+            else if (context.interpolated_verbatium_string() != null)
+            {
+                return VisitInterpolated_verbatium_string(context.interpolated_verbatium_string());
+            }
+            else
+            {
+                if(context.REGULAR_STRING() != null)
+                {
+                    return new SymbolVariableNode()
+                    {
+                        ClassName = ClassName,
+                        Namespace = Namespace,
+                        Type = Type,
+                        Variable = context.Start.Text
+                    };
+                }
+                else if(context.VERBATIUM_STRING() != null){
+                    return null;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         public SymbolNode VisitInterpolated_regular_string([NotNull] CSharpParser.Interpolated_regular_stringContext context)

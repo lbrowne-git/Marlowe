@@ -37,12 +37,13 @@ namespace Marlowe
         {
             if (HasEntryPoint())
             {
-                foreach (KeyValuePair<string, SymbolNode> functions in EntryPoint.Functions)
+                foreach (KeyValuePair<string, SymbolFunctionNode> functions in EntryPoint.Functions)
                 {
                     if (functions.Key.ToUpper().Contains("MAIN"))
                     {
                         // Executes Entrypoint methods.
                         CSharpVisitor visitor = (CSharpVisitor)EntryPoint.Analyser.Visitor;
+                        visitor.criteria = Criteria;
                         visitor.VisitMethod_body((CSharpParser.Method_bodyContext)functions.Value.RuleContext);
 
                         if (Logger != null)
@@ -68,26 +69,17 @@ namespace Marlowe
                 if (Logger != null)
                 {
                     Logger.WriteContent("No EntryPoint exists in this code.");
-                }
-            }
-
-        }
-
-        private void SearchSymbolTable(string key)
-        {
-            SymbolTable FilteredSymbolTable;
-            foreach (SymbolTable symbolTable in SymbolTables)
-            {
-                foreach (KeyValuePair<string, SymbolNode> variable in symbolTable.Variables)
-                {
-                    if (variable.Value.Namespace == key || variable.Value.ClassName == key)
+                    if(SymbolTables.Count > 0)
                     {
-
+                        foreach (SymbolTable symbolTable in SymbolTables)
+                        {
+                            Logger.LogSymbolTable(symbolTable);
+                        }
                     }
                 }
             }
-        }
 
+        }
         public List<object> GenerateClassContext()
         {
             List<object> newClassObjects = new List<object>();
@@ -104,7 +96,7 @@ namespace Marlowe
         {
             foreach (SymbolTable symbolTable in SymbolTables)
             {
-                foreach (KeyValuePair<string, SymbolNode> functions in symbolTable.Functions)
+                foreach (KeyValuePair<string, SymbolFunctionNode> functions in symbolTable.Functions)
                 {
                     if (functions.Key.ToUpper().Equals("MAIN")) // Checks for main function in class
                     {

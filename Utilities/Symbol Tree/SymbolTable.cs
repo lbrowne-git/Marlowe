@@ -8,11 +8,39 @@ namespace Marlowe.Utilities
     public abstract class SymbolTable
     {
         public  Dictionary<string, SymbolNode> Variables = new Dictionary<string, SymbolNode>();
-        public  Dictionary<string, SymbolNode> Functions = new Dictionary<string, SymbolNode>();
+        public  Dictionary<string, SymbolFunctionNode> Functions = new Dictionary<string, SymbolFunctionNode>();
         public  Dictionary<string, SymbolNode> Directives = new Dictionary<string,SymbolNode>();
 
         public Analyser Analyser;
 
+        public SymbolNode SearchSymbolTable(string key)
+        {
+            foreach (KeyValuePair<string, SymbolNode> symbols in Variables)
+            {
+                if(symbols.Key == key)
+                {
+                    return symbols.Value;
+                }
+            }
+            foreach(KeyValuePair<string, SymbolFunctionNode> symbolFunctions in Functions)
+            {
+                if(symbolFunctions.Key == key)
+                {
+                    return symbolFunctions.Value;
+                }
+                else
+                {
+                    foreach (KeyValuePair<string, SymbolNode> param in symbolFunctions.Value.Paramaters)
+                    {
+                        if(param.Key == key)
+                        {
+                            return param.Value;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
     }
 
     /// <summary>

@@ -46,14 +46,14 @@ namespace Marlowe.Utilities
         public void LogSymbolTable(SymbolTable symbolTable)
         {
             WriteSymbolNode(symbolTable.Variables, "Variables");
-            WriteSymbolNode(symbolTable.Functions, "Functions");
+            //WriteSymbolNode(symbolTable.Functions, "Functions");
             WriteSymbolNode(symbolTable.Directives, "");
         }
 
         public void LogSymbolTable(SymbolTable symbolTable, string heading)
         {
             WriteSymbolNode(symbolTable.Variables, heading);
-            WriteSymbolNode(symbolTable.Functions, "Functions");
+           // WriteSymbolNode((SymbolNode)symbolTable.Functions, "Functions");
             WriteSymbolNode(symbolTable.Directives, "");
         }
 
