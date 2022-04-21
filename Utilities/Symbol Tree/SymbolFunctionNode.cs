@@ -15,15 +15,7 @@ namespace Marlowe.Utilities
 
         public override string ToString()
         {
-            string buffer = "Paramaters:\n(";
-            foreach (KeyValuePair<string, SymbolNode> param in this.Paramaters)
-            {
-                buffer += param.Value.Type.Name + " " + param.Key + ",";
-                if(param.Value.Variable != null)
-                {
-                    buffer += "=" + param.Value.Variable;
-                }
-            }
+            string buffer = "Paramaters:(";
             buffer = buffer.TrimEnd(',');
             buffer += ")\n"+base.ToString()+"\n";
             return buffer;

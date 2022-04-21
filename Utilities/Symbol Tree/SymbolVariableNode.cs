@@ -18,11 +18,6 @@ namespace Marlowe.Utilities
         /// <summary>
         ///     The <see langword="object"/> representation of the value taken after the assignment call.
         /// </summary>
-        ///
-
-        public override string ToString()
-        {
-            return $"{Variable}\t:\t{ClassName}\t:\t{Namespace}\t:\t{Type}"; 
-        }
+        ///}
     }
 }
