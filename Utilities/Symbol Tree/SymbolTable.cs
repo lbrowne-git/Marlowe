@@ -11,7 +11,7 @@ namespace Marlowe.Utilities
         public  Dictionary<string, SymbolNode> Functions = new Dictionary<string, SymbolNode>();
         public  Dictionary<string, SymbolNode> Directives = new Dictionary<string,SymbolNode>();
 
-        public readonly Analyser Analyser;
+        public Analyser Analyser;
 
     }
 

@@ -24,6 +24,8 @@ namespace Marlowe.Utilities
         public string ClassName { get; set; }
         public Type Type { get; set; }
 
+        public ParserRuleContext RuleContext { get; set; }
+
         public void HandleArthimatic(ParserRuleContext[] multiplicative_expressionContexts, string arthmatic)
         {
             SymbolVariableNode buffer = new SymbolVariableNode();
