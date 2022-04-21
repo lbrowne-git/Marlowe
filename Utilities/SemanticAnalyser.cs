@@ -9,7 +9,7 @@ namespace Marlowe.Utilities
         public enum Operators { PLUS, MINUS, MOD, MULT, DIV, FLOAT };
         public enum Logical { EQ, NEQ, OR, AND , DIV, FLOAT };
 
-        private static ISymbolNode symbolNode;
+        private static SymbolNode symbolNode;
 
         /// <summary>
         ///  Using LR parsing this function check if two nodes are off the same primative type and performs an operation merging both of these expressions.
@@ -17,8 +17,8 @@ namespace Marlowe.Utilities
         /// <param name="LNode">The Left-hand expression, which the operation is happening to.</param>
         /// <param name="RNode"> The Right-hand expression, which is performing an action against the left-hand node.</param>
         /// <param name="OP"> A Operation provided by the SemanticAnalyser to be used by this function.</param>
-        /// <returns>A new <see cref="ISymbolNode"/> comprising of the input Left and Right <see cref="ISymbolNode"/></returns>
-        public static ISymbolNode OperationExpression(ISymbolNode LNode, ISymbolNode RNode, Operators OP){
+        /// <returns>A new <see cref="SymbolNode"/> comprising of the input Left and Right <see cref="SymbolNode"/></returns>
+        public static SymbolNode OperationExpression(SymbolNode LNode, SymbolNode RNode, Operators OP){
             symbolNode = new SymbolVariableNode{// Node must be created this way to eliminate object referencing.
                                 ClassName = LNode.ClassName,
                                 Namespace = LNode.Namespace, 
@@ -123,7 +123,7 @@ namespace Marlowe.Utilities
         /// <param name="sn">A SymbolNode with a variable and type.</param>
         /// <returns><see langword="True"/> if the input object is the specified type. <see langword="False"/> if it is not or if null.</returns>
 
-        public static bool IsCorrectVariableType(ISymbolNode sn)
+        public static bool IsCorrectVariableType(SymbolNode sn)
         {
             try{
                 Convert.ChangeType(sn.Variable, sn.Type);
@@ -136,7 +136,7 @@ namespace Marlowe.Utilities
             }
         }
 
-        public static ISymbolNode LogicalOperationExpression(ISymbolNode lNode, ISymbolNode rNode, Logical logic)
+        public static SymbolNode LogicalOperationExpression(SymbolNode lNode, SymbolNode rNode, Logical logic)
         {
             SymbolVariableNode bufferNode = new SymbolVariableNode()
             {

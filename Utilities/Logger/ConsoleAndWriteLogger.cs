@@ -50,7 +50,7 @@ namespace Marlowe.Utilities
             fileLogger.WriteHeader(heading, level);
         }
 
-        public void WriteSymbolNode(IDictionary<string, ISymbolNode> dictonary, string header = "")
+        public void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = "")
         {
             consoleLogger.WriteSymbolNode(dictonary, header);
             fileLogger.WriteSymbolNode(dictonary, header);

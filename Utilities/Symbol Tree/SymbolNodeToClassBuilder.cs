@@ -30,7 +30,7 @@ namespace Marlowe.Utilities
         ///     
         /// </summary>
         /// <param name="symbolTables"></param>
-        /// <returns>A collection of created objects created out of the <see cref="SymbolTable"/> colllection.</returns>
+        /// <returns>An <see cref="object"/> collection created out of a <see cref="SymbolTable"/> colllection.</returns>
         private static List<object> CreateNewObjects(List<SymbolTable> symbolTables)
         {
             List<object> classObjects = new List<object>();
@@ -47,7 +47,7 @@ namespace Marlowe.Utilities
             //ConstructorBuilder constructor = tb.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
 
             string typeSignature = "";
-            foreach (KeyValuePair<string, ISymbolNode> keyValuePair in symbolTable.Variables)
+            foreach (KeyValuePair<string, SymbolNode> keyValuePair in symbolTable.Variables)
             {
                 if (typeSignature != keyValuePair.Value.ClassName)
                 {
@@ -57,9 +57,11 @@ namespace Marlowe.Utilities
                 CreateProperty(tb, keyValuePair.Key, keyValuePair.Value.Type);
 
             }
-
-            Type objectType = tb.CreateType();
-            return objectType;
+            if (tb != null){
+                Type objectType = tb.CreateType();
+                return objectType;
+            }
+            return null;
         }
 
         private static TypeBuilder GetTypeBuilder(string typeSignature)

@@ -19,20 +19,10 @@ namespace Marlowe.Utilities
         ///     The <see langword="object"/> representation of the value taken after the assignment call.
         /// </summary>
         ///
-        private object variable { get; set; }
-
-        private string nodeNamespace { get; set; }
-
-        private string className { get; set; }
-        
-        private Type type { get; set; }
-
-
-        #region Getters & Setters
-        public object Variable { get => variable; set => variable = value; }
-        public string Namespace { get => nodeNamespace; set => nodeNamespace = value; }
-        public string ClassName { get => className; set => className = value; }
-        public Type Type { get => type; set => type = value; }
+        public object Variable { get; set; }
+        public string Namespace { get; set; }
+        public string ClassName { get; set; }
+        public Type Type { get; set; }
 
         public void HandleArthimatic(ParserRuleContext[] multiplicative_expressionContexts, string arthmatic)
         {
@@ -49,13 +39,9 @@ namespace Marlowe.Utilities
             }
         }
 
-
-        #endregion
-
-
         public override string ToString()
         {
-            return $"{variable}\t:\t{className}\t:\t{nodeNamespace}\t:\t{Type}"; 
+            return $"{Variable}\t:\t{ClassName}\t:\t{Namespace}\t:\t{Type}"; 
         }
     }
 }

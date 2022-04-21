@@ -56,10 +56,10 @@ namespace Marlowe.Utilities
             WriteSymbolNode(symbolTable.Directives, "");
         }
 
-        public void WriteSymbolNode(IDictionary<string, ISymbolNode> dictonary, string header = ""){
+        public void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = ""){
             WriteHeader(header);
             Console.WriteLine($"Total:\t {dictonary.Count}");
-            foreach (KeyValuePair<string, ISymbolNode> node in dictonary)
+            foreach (KeyValuePair<string, SymbolNode> node in dictonary)
             {
                 WriteContent($"{node.Key}\t:" + $"\t{node.Value}");
             }

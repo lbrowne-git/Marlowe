@@ -12,7 +12,7 @@ namespace Marlowe.CSharp
     ///     analysis on these contexts.This allows for the creation of a symbol tree from the source code.
     /// </summary>
 
-    public class CSharpVisitor : SymbolTable, ICSharpVisitor<ISymbolNode>
+    public class CSharpVisitor : SymbolTable, ICSharpVisitor<SymbolNode>
     { 
 
         private Type Type = default(Type);
@@ -21,16 +21,16 @@ namespace Marlowe.CSharp
         private string Accessbility;
         private string VarName = "";
 
-        private ISymbolNode VisitorSymbolNode;
+        private SymbolNode VisitorSymbolNode;
 
-        public ISymbolNode Visit(IParseTree tree){return null;}
+        public SymbolNode Visit(IParseTree tree){return null;}
 
 
         //Entry point into parser generated context.
          //   References:
          //       BYTE_ORDER_MARK? extern_alias_directives? using_directives?
          //       global_attribute_section* namespace_member_declarations? EOF
-        public ISymbolNode VisitCompilation_unit([NotNull] CSharpParser.Compilation_unitContext context)
+        public SymbolNode VisitCompilation_unit([NotNull] CSharpParser.Compilation_unitContext context)
         {
             if (context.BYTE_ORDER_MARK() != null)
             {
@@ -66,7 +66,7 @@ namespace Marlowe.CSharp
         #region Namespace
         //   namespace_member_declarations
         //:       namespace_member_declaration                      
-        public ISymbolNode VisitNamespace_member_declarations([NotNull] CSharpParser.Namespace_member_declarationsContext context)
+        public SymbolNode VisitNamespace_member_declarations([NotNull] CSharpParser.Namespace_member_declarationsContext context)
         {
 
             foreach (var NamespaceContext in context.namespace_member_declaration())
@@ -84,7 +84,7 @@ namespace Marlowe.CSharp
         //: namespace_declaration
         //| type_declaration
         //;
-        public ISymbolNode VisitNamespace_member_declaration([NotNull] CSharpParser.Namespace_member_declarationContext context)
+        public SymbolNode VisitNamespace_member_declaration([NotNull] CSharpParser.Namespace_member_declarationContext context)
         {
 
             if (context.namespace_declaration() != null){
@@ -96,7 +96,7 @@ namespace Marlowe.CSharp
             return null;        
         }
 
-        public ISymbolNode VisitNamespace_declaration([NotNull] CSharpParser.Namespace_declarationContext context)
+        public SymbolNode VisitNamespace_declaration([NotNull] CSharpParser.Namespace_declarationContext context)
         {
             if (context.NAMESPACE() != null)
             {
@@ -112,7 +112,7 @@ namespace Marlowe.CSharp
             return default;
         }
 
-        public ISymbolNode VisitQualified_identifier([NotNull] CSharpParser.Qualified_identifierContext context)
+        public SymbolNode VisitQualified_identifier([NotNull] CSharpParser.Qualified_identifierContext context)
         {
             if(context.identifier().Length == 1){
                 Namespace = (string)VisitIdentifier(context.identifier()[0]);
@@ -127,7 +127,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitNamespace_body([NotNull] CSharpParser.Namespace_bodyContext context)
+        public SymbolNode VisitNamespace_body([NotNull] CSharpParser.Namespace_bodyContext context)
         {
             if (context.OPEN_BRACE() != null)
             {
@@ -166,7 +166,7 @@ namespace Marlowe.CSharp
         //class_definition
         //: CLASS identifier type_parameter_list? class_base? type_parameter_constraints_clauses?
         //class_body ';'?
-        public ISymbolNode VisitClass_definition([NotNull] CSharpParser.Class_definitionContext context)
+        public SymbolNode VisitClass_definition([NotNull] CSharpParser.Class_definitionContext context)
         {
             if (context.CLASS() != null)
             {
@@ -203,7 +203,7 @@ namespace Marlowe.CSharp
         }
         //class_body
 	        //: OPEN_BRACE class_member_declarations? CLOSE_BRACE
-        public ISymbolNode VisitClass_body([NotNull] CSharpParser.Class_bodyContext context){
+        public SymbolNode VisitClass_body([NotNull] CSharpParser.Class_bodyContext context){
 
             if (context.OPEN_BRACE() != null){
                 if(context.class_member_declarations() != null){
@@ -218,7 +218,7 @@ namespace Marlowe.CSharp
             return null;       
         }
 
-        public ISymbolNode VisitClass_member_declarations([NotNull] CSharpParser.Class_member_declarationsContext context)
+        public SymbolNode VisitClass_member_declarations([NotNull] CSharpParser.Class_member_declarationsContext context)
         {
             foreach (var member_DeclarationContext in context.class_member_declaration()){
                 VisitClass_member_declaration(member_DeclarationContext);
@@ -227,7 +227,7 @@ namespace Marlowe.CSharp
         }
         //class_member_declaration
 	        //: attributes? all_member_modifiers? (common_member_declaration | destructor_definition)
-        public ISymbolNode VisitClass_member_declaration([NotNull] CSharpParser.Class_member_declarationContext context){
+        public SymbolNode VisitClass_member_declaration([NotNull] CSharpParser.Class_member_declarationContext context){
             if (context.attributes() != null){
                 VisitAttributes(context.attributes());
             }
@@ -258,7 +258,7 @@ namespace Marlowe.CSharp
 	        //| enum_definition
 	        //| delegate_definition
 	        //;
-        public ISymbolNode VisitCommon_member_declaration([NotNull] CSharpParser.Common_member_declarationContext context)
+        public SymbolNode VisitCommon_member_declaration([NotNull] CSharpParser.Common_member_declarationContext context)
         {
             if (context.typed_member_declaration() != null) {
                 VisitTyped_member_declaration(context.typed_member_declaration());
@@ -302,7 +302,7 @@ namespace Marlowe.CSharp
 	        //   | operator_declaration
 	        //   | field_declaration)
             //             
-        public ISymbolNode VisitTyped_member_declaration([NotNull] CSharpParser.Typed_member_declarationContext context)
+        public SymbolNode VisitTyped_member_declaration([NotNull] CSharpParser.Typed_member_declarationContext context)
         {
             if (context.type_() != null)
             {
@@ -333,7 +333,7 @@ namespace Marlowe.CSharp
             }
             return null;      
         }
-       public ISymbolNode VisitField_declaration([NotNull] CSharpParser.Field_declarationContext context)
+       public SymbolNode VisitField_declaration([NotNull] CSharpParser.Field_declarationContext context)
         {
             if(context != null)
             {
@@ -351,7 +351,7 @@ namespace Marlowe.CSharp
             return null;     
         }
 
-        public ISymbolNode VisitVariable_declarators([NotNull] CSharpParser.Variable_declaratorsContext context){
+        public SymbolNode VisitVariable_declarators([NotNull] CSharpParser.Variable_declaratorsContext context){
             foreach (var variableContext in context.variable_declarator()){
                 
                 VisitVariable_declarator(variableContext);
@@ -363,7 +363,7 @@ namespace Marlowe.CSharp
          //       variable_declarator
 	    //: identifier('=' variable_initializer)?
 	    //;
-        public ISymbolNode VisitVariable_declarator([NotNull] CSharpParser.Variable_declaratorContext context)
+        public SymbolNode VisitVariable_declarator([NotNull] CSharpParser.Variable_declaratorContext context)
         {
             if(context.identifier() != null)
             {
@@ -389,7 +389,7 @@ namespace Marlowe.CSharp
 	        //: expression
 	        //| array_initializer
 	        //;
-        public ISymbolNode VisitVariable_initializer([NotNull] CSharpParser.Variable_initializerContext context){
+        public SymbolNode VisitVariable_initializer([NotNull] CSharpParser.Variable_initializerContext context){
             if(context.expression() != null){
                 return VisitExpression(context.expression());
             }
@@ -406,7 +406,7 @@ namespace Marlowe.CSharp
         //: method_member_name type_parameter_list? OPEN_PARENS formal_parameter_list? CLOSE_PARENS
         //       type_parameter_constraints_clauses? (method_body | right_arrow throwable_expression ';')
         //;
-        public ISymbolNode VisitMethod_declaration([NotNull] CSharpParser.Method_declarationContext context)
+        public SymbolNode VisitMethod_declaration([NotNull] CSharpParser.Method_declarationContext context)
         {
             if (context.OPEN_PARENS() != null)
             {
@@ -448,7 +448,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitFormal_parameter_list([NotNull] CSharpParser.Formal_parameter_listContext context)
+        public SymbolNode VisitFormal_parameter_list([NotNull] CSharpParser.Formal_parameter_listContext context)
         {
             if(context.parameter_array() != null)
             {
@@ -476,7 +476,7 @@ namespace Marlowe.CSharp
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public ISymbolNode VisitFixed_parameters([NotNull] CSharpParser.Fixed_parametersContext context)
+        public SymbolNode VisitFixed_parameters([NotNull] CSharpParser.Fixed_parametersContext context)
         {
             if(context.fixed_parameter().Length != 0)
             {
@@ -489,14 +489,14 @@ namespace Marlowe.CSharp
                 };
                 if(context.fixed_parameter().Length == 1)
                 {
-                    ISymbolNode fixedparamNode = VisitFixed_parameter(context.fixed_parameter()[0]);
+                    SymbolNode fixedparamNode = VisitFixed_parameter(context.fixed_parameter()[0]);
                     functionNode.Paramaters[VarName] = fixedparamNode;
                 }
                 else
                 {
                     foreach(var obj in context.fixed_parameter())
                     {
-                        ISymbolNode fixedparamNode = VisitFixed_parameter(obj);
+                        SymbolNode fixedparamNode = VisitFixed_parameter(obj);
                         functionNode.Paramaters[VarName] = fixedparamNode;
                     }
                 }
@@ -504,7 +504,7 @@ namespace Marlowe.CSharp
             }
             return null;
         }
-        public ISymbolNode VisitFixed_parameter([NotNull] CSharpParser.Fixed_parameterContext context)
+        public SymbolNode VisitFixed_parameter([NotNull] CSharpParser.Fixed_parameterContext context)
         {
             if(context.ARGLIST() != null)
             {
@@ -530,9 +530,9 @@ namespace Marlowe.CSharp
             }
             return null;
         }
-        public ISymbolNode VisitArg_declaration([NotNull] CSharpParser.Arg_declarationContext context)
+        public SymbolNode VisitArg_declaration([NotNull] CSharpParser.Arg_declarationContext context)
         {
-            ISymbolNode paramaterSymbol;
+            SymbolNode paramaterSymbol;
             if(context.type_() != null)
             {
                 if(context.identifier() != null)
@@ -567,7 +567,7 @@ namespace Marlowe.CSharp
             }
         }
 
-        public ISymbolNode VisitMethod_body([NotNull] CSharpParser.Method_bodyContext context)
+        public SymbolNode VisitMethod_body([NotNull] CSharpParser.Method_bodyContext context)
         {
             if (context.block() != null)
             {
@@ -583,7 +583,7 @@ namespace Marlowe.CSharp
             }
         }
 
-        public ISymbolNode VisitBlock([NotNull] CSharpParser.BlockContext context)
+        public SymbolNode VisitBlock([NotNull] CSharpParser.BlockContext context)
         {
             if (context.OPEN_BRACE() != null)
             {
@@ -609,7 +609,7 @@ namespace Marlowe.CSharp
             }
         }
 
-        public ISymbolNode VisitStatement_list([NotNull] CSharpParser.Statement_listContext context)
+        public SymbolNode VisitStatement_list([NotNull] CSharpParser.Statement_listContext context)
         {
             if (context.statement().Length >= 1)
             {
@@ -626,7 +626,7 @@ namespace Marlowe.CSharp
         //| declarationStatement
         //| embedded_statement
         //;
-        public ISymbolNode VisitStatement([NotNull] CSharpParser.StatementContext context)
+        public SymbolNode VisitStatement([NotNull] CSharpParser.StatementContext context)
         {
             if (context.labeled_Statement() != null)
             {
@@ -646,7 +646,7 @@ namespace Marlowe.CSharp
             }
         }
 
-        public ISymbolNode VisitEmbedded_statement([NotNull] CSharpParser.Embedded_statementContext context)
+        public SymbolNode VisitEmbedded_statement([NotNull] CSharpParser.Embedded_statementContext context)
         {
             if (context.block() != null)
             {
@@ -662,7 +662,7 @@ namespace Marlowe.CSharp
             }
         }
 
-        private ISymbolNode VisitSimple_embedded_statement([NotNull] CSharpParser.Simple_embedded_statementContext context)
+        private SymbolNode VisitSimple_embedded_statement([NotNull] CSharpParser.Simple_embedded_statementContext context)
         {   // Contexts of Simple Embedded Statement extend this class and must be dynamcically cast. 
             switch (context)
             {
@@ -678,7 +678,7 @@ namespace Marlowe.CSharp
         }
 
         #region Method Related Logical Operators
-        public ISymbolNode VisitReturnStatement([NotNull] CSharpParser.ReturnStatementContext context)
+        public SymbolNode VisitReturnStatement([NotNull] CSharpParser.ReturnStatementContext context)
         {
             if (context.RETURN() != null)
             {
@@ -690,7 +690,7 @@ namespace Marlowe.CSharp
             }
             return null;
         }
-        public ISymbolNode VisitIfStatement([NotNull] CSharpParser.IfStatementContext context)
+        public SymbolNode VisitIfStatement([NotNull] CSharpParser.IfStatementContext context)
         {
             if(context.IF() != null)
             {
@@ -743,7 +743,7 @@ namespace Marlowe.CSharp
             }
         }
 
-        public ISymbolNode VisitIf_body([NotNull] CSharpParser.If_bodyContext context)
+        public SymbolNode VisitIf_body([NotNull] CSharpParser.If_bodyContext context)
         {
             if(context.block() != null)
             {
@@ -762,7 +762,7 @@ namespace Marlowe.CSharp
 
 
         #endregion
-        public ISymbolNode VisitLabeled_Statement([NotNull] CSharpParser.Labeled_StatementContext context)
+        public SymbolNode VisitLabeled_Statement([NotNull] CSharpParser.Labeled_StatementContext context)
         {
             if (context.identifier() != null)
             {
@@ -790,7 +790,7 @@ namespace Marlowe.CSharp
         // | local_constant_declaration ';'
         // | local_function_declaration
         // ;
-        public ISymbolNode VisitDeclarationStatement([NotNull] CSharpParser.DeclarationStatementContext context)
+        public SymbolNode VisitDeclarationStatement([NotNull] CSharpParser.DeclarationStatementContext context)
         {
             if (context.SEMICOLON() != null)
             {
@@ -818,7 +818,7 @@ namespace Marlowe.CSharp
         // (USING | REF | REF READONLY)? local_variable_type local_variable_declarator( ','  local_variable_declarator { this.IsLocalVariableDeclaration() }? )*
         // | FIXED pointer_type fixed_pointer_declarators
         // ;
-        public ISymbolNode VisitLocal_variable_declaration([NotNull] CSharpParser.Local_variable_declarationContext context)
+        public SymbolNode VisitLocal_variable_declaration([NotNull] CSharpParser.Local_variable_declarationContext context)
         {
             if (context.USING() != null || context.REF() != null || (context.READONLY() != null && context.REF() != null))
             {
@@ -844,7 +844,7 @@ namespace Marlowe.CSharp
         //local_variable_declarator
         // : identifier('=' REF? local_variable_initializer)?
         // ;
-        public ISymbolNode VisitLocal_variable_declarator([NotNull] CSharpParser.Local_variable_declaratorContext context)
+        public SymbolNode VisitLocal_variable_declarator([NotNull] CSharpParser.Local_variable_declaratorContext context)
         {
             if (context.identifier() != null)
             {
@@ -873,7 +873,7 @@ namespace Marlowe.CSharp
         //| array_initializer
         //| stackalloc_initializer
         //;
-        public ISymbolNode VisitLocal_variable_initializer([NotNull] CSharpParser.Local_variable_initializerContext context)
+        public SymbolNode VisitLocal_variable_initializer([NotNull] CSharpParser.Local_variable_initializerContext context)
         {
             if (context.expression() != null)
             {
@@ -894,7 +894,7 @@ namespace Marlowe.CSharp
         }
         #endregion
 
-        public ISymbolNode VisitMethod_member_name([NotNull] CSharpParser.Method_member_nameContext context)
+        public SymbolNode VisitMethod_member_name([NotNull] CSharpParser.Method_member_nameContext context)
         {
             if (context.identifier().Length > 1)
             {
@@ -912,7 +912,6 @@ namespace Marlowe.CSharp
         }
         #endregion
 
-
         #region Expression & Assignment
 
         //expression
@@ -920,7 +919,7 @@ namespace Marlowe.CSharp
         //| non_assignment_expression
         //| REF non_assignment_expression
         //   ;
-        public ISymbolNode VisitExpression([NotNull] CSharpParser.ExpressionContext context){
+        public SymbolNode VisitExpression([NotNull] CSharpParser.ExpressionContext context){
             if(context.assignment() != null){
                 return VisitAssignment(context.assignment());
             }
@@ -931,7 +930,7 @@ namespace Marlowe.CSharp
             return null;    
         }
 
-        public ISymbolNode VisitNon_assignment_expression([NotNull] CSharpParser.Non_assignment_expressionContext context){
+        public SymbolNode VisitNon_assignment_expression([NotNull] CSharpParser.Non_assignment_expressionContext context){
             if (context.lambda_expression() != null){
                // VisitLambda_expression(context.lambda_expression());
             }
@@ -946,7 +945,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitConditional_expression([NotNull] CSharpParser.Conditional_expressionContext context)
+        public SymbolNode VisitConditional_expression([NotNull] CSharpParser.Conditional_expressionContext context)
         {
             
             if(context.null_coalescing_expression() != null)
@@ -956,7 +955,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitNull_coalescing_expression([NotNull] CSharpParser.Null_coalescing_expressionContext context)
+        public SymbolNode VisitNull_coalescing_expression([NotNull] CSharpParser.Null_coalescing_expressionContext context)
         {
             if(context.conditional_or_expression() != null)
             {
@@ -965,13 +964,13 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitConditional_or_expression([NotNull] CSharpParser.Conditional_or_expressionContext context)
+        public SymbolNode VisitConditional_or_expression([NotNull] CSharpParser.Conditional_or_expressionContext context)
         {
             if(context.conditional_and_expression().Length > 1)
             {
                 if(context.OP_OR() != null)
                 {
-                    ISymbolNode LNode = VisitConditional_and_expression(context.conditional_and_expression()[0]);
+                    SymbolNode LNode = VisitConditional_and_expression(context.conditional_and_expression()[0]);
                     bool RNode = (bool)VisitConditional_and_expression(context.conditional_and_expression()[1]).Variable;
                     if(RNode || (bool)LNode.Variable)
                     {
@@ -998,14 +997,14 @@ namespace Marlowe.CSharp
         }
 
 
-        public ISymbolNode VisitConditional_and_expression([NotNull] CSharpParser.Conditional_and_expressionContext context)
+        public SymbolNode VisitConditional_and_expression([NotNull] CSharpParser.Conditional_and_expressionContext context)
         {
             if (context.inclusive_or_expression().Length > 1)
             {
                 if (context.OP_AND() != null)
                 {
-                    ISymbolNode LNode = VisitInclusive_or_expression(context.inclusive_or_expression()[0]);
-                    ISymbolNode RNode = VisitInclusive_or_expression(context.inclusive_or_expression()[1]);
+                    SymbolNode LNode = VisitInclusive_or_expression(context.inclusive_or_expression()[0]);
+                    SymbolNode RNode = VisitInclusive_or_expression(context.inclusive_or_expression()[1]);
                     return SemanticAnalyser.LogicalOperationExpression(LNode, RNode, SemanticAnalyser.Logical.AND);
                 }
                 else
@@ -1020,7 +1019,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitInclusive_or_expression([NotNull] CSharpParser.Inclusive_or_expressionContext context){
+        public SymbolNode VisitInclusive_or_expression([NotNull] CSharpParser.Inclusive_or_expressionContext context){
             if (context.exclusive_or_expression().Length > 1)
             {
                 if (context.BITWISE_OR() != null)
@@ -1041,7 +1040,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitExclusive_or_expression([NotNull] CSharpParser.Exclusive_or_expressionContext context)
+        public SymbolNode VisitExclusive_or_expression([NotNull] CSharpParser.Exclusive_or_expressionContext context)
         {
             if (context.and_expression().Length > 1)
             {
@@ -1063,7 +1062,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitAnd_expression([NotNull] CSharpParser.And_expressionContext context){
+        public SymbolNode VisitAnd_expression([NotNull] CSharpParser.And_expressionContext context){
             
             if (context.equality_expression().Length > 1)
             {
@@ -1086,14 +1085,14 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitEquality_expression([NotNull] CSharpParser.Equality_expressionContext context)
+        public SymbolNode VisitEquality_expression([NotNull] CSharpParser.Equality_expressionContext context)
         {
             if (context.relational_expression().Length > 1)
             {
                 if (context.OP_EQ() != null || context.OP_NE() != null)
                 {
-                    ISymbolNode LNode = VisitRelational_expression(context.relational_expression()[0]);
-                    ISymbolNode RNode = VisitRelational_expression(context.relational_expression()[1]);
+                    SymbolNode LNode = VisitRelational_expression(context.relational_expression()[0]);
+                    SymbolNode RNode = VisitRelational_expression(context.relational_expression()[1]);
                     return SemanticAnalyser.LogicalOperationExpression(LNode, RNode, SemanticAnalyser.Logical.EQ);
                 }
                 else
@@ -1108,7 +1107,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitRelational_expression([NotNull] CSharpParser.Relational_expressionContext context){
+        public SymbolNode VisitRelational_expression([NotNull] CSharpParser.Relational_expressionContext context){
             if(context.shift_expression().Length > 1){
                 if(context.OP_GE() != null || context.OP_LE() != null|| context.LT() != null || context.GT() != null){
                     foreach (var item in context.shift_expression()){
@@ -1126,7 +1125,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitShift_expression([NotNull] CSharpParser.Shift_expressionContext context){
+        public SymbolNode VisitShift_expression([NotNull] CSharpParser.Shift_expressionContext context){
             if (context.additive_expression().Length > 1){
                 if (context.OP_LEFT_SHIFT() != null || context.right_shift() != null){
                     foreach (var item in context.additive_expression()){
@@ -1143,14 +1142,14 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitAdditive_expression([NotNull] CSharpParser.Additive_expressionContext context)
+        public SymbolNode VisitAdditive_expression([NotNull] CSharpParser.Additive_expressionContext context)
         {
             if (context.multiplicative_expression().Length > 1)
             {
                 if (context.MINUS() != null || context.PLUS() != null)
                 {
-                    ISymbolNode LNode = VisitMultiplicative_expression(context.multiplicative_expression()[0]);
-                    ISymbolNode RNode = VisitMultiplicative_expression(context.multiplicative_expression()[1]);
+                    SymbolNode LNode = VisitMultiplicative_expression(context.multiplicative_expression()[0]);
+                    SymbolNode RNode = VisitMultiplicative_expression(context.multiplicative_expression()[1]);
                     if (context.PLUS().Length > 0){
 
                         VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.PLUS);
@@ -1186,14 +1185,14 @@ namespace Marlowe.CSharp
             }
         }
 
-        public ISymbolNode VisitMultiplicative_expression([NotNull] CSharpParser.Multiplicative_expressionContext context)
+        public SymbolNode VisitMultiplicative_expression([NotNull] CSharpParser.Multiplicative_expressionContext context)
         {
             if (context.switch_expression().Length > 1)
             {
                 if (context.STAR() != null || context.PERCENT() != null || context.DIV() != null)
                 {
-                    ISymbolNode LNode = VisitSwitch_expression(context.switch_expression()[0]);
-                    ISymbolNode RNode = VisitSwitch_expression(context.switch_expression()[1]);
+                    SymbolNode LNode = VisitSwitch_expression(context.switch_expression()[0]);
+                    SymbolNode RNode = VisitSwitch_expression(context.switch_expression()[1]);
                     if (context.STAR().Length > 0)
                     {
                         VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MULT);
@@ -1234,7 +1233,7 @@ namespace Marlowe.CSharp
             }
             return null;
         }
-        public ISymbolNode VisitSwitch_expression([NotNull] CSharpParser.Switch_expressionContext context)
+        public SymbolNode VisitSwitch_expression([NotNull] CSharpParser.Switch_expressionContext context)
         {
             if (context.range_expression() != null){
                 if(context.SWITCH() != null){
@@ -1250,7 +1249,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitRange_expression([NotNull] CSharpParser.Range_expressionContext context)
+        public SymbolNode VisitRange_expression([NotNull] CSharpParser.Range_expressionContext context)
         {
             if(context.unary_expression().Length > 1)
             {
@@ -1266,7 +1265,7 @@ namespace Marlowe.CSharp
         //: unary_expression assignment_operator? expression
         //| unary_expression '??=' throwable_expression
         //;
-        public ISymbolNode VisitAssignment([NotNull] CSharpParser.AssignmentContext context){
+        public SymbolNode VisitAssignment([NotNull] CSharpParser.AssignmentContext context){
             if(context.unary_expression() != null)
             {
                 return VisitUnary_expression(context.unary_expression());
@@ -1294,7 +1293,7 @@ namespace Marlowe.CSharp
 	    //| '*' unary_expression
 	    //| '^' unary_expression // C# 8 ranges
 	    //;
-        public ISymbolNode VisitUnary_expression([NotNull] CSharpParser.Unary_expressionContext context)
+        public SymbolNode VisitUnary_expression([NotNull] CSharpParser.Unary_expressionContext context)
         {
             if(context.primary_expression() != null)
             {
@@ -1307,7 +1306,7 @@ namespace Marlowe.CSharp
 
          //       primary_expression  
 	        //: pe=primary_expression_start
-        public ISymbolNode VisitPrimary_expression([NotNull] CSharpParser.Primary_expressionContext context)
+        public SymbolNode VisitPrimary_expression([NotNull] CSharpParser.Primary_expressionContext context)
         {
             if(context.primary_expression_start() != null)
             {
@@ -1335,7 +1334,7 @@ namespace Marlowe.CSharp
 	       ///       | rank_specifier array_initializer)                       #objectCreationExpression
 	       /// | OPEN_PARENS argument( ',' argument )+ CLOSE_PARENS           #tupleExpression
 	       /// ;
-        public ISymbolNode VisitPrimary_expression_start([NotNull] CSharpParser.Primary_expression_startContext context) {
+        public SymbolNode VisitPrimary_expression_start([NotNull] CSharpParser.Primary_expression_startContext context) {
             string value = context.Start.Text;
 
             if (Variables.ContainsKey(value)){
@@ -1374,7 +1373,7 @@ namespace Marlowe.CSharp
         //: base_type('?' | rank_specifier | '*')*
         //;
 
-        public ISymbolNode VisitType_([NotNull] CSharpParser.Type_Context context)
+        public SymbolNode VisitType_([NotNull] CSharpParser.Type_Context context)
         {
             if (context.base_type() != null) { 
                 VisitBase_type(context.base_type());
@@ -1388,7 +1387,7 @@ namespace Marlowe.CSharp
 	        //| VOID '*'
 	        //| tuple_type
 	        //;
-        public ISymbolNode VisitBase_type([NotNull] CSharpParser.Base_typeContext context)
+        public SymbolNode VisitBase_type([NotNull] CSharpParser.Base_typeContext context)
         {
             if (context.simple_type() != null) 
             {
@@ -1407,7 +1406,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitClass_type([NotNull] CSharpParser.Class_typeContext context)
+        public SymbolNode VisitClass_type([NotNull] CSharpParser.Class_typeContext context)
         {
             if(context.namespace_or_type_name() != null)
             {
@@ -1433,7 +1432,7 @@ namespace Marlowe.CSharp
 
 
 
-        public ISymbolNode VisitSimple_type([NotNull] CSharpParser.Simple_typeContext context)
+        public SymbolNode VisitSimple_type([NotNull] CSharpParser.Simple_typeContext context)
         {
             if (context.numeric_type() != null)
             {
@@ -1446,7 +1445,7 @@ namespace Marlowe.CSharp
             return null; 
         }
 
-        public ISymbolNode VisitNumeric_type([NotNull] CSharpParser.Numeric_typeContext context)
+        public SymbolNode VisitNumeric_type([NotNull] CSharpParser.Numeric_typeContext context)
         {
             if(context.integral_type() != null)
             {
@@ -1463,7 +1462,7 @@ namespace Marlowe.CSharp
             return null;
         }
 
-        public ISymbolNode VisitIntegral_type([NotNull] CSharpParser.Integral_typeContext context)
+        public SymbolNode VisitIntegral_type([NotNull] CSharpParser.Integral_typeContext context)
         {
             switch (context.Start.Text)
             {
@@ -1486,7 +1485,7 @@ namespace Marlowe.CSharp
         }
 
 
-        public ISymbolNode VisitFloating_point_type([NotNull] CSharpParser.Floating_point_typeContext context)
+        public SymbolNode VisitFloating_point_type([NotNull] CSharpParser.Floating_point_typeContext context)
         {
             if (context.DOUBLE() != null)
             {
@@ -1505,7 +1504,7 @@ namespace Marlowe.CSharp
         //type_declaration
         // : attributes? all_member_modifiers?
         //  (class_definition | struct_definition | interface_definition | enum_definition | delegate_definition)
-        public ISymbolNode VisitType_declaration([NotNull] CSharpParser.Type_declarationContext context)
+        public SymbolNode VisitType_declaration([NotNull] CSharpParser.Type_declarationContext context)
         {
 
             if (context.attributes() != null)
@@ -1546,13 +1545,13 @@ namespace Marlowe.CSharp
         #endregion
 
         #region Attributes
-        public ISymbolNode VisitAttributes([NotNull] CSharpParser.AttributesContext context){
+        public SymbolNode VisitAttributes([NotNull] CSharpParser.AttributesContext context){
             foreach (var attribute in context.attribute_section()){
                 VisitAttribute_section(attribute);
             }
             return null;      
         }
-        public ISymbolNode VisitAttribute_section([NotNull] CSharpParser.Attribute_sectionContext context){
+        public SymbolNode VisitAttribute_section([NotNull] CSharpParser.Attribute_sectionContext context){
             if (context.OPEN_BRACKET().GetText() != null){
                 if (context.attribute_target() != null){
                     if (context.COLON().GetText() != null){
@@ -1575,7 +1574,7 @@ namespace Marlowe.CSharp
             
             return null;  
         }
-        public ISymbolNode VisitAttribute_target([NotNull] CSharpParser.Attribute_targetContext context)
+        public SymbolNode VisitAttribute_target([NotNull] CSharpParser.Attribute_targetContext context)
         {
             if(context.keyword() != null)
             {
@@ -1591,7 +1590,7 @@ namespace Marlowe.CSharp
             }
             return null;
         }
-        public ISymbolNode VisitKeyword([NotNull] CSharpParser.KeywordContext context)
+        public SymbolNode VisitKeyword([NotNull] CSharpParser.KeywordContext context)
         {
             if(context.Start.Text != null)
             {
@@ -1624,7 +1623,7 @@ namespace Marlowe.CSharp
         #endregion
 
         #region All Members
-        public ISymbolNode VisitAll_member_modifiers([NotNull] CSharpParser.All_member_modifiersContext context)
+        public SymbolNode VisitAll_member_modifiers([NotNull] CSharpParser.All_member_modifiersContext context)
         {
             foreach (var MemberContext in context.all_member_modifier())
             {
@@ -1635,7 +1634,7 @@ namespace Marlowe.CSharp
                 return default;
         }
 
-        public ISymbolNode VisitAll_member_modifier([NotNull] CSharpParser.All_member_modifierContext context){
+        public SymbolNode VisitAll_member_modifier([NotNull] CSharpParser.All_member_modifierContext context){
 
             if (!context.IsEmpty)
             {
@@ -1666,9 +1665,8 @@ namespace Marlowe.CSharp
         }
         #endregion
 
-
         #region Using Directives
-        public ISymbolNode VisitUsing_directives([NotNull] CSharpParser.Using_directivesContext context)
+        public SymbolNode VisitUsing_directives([NotNull] CSharpParser.Using_directivesContext context)
         {
             foreach (CSharpParser.Using_directiveContext usingContext in context.using_directive())
             {
@@ -1677,7 +1675,7 @@ namespace Marlowe.CSharp
             return default;
         }
 
-        public ISymbolNode VisitUsingNamespaceDirective([NotNull] CSharpParser.UsingNamespaceDirectiveContext context)
+        public SymbolNode VisitUsingNamespaceDirective([NotNull] CSharpParser.UsingNamespaceDirectiveContext context)
         {
             if (context.USING() != null)
             {
@@ -1707,7 +1705,7 @@ namespace Marlowe.CSharp
 
 
         //	(identifier type_argument_list? | qualified_alias_member) ('.' identifier type_argument_list?)*
-        public ISymbolNode VisitNamespace_or_type_name([NotNull] CSharpParser.Namespace_or_type_nameContext context)
+        public SymbolNode VisitNamespace_or_type_name([NotNull] CSharpParser.Namespace_or_type_nameContext context)
         {
             if (context.identifier().Length == 1)
             {
@@ -1752,948 +1750,947 @@ namespace Marlowe.CSharp
             return null;
         }
 
-
         #region Not Implemented Context
    
 
 
-        public ISymbolNode VisitTuple_type([NotNull] CSharpParser.Tuple_typeContext context)
+        public SymbolNode VisitTuple_type([NotNull] CSharpParser.Tuple_typeContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitTuple_element([NotNull] CSharpParser.Tuple_elementContext context)
+        public SymbolNode VisitTuple_element([NotNull] CSharpParser.Tuple_elementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitType_argument_list([NotNull] CSharpParser.Type_argument_listContext context)
+        public SymbolNode VisitType_argument_list([NotNull] CSharpParser.Type_argument_listContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitArgument_list([NotNull] CSharpParser.Argument_listContext context)
+        public SymbolNode VisitArgument_list([NotNull] CSharpParser.Argument_listContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitArgument([NotNull] CSharpParser.ArgumentContext context)
+        public SymbolNode VisitArgument([NotNull] CSharpParser.ArgumentContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitAssignment_operator([NotNull] CSharpParser.Assignment_operatorContext context)
+        public SymbolNode VisitAssignment_operator([NotNull] CSharpParser.Assignment_operatorContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitSwitch_expression_arms([NotNull] CSharpParser.Switch_expression_armsContext context)
+        public SymbolNode VisitSwitch_expression_arms([NotNull] CSharpParser.Switch_expression_armsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitSwitch_expression_arm([NotNull] CSharpParser.Switch_expression_armContext context)
+        public SymbolNode VisitSwitch_expression_arm([NotNull] CSharpParser.Switch_expression_armContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitLiteralExpression([NotNull] CSharpParser.LiteralExpressionContext context)
+        public SymbolNode VisitLiteralExpression([NotNull] CSharpParser.LiteralExpressionContext context)
         {
             return null;
         }
 
-        public ISymbolNode VisitSimpleNameExpression([NotNull] CSharpParser.SimpleNameExpressionContext context)
+        public SymbolNode VisitSimpleNameExpression([NotNull] CSharpParser.SimpleNameExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitParenthesisExpressions([NotNull] CSharpParser.ParenthesisExpressionsContext context)
+        public SymbolNode VisitParenthesisExpressions([NotNull] CSharpParser.ParenthesisExpressionsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitMemberAccessExpression([NotNull] CSharpParser.MemberAccessExpressionContext context)
+        public SymbolNode VisitMemberAccessExpression([NotNull] CSharpParser.MemberAccessExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitLiteralAccessExpression([NotNull] CSharpParser.LiteralAccessExpressionContext context)
+        public SymbolNode VisitLiteralAccessExpression([NotNull] CSharpParser.LiteralAccessExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitThisReferenceExpression([NotNull] CSharpParser.ThisReferenceExpressionContext context)
+        public SymbolNode VisitThisReferenceExpression([NotNull] CSharpParser.ThisReferenceExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitBaseAccessExpression([NotNull] CSharpParser.BaseAccessExpressionContext context)
+        public SymbolNode VisitBaseAccessExpression([NotNull] CSharpParser.BaseAccessExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitObjectCreationExpression([NotNull] CSharpParser.ObjectCreationExpressionContext context)
+        public SymbolNode VisitObjectCreationExpression([NotNull] CSharpParser.ObjectCreationExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitTupleExpression([NotNull] CSharpParser.TupleExpressionContext context)
+        public SymbolNode VisitTupleExpression([NotNull] CSharpParser.TupleExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitTypeofExpression([NotNull] CSharpParser.TypeofExpressionContext context)
+        public SymbolNode VisitTypeofExpression([NotNull] CSharpParser.TypeofExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitCheckedExpression([NotNull] CSharpParser.CheckedExpressionContext context)
+        public SymbolNode VisitCheckedExpression([NotNull] CSharpParser.CheckedExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitUncheckedExpression([NotNull] CSharpParser.UncheckedExpressionContext context)
+        public SymbolNode VisitUncheckedExpression([NotNull] CSharpParser.UncheckedExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitDefaultValueExpression([NotNull] CSharpParser.DefaultValueExpressionContext context)
+        public SymbolNode VisitDefaultValueExpression([NotNull] CSharpParser.DefaultValueExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitAnonymousMethodExpression([NotNull] CSharpParser.AnonymousMethodExpressionContext context)
+        public SymbolNode VisitAnonymousMethodExpression([NotNull] CSharpParser.AnonymousMethodExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitSizeofExpression([NotNull] CSharpParser.SizeofExpressionContext context)
+        public SymbolNode VisitSizeofExpression([NotNull] CSharpParser.SizeofExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitNameofExpression([NotNull] CSharpParser.NameofExpressionContext context)
+        public SymbolNode VisitNameofExpression([NotNull] CSharpParser.NameofExpressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitThrowable_expression([NotNull] CSharpParser.Throwable_expressionContext context)
+        public SymbolNode VisitThrowable_expression([NotNull] CSharpParser.Throwable_expressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitThrow_expression([NotNull] CSharpParser.Throw_expressionContext context)
+        public SymbolNode VisitThrow_expression([NotNull] CSharpParser.Throw_expressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitMember_access([NotNull] CSharpParser.Member_accessContext context)
+        public SymbolNode VisitMember_access([NotNull] CSharpParser.Member_accessContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitBracket_expression([NotNull] CSharpParser.Bracket_expressionContext context)
+        public SymbolNode VisitBracket_expression([NotNull] CSharpParser.Bracket_expressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitIndexer_argument([NotNull] CSharpParser.Indexer_argumentContext context)
+        public SymbolNode VisitIndexer_argument([NotNull] CSharpParser.Indexer_argumentContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitPredefined_type([NotNull] CSharpParser.Predefined_typeContext context)
+        public SymbolNode VisitPredefined_type([NotNull] CSharpParser.Predefined_typeContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitExpression_list([NotNull] CSharpParser.Expression_listContext context)
+        public SymbolNode VisitExpression_list([NotNull] CSharpParser.Expression_listContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitObject_or_collection_initializer([NotNull] CSharpParser.Object_or_collection_initializerContext context)
+        public SymbolNode VisitObject_or_collection_initializer([NotNull] CSharpParser.Object_or_collection_initializerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitObject_initializer([NotNull] CSharpParser.Object_initializerContext context)
+        public SymbolNode VisitObject_initializer([NotNull] CSharpParser.Object_initializerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitMember_initializer_list([NotNull] CSharpParser.Member_initializer_listContext context)
+        public SymbolNode VisitMember_initializer_list([NotNull] CSharpParser.Member_initializer_listContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitMember_initializer([NotNull] CSharpParser.Member_initializerContext context)
+        public SymbolNode VisitMember_initializer([NotNull] CSharpParser.Member_initializerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitInitializer_value([NotNull] CSharpParser.Initializer_valueContext context)
+        public SymbolNode VisitInitializer_value([NotNull] CSharpParser.Initializer_valueContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitCollection_initializer([NotNull] CSharpParser.Collection_initializerContext context)
+        public SymbolNode VisitCollection_initializer([NotNull] CSharpParser.Collection_initializerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitElement_initializer([NotNull] CSharpParser.Element_initializerContext context)
+        public SymbolNode VisitElement_initializer([NotNull] CSharpParser.Element_initializerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitAnonymous_object_initializer([NotNull] CSharpParser.Anonymous_object_initializerContext context)
+        public SymbolNode VisitAnonymous_object_initializer([NotNull] CSharpParser.Anonymous_object_initializerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitMember_declarator_list([NotNull] CSharpParser.Member_declarator_listContext context)
+        public SymbolNode VisitMember_declarator_list([NotNull] CSharpParser.Member_declarator_listContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitMember_declarator([NotNull] CSharpParser.Member_declaratorContext context)
+        public SymbolNode VisitMember_declarator([NotNull] CSharpParser.Member_declaratorContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitUnbound_type_name([NotNull] CSharpParser.Unbound_type_nameContext context)
+        public SymbolNode VisitUnbound_type_name([NotNull] CSharpParser.Unbound_type_nameContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitGeneric_dimension_specifier([NotNull] CSharpParser.Generic_dimension_specifierContext context)
+        public SymbolNode VisitGeneric_dimension_specifier([NotNull] CSharpParser.Generic_dimension_specifierContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitIsType([NotNull] CSharpParser.IsTypeContext context)
+        public SymbolNode VisitIsType([NotNull] CSharpParser.IsTypeContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitIsTypePatternArms([NotNull] CSharpParser.IsTypePatternArmsContext context)
+        public SymbolNode VisitIsTypePatternArms([NotNull] CSharpParser.IsTypePatternArmsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitIsTypePatternArm([NotNull] CSharpParser.IsTypePatternArmContext context)
+        public SymbolNode VisitIsTypePatternArm([NotNull] CSharpParser.IsTypePatternArmContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitLambda_expression([NotNull] CSharpParser.Lambda_expressionContext context)
+        public SymbolNode VisitLambda_expression([NotNull] CSharpParser.Lambda_expressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitAnonymous_function_signature([NotNull] CSharpParser.Anonymous_function_signatureContext context)
+        public SymbolNode VisitAnonymous_function_signature([NotNull] CSharpParser.Anonymous_function_signatureContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitExplicit_anonymous_function_parameter_list([NotNull] CSharpParser.Explicit_anonymous_function_parameter_listContext context)
+        public SymbolNode VisitExplicit_anonymous_function_parameter_list([NotNull] CSharpParser.Explicit_anonymous_function_parameter_listContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitExplicit_anonymous_function_parameter([NotNull] CSharpParser.Explicit_anonymous_function_parameterContext context)
+        public SymbolNode VisitExplicit_anonymous_function_parameter([NotNull] CSharpParser.Explicit_anonymous_function_parameterContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitImplicit_anonymous_function_parameter_list([NotNull] CSharpParser.Implicit_anonymous_function_parameter_listContext context)
+        public SymbolNode VisitImplicit_anonymous_function_parameter_list([NotNull] CSharpParser.Implicit_anonymous_function_parameter_listContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitAnonymous_function_body([NotNull] CSharpParser.Anonymous_function_bodyContext context)
+        public SymbolNode VisitAnonymous_function_body([NotNull] CSharpParser.Anonymous_function_bodyContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitQuery_expression([NotNull] CSharpParser.Query_expressionContext context)
+        public SymbolNode VisitQuery_expression([NotNull] CSharpParser.Query_expressionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitFrom_clause([NotNull] CSharpParser.From_clauseContext context)
+        public SymbolNode VisitFrom_clause([NotNull] CSharpParser.From_clauseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitQuery_body([NotNull] CSharpParser.Query_bodyContext context)
+        public SymbolNode VisitQuery_body([NotNull] CSharpParser.Query_bodyContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitQuery_body_clause([NotNull] CSharpParser.Query_body_clauseContext context)
+        public SymbolNode VisitQuery_body_clause([NotNull] CSharpParser.Query_body_clauseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitLet_clause([NotNull] CSharpParser.Let_clauseContext context)
+        public SymbolNode VisitLet_clause([NotNull] CSharpParser.Let_clauseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitWhere_clause([NotNull] CSharpParser.Where_clauseContext context)
+        public SymbolNode VisitWhere_clause([NotNull] CSharpParser.Where_clauseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitCombined_join_clause([NotNull] CSharpParser.Combined_join_clauseContext context)
+        public SymbolNode VisitCombined_join_clause([NotNull] CSharpParser.Combined_join_clauseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitOrderby_clause([NotNull] CSharpParser.Orderby_clauseContext context)
+        public SymbolNode VisitOrderby_clause([NotNull] CSharpParser.Orderby_clauseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitOrdering([NotNull] CSharpParser.OrderingContext context)
+        public SymbolNode VisitOrdering([NotNull] CSharpParser.OrderingContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitSelect_or_group_clause([NotNull] CSharpParser.Select_or_group_clauseContext context)
+        public SymbolNode VisitSelect_or_group_clause([NotNull] CSharpParser.Select_or_group_clauseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitQuery_continuation([NotNull] CSharpParser.Query_continuationContext context)
+        public SymbolNode VisitQuery_continuation([NotNull] CSharpParser.Query_continuationContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitLocal_function_declaration([NotNull] CSharpParser.Local_function_declarationContext context)
+        public SymbolNode VisitLocal_function_declaration([NotNull] CSharpParser.Local_function_declarationContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitLocal_function_header([NotNull] CSharpParser.Local_function_headerContext context)
+        public SymbolNode VisitLocal_function_header([NotNull] CSharpParser.Local_function_headerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitLocal_function_modifiers([NotNull] CSharpParser.Local_function_modifiersContext context)
+        public SymbolNode VisitLocal_function_modifiers([NotNull] CSharpParser.Local_function_modifiersContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitLocal_function_body([NotNull] CSharpParser.Local_function_bodyContext context)
+        public SymbolNode VisitLocal_function_body([NotNull] CSharpParser.Local_function_bodyContext context)
         {
             throw new NotImplementedException();
         }
-        public ISymbolNode VisitTheEmptyStatement([NotNull] CSharpParser.TheEmptyStatementContext context)
+        public SymbolNode VisitTheEmptyStatement([NotNull] CSharpParser.TheEmptyStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitExpressionStatement([NotNull] CSharpParser.ExpressionStatementContext context)
+        public SymbolNode VisitExpressionStatement([NotNull] CSharpParser.ExpressionStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitSwitchStatement([NotNull] CSharpParser.SwitchStatementContext context)
+        public SymbolNode VisitSwitchStatement([NotNull] CSharpParser.SwitchStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitWhileStatement([NotNull] CSharpParser.WhileStatementContext context)
+        public SymbolNode VisitWhileStatement([NotNull] CSharpParser.WhileStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitDoStatement([NotNull] CSharpParser.DoStatementContext context)
+        public SymbolNode VisitDoStatement([NotNull] CSharpParser.DoStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitForStatement([NotNull] CSharpParser.ForStatementContext context)
+        public SymbolNode VisitForStatement([NotNull] CSharpParser.ForStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitForeachStatement([NotNull] CSharpParser.ForeachStatementContext context)
+        public SymbolNode VisitForeachStatement([NotNull] CSharpParser.ForeachStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitBreakStatement([NotNull] CSharpParser.BreakStatementContext context)
+        public SymbolNode VisitBreakStatement([NotNull] CSharpParser.BreakStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitContinueStatement([NotNull] CSharpParser.ContinueStatementContext context)
+        public SymbolNode VisitContinueStatement([NotNull] CSharpParser.ContinueStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitGotoStatement([NotNull] CSharpParser.GotoStatementContext context)
+        public SymbolNode VisitGotoStatement([NotNull] CSharpParser.GotoStatementContext context)
         {
             throw new NotImplementedException();
         }
 
  
 
-        public ISymbolNode VisitThrowStatement([NotNull] CSharpParser.ThrowStatementContext context)
+        public SymbolNode VisitThrowStatement([NotNull] CSharpParser.ThrowStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitTryStatement([NotNull] CSharpParser.TryStatementContext context)
+        public SymbolNode VisitTryStatement([NotNull] CSharpParser.TryStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitCheckedStatement([NotNull] CSharpParser.CheckedStatementContext context)
+        public SymbolNode VisitCheckedStatement([NotNull] CSharpParser.CheckedStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitUncheckedStatement([NotNull] CSharpParser.UncheckedStatementContext context)
+        public SymbolNode VisitUncheckedStatement([NotNull] CSharpParser.UncheckedStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitLockStatement([NotNull] CSharpParser.LockStatementContext context)
+        public SymbolNode VisitLockStatement([NotNull] CSharpParser.LockStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitUsingStatement([NotNull] CSharpParser.UsingStatementContext context)
+        public SymbolNode VisitUsingStatement([NotNull] CSharpParser.UsingStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitYieldStatement([NotNull] CSharpParser.YieldStatementContext context)
+        public SymbolNode VisitYieldStatement([NotNull] CSharpParser.YieldStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitUnsafeStatement([NotNull] CSharpParser.UnsafeStatementContext context)
+        public SymbolNode VisitUnsafeStatement([NotNull] CSharpParser.UnsafeStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitFixedStatement([NotNull] CSharpParser.FixedStatementContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public ISymbolNode VisitLocal_variable_type([NotNull] CSharpParser.Local_variable_typeContext context)
+        public SymbolNode VisitFixedStatement([NotNull] CSharpParser.FixedStatementContext context)
         {
             throw new NotImplementedException();
         }
 
 
-
-        public ISymbolNode VisitLocal_constant_declaration([NotNull] CSharpParser.Local_constant_declarationContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitSwitch_section([NotNull] CSharpParser.Switch_sectionContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitSwitch_label([NotNull] CSharpParser.Switch_labelContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitCase_guard([NotNull] CSharpParser.Case_guardContext context)
+        public SymbolNode VisitLocal_variable_type([NotNull] CSharpParser.Local_variable_typeContext context)
         {
             throw new NotImplementedException();
         }
 
 
-        public ISymbolNode VisitFor_initializer([NotNull] CSharpParser.For_initializerContext context)
+
+        public SymbolNode VisitLocal_constant_declaration([NotNull] CSharpParser.Local_constant_declarationContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitFor_iterator([NotNull] CSharpParser.For_iteratorContext context)
+        public SymbolNode VisitSwitch_section([NotNull] CSharpParser.Switch_sectionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitCatch_clauses([NotNull] CSharpParser.Catch_clausesContext context)
+        public SymbolNode VisitSwitch_label([NotNull] CSharpParser.Switch_labelContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitSpecific_catch_clause([NotNull] CSharpParser.Specific_catch_clauseContext context)
+        public SymbolNode VisitCase_guard([NotNull] CSharpParser.Case_guardContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitGeneral_catch_clause([NotNull] CSharpParser.General_catch_clauseContext context)
+
+        public SymbolNode VisitFor_initializer([NotNull] CSharpParser.For_initializerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitException_filter([NotNull] CSharpParser.Exception_filterContext context)
+        public SymbolNode VisitFor_iterator([NotNull] CSharpParser.For_iteratorContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitFinally_clause([NotNull] CSharpParser.Finally_clauseContext context)
+        public SymbolNode VisitCatch_clauses([NotNull] CSharpParser.Catch_clausesContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitResource_acquisition([NotNull] CSharpParser.Resource_acquisitionContext context)
-        {
-            throw new NotImplementedException();
-        }
-        public ISymbolNode VisitExtern_alias_directives([NotNull] CSharpParser.Extern_alias_directivesContext context)
+        public SymbolNode VisitSpecific_catch_clause([NotNull] CSharpParser.Specific_catch_clauseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitExtern_alias_directive([NotNull] CSharpParser.Extern_alias_directiveContext context)
+        public SymbolNode VisitGeneral_catch_clause([NotNull] CSharpParser.General_catch_clauseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitUsingAliasDirective([NotNull] CSharpParser.UsingAliasDirectiveContext context)
+        public SymbolNode VisitException_filter([NotNull] CSharpParser.Exception_filterContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitFinally_clause([NotNull] CSharpParser.Finally_clauseContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitResource_acquisition([NotNull] CSharpParser.Resource_acquisitionContext context)
+        {
+            throw new NotImplementedException();
+        }
+        public SymbolNode VisitExtern_alias_directives([NotNull] CSharpParser.Extern_alias_directivesContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitExtern_alias_directive([NotNull] CSharpParser.Extern_alias_directiveContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitUsingAliasDirective([NotNull] CSharpParser.UsingAliasDirectiveContext context)
         {
             throw new NotImplementedException();
         }
 
    
 
-        public ISymbolNode VisitUsingStaticDirective([NotNull] CSharpParser.UsingStaticDirectiveContext context)
+        public SymbolNode VisitUsingStaticDirective([NotNull] CSharpParser.UsingStaticDirectiveContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitQualified_alias_member([NotNull] CSharpParser.Qualified_alias_memberContext context)
+        public SymbolNode VisitQualified_alias_member([NotNull] CSharpParser.Qualified_alias_memberContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitType_parameter_list([NotNull] CSharpParser.Type_parameter_listContext context)
+        public SymbolNode VisitType_parameter_list([NotNull] CSharpParser.Type_parameter_listContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitType_parameter([NotNull] CSharpParser.Type_parameterContext context)
+        public SymbolNode VisitType_parameter([NotNull] CSharpParser.Type_parameterContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitClass_base([NotNull] CSharpParser.Class_baseContext context)
+        public SymbolNode VisitClass_base([NotNull] CSharpParser.Class_baseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitInterface_type_list([NotNull] CSharpParser.Interface_type_listContext context)
+        public SymbolNode VisitInterface_type_list([NotNull] CSharpParser.Interface_type_listContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitType_parameter_constraints_clauses([NotNull] CSharpParser.Type_parameter_constraints_clausesContext context)
+        public SymbolNode VisitType_parameter_constraints_clauses([NotNull] CSharpParser.Type_parameter_constraints_clausesContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitType_parameter_constraints_clause([NotNull] CSharpParser.Type_parameter_constraints_clauseContext context)
+        public SymbolNode VisitType_parameter_constraints_clause([NotNull] CSharpParser.Type_parameter_constraints_clauseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitType_parameter_constraints([NotNull] CSharpParser.Type_parameter_constraintsContext context)
+        public SymbolNode VisitType_parameter_constraints([NotNull] CSharpParser.Type_parameter_constraintsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitPrimary_constraint([NotNull] CSharpParser.Primary_constraintContext context)
+        public SymbolNode VisitPrimary_constraint([NotNull] CSharpParser.Primary_constraintContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitSecondary_constraints([NotNull] CSharpParser.Secondary_constraintsContext context)
+        public SymbolNode VisitSecondary_constraints([NotNull] CSharpParser.Secondary_constraintsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitConstructor_constraint([NotNull] CSharpParser.Constructor_constraintContext context)
+        public SymbolNode VisitConstructor_constraint([NotNull] CSharpParser.Constructor_constraintContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitConstant_declarators([NotNull] CSharpParser.Constant_declaratorsContext context)
+        public SymbolNode VisitConstant_declarators([NotNull] CSharpParser.Constant_declaratorsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitConstant_declarator([NotNull] CSharpParser.Constant_declaratorContext context)
+        public SymbolNode VisitConstant_declarator([NotNull] CSharpParser.Constant_declaratorContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitReturn_type([NotNull] CSharpParser.Return_typeContext context)
+        public SymbolNode VisitReturn_type([NotNull] CSharpParser.Return_typeContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitMember_name([NotNull] CSharpParser.Member_nameContext context)
+        public SymbolNode VisitMember_name([NotNull] CSharpParser.Member_nameContext context)
         {
             throw new NotImplementedException();
         }
 
 
-        public ISymbolNode VisitParameter_modifier([NotNull] CSharpParser.Parameter_modifierContext context)
+        public SymbolNode VisitParameter_modifier([NotNull] CSharpParser.Parameter_modifierContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitParameter_array([NotNull] CSharpParser.Parameter_arrayContext context)
+        public SymbolNode VisitParameter_array([NotNull] CSharpParser.Parameter_arrayContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitAccessor_declarations([NotNull] CSharpParser.Accessor_declarationsContext context)
+        public SymbolNode VisitAccessor_declarations([NotNull] CSharpParser.Accessor_declarationsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitGet_accessor_declaration([NotNull] CSharpParser.Get_accessor_declarationContext context)
+        public SymbolNode VisitGet_accessor_declaration([NotNull] CSharpParser.Get_accessor_declarationContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitSet_accessor_declaration([NotNull] CSharpParser.Set_accessor_declarationContext context)
+        public SymbolNode VisitSet_accessor_declaration([NotNull] CSharpParser.Set_accessor_declarationContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitAccessor_modifier([NotNull] CSharpParser.Accessor_modifierContext context)
+        public SymbolNode VisitAccessor_modifier([NotNull] CSharpParser.Accessor_modifierContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitAccessor_body([NotNull] CSharpParser.Accessor_bodyContext context)
+        public SymbolNode VisitAccessor_body([NotNull] CSharpParser.Accessor_bodyContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitEvent_accessor_declarations([NotNull] CSharpParser.Event_accessor_declarationsContext context)
+        public SymbolNode VisitEvent_accessor_declarations([NotNull] CSharpParser.Event_accessor_declarationsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitAdd_accessor_declaration([NotNull] CSharpParser.Add_accessor_declarationContext context)
+        public SymbolNode VisitAdd_accessor_declaration([NotNull] CSharpParser.Add_accessor_declarationContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitRemove_accessor_declaration([NotNull] CSharpParser.Remove_accessor_declarationContext context)
+        public SymbolNode VisitRemove_accessor_declaration([NotNull] CSharpParser.Remove_accessor_declarationContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitOverloadable_operator([NotNull] CSharpParser.Overloadable_operatorContext context)
+        public SymbolNode VisitOverloadable_operator([NotNull] CSharpParser.Overloadable_operatorContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitConversion_operator_declarator([NotNull] CSharpParser.Conversion_operator_declaratorContext context)
+        public SymbolNode VisitConversion_operator_declarator([NotNull] CSharpParser.Conversion_operator_declaratorContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitConstructor_initializer([NotNull] CSharpParser.Constructor_initializerContext context)
+        public SymbolNode VisitConstructor_initializer([NotNull] CSharpParser.Constructor_initializerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitBody([NotNull] CSharpParser.BodyContext context)
+        public SymbolNode VisitBody([NotNull] CSharpParser.BodyContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitStruct_interfaces([NotNull] CSharpParser.Struct_interfacesContext context)
+        public SymbolNode VisitStruct_interfaces([NotNull] CSharpParser.Struct_interfacesContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitStruct_body([NotNull] CSharpParser.Struct_bodyContext context)
+        public SymbolNode VisitStruct_body([NotNull] CSharpParser.Struct_bodyContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitStruct_member_declaration([NotNull] CSharpParser.Struct_member_declarationContext context)
+        public SymbolNode VisitStruct_member_declaration([NotNull] CSharpParser.Struct_member_declarationContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitArray_type([NotNull] CSharpParser.Array_typeContext context)
+        public SymbolNode VisitArray_type([NotNull] CSharpParser.Array_typeContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitRank_specifier([NotNull] CSharpParser.Rank_specifierContext context)
+        public SymbolNode VisitRank_specifier([NotNull] CSharpParser.Rank_specifierContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitArray_initializer([NotNull] CSharpParser.Array_initializerContext context)
+        public SymbolNode VisitArray_initializer([NotNull] CSharpParser.Array_initializerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitVariant_type_parameter_list([NotNull] CSharpParser.Variant_type_parameter_listContext context)
+        public SymbolNode VisitVariant_type_parameter_list([NotNull] CSharpParser.Variant_type_parameter_listContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitVariant_type_parameter([NotNull] CSharpParser.Variant_type_parameterContext context)
+        public SymbolNode VisitVariant_type_parameter([NotNull] CSharpParser.Variant_type_parameterContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitVariance_annotation([NotNull] CSharpParser.Variance_annotationContext context)
+        public SymbolNode VisitVariance_annotation([NotNull] CSharpParser.Variance_annotationContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitInterface_base([NotNull] CSharpParser.Interface_baseContext context)
+        public SymbolNode VisitInterface_base([NotNull] CSharpParser.Interface_baseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitInterface_body([NotNull] CSharpParser.Interface_bodyContext context)
+        public SymbolNode VisitInterface_body([NotNull] CSharpParser.Interface_bodyContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitInterface_member_declaration([NotNull] CSharpParser.Interface_member_declarationContext context)
+        public SymbolNode VisitInterface_member_declaration([NotNull] CSharpParser.Interface_member_declarationContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitInterface_accessors([NotNull] CSharpParser.Interface_accessorsContext context)
+        public SymbolNode VisitInterface_accessors([NotNull] CSharpParser.Interface_accessorsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitEnum_base([NotNull] CSharpParser.Enum_baseContext context)
+        public SymbolNode VisitEnum_base([NotNull] CSharpParser.Enum_baseContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitEnum_body([NotNull] CSharpParser.Enum_bodyContext context)
+        public SymbolNode VisitEnum_body([NotNull] CSharpParser.Enum_bodyContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitEnum_member_declaration([NotNull] CSharpParser.Enum_member_declarationContext context)
+        public SymbolNode VisitEnum_member_declaration([NotNull] CSharpParser.Enum_member_declarationContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitGlobal_attribute_section([NotNull] CSharpParser.Global_attribute_sectionContext context)
+        public SymbolNode VisitGlobal_attribute_section([NotNull] CSharpParser.Global_attribute_sectionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitGlobal_attribute_target([NotNull] CSharpParser.Global_attribute_targetContext context)
+        public SymbolNode VisitGlobal_attribute_target([NotNull] CSharpParser.Global_attribute_targetContext context)
         {
             throw new NotImplementedException();
         }
 
   
 
-        public ISymbolNode VisitAttribute_list([NotNull] CSharpParser.Attribute_listContext context)
+        public SymbolNode VisitAttribute_list([NotNull] CSharpParser.Attribute_listContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitAttribute([NotNull] CSharpParser.AttributeContext context)
+        public SymbolNode VisitAttribute([NotNull] CSharpParser.AttributeContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitAttribute_argument([NotNull] CSharpParser.Attribute_argumentContext context)
+        public SymbolNode VisitAttribute_argument([NotNull] CSharpParser.Attribute_argumentContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitPointer_type([NotNull] CSharpParser.Pointer_typeContext context)
+        public SymbolNode VisitPointer_type([NotNull] CSharpParser.Pointer_typeContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitFixed_pointer_declarators([NotNull] CSharpParser.Fixed_pointer_declaratorsContext context)
+        public SymbolNode VisitFixed_pointer_declarators([NotNull] CSharpParser.Fixed_pointer_declaratorsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitFixed_pointer_declarator([NotNull] CSharpParser.Fixed_pointer_declaratorContext context)
+        public SymbolNode VisitFixed_pointer_declarator([NotNull] CSharpParser.Fixed_pointer_declaratorContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitFixed_pointer_initializer([NotNull] CSharpParser.Fixed_pointer_initializerContext context)
+        public SymbolNode VisitFixed_pointer_initializer([NotNull] CSharpParser.Fixed_pointer_initializerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitFixed_size_buffer_declarator([NotNull] CSharpParser.Fixed_size_buffer_declaratorContext context)
+        public SymbolNode VisitFixed_size_buffer_declarator([NotNull] CSharpParser.Fixed_size_buffer_declaratorContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitStackalloc_initializer([NotNull] CSharpParser.Stackalloc_initializerContext context)
+        public SymbolNode VisitStackalloc_initializer([NotNull] CSharpParser.Stackalloc_initializerContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitRight_arrow([NotNull] CSharpParser.Right_arrowContext context)
+        public SymbolNode VisitRight_arrow([NotNull] CSharpParser.Right_arrowContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitRight_shift([NotNull] CSharpParser.Right_shiftContext context)
+        public SymbolNode VisitRight_shift([NotNull] CSharpParser.Right_shiftContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitRight_shift_assignment([NotNull] CSharpParser.Right_shift_assignmentContext context)
+        public SymbolNode VisitRight_shift_assignment([NotNull] CSharpParser.Right_shift_assignmentContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitLiteral([NotNull] CSharpParser.LiteralContext context)
+        public SymbolNode VisitLiteral([NotNull] CSharpParser.LiteralContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitBoolean_literal([NotNull] CSharpParser.Boolean_literalContext context)
+        public SymbolNode VisitBoolean_literal([NotNull] CSharpParser.Boolean_literalContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitString_literal([NotNull] CSharpParser.String_literalContext context)
+        public SymbolNode VisitString_literal([NotNull] CSharpParser.String_literalContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitInterpolated_regular_string([NotNull] CSharpParser.Interpolated_regular_stringContext context)
+        public SymbolNode VisitInterpolated_regular_string([NotNull] CSharpParser.Interpolated_regular_stringContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitInterpolated_verbatium_string([NotNull] CSharpParser.Interpolated_verbatium_stringContext context)
+        public SymbolNode VisitInterpolated_verbatium_string([NotNull] CSharpParser.Interpolated_verbatium_stringContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitInterpolated_regular_string_part([NotNull] CSharpParser.Interpolated_regular_string_partContext context)
+        public SymbolNode VisitInterpolated_regular_string_part([NotNull] CSharpParser.Interpolated_regular_string_partContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitInterpolated_verbatium_string_part([NotNull] CSharpParser.Interpolated_verbatium_string_partContext context)
+        public SymbolNode VisitInterpolated_verbatium_string_part([NotNull] CSharpParser.Interpolated_verbatium_string_partContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitInterpolated_string_expression([NotNull] CSharpParser.Interpolated_string_expressionContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public ISymbolNode VisitStruct_definition([NotNull] CSharpParser.Struct_definitionContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitInterface_definition([NotNull] CSharpParser.Interface_definitionContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitEnum_definition([NotNull] CSharpParser.Enum_definitionContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitDelegate_definition([NotNull] CSharpParser.Delegate_definitionContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitEvent_declaration([NotNull] CSharpParser.Event_declarationContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitProperty_declaration([NotNull] CSharpParser.Property_declarationContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitConstant_declaration([NotNull] CSharpParser.Constant_declarationContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitIndexer_declaration([NotNull] CSharpParser.Indexer_declarationContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitDestructor_definition([NotNull] CSharpParser.Destructor_definitionContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitConstructor_declaration([NotNull] CSharpParser.Constructor_declarationContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISymbolNode VisitOperator_declaration([NotNull] CSharpParser.Operator_declarationContext context)
+        public SymbolNode VisitInterpolated_string_expression([NotNull] CSharpParser.Interpolated_string_expressionContext context)
         {
             throw new NotImplementedException();
         }
 
 
-        public ISymbolNode VisitMethod_invocation([NotNull] CSharpParser.Method_invocationContext context)
+        public SymbolNode VisitStruct_definition([NotNull] CSharpParser.Struct_definitionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitObject_creation_expression([NotNull] CSharpParser.Object_creation_expressionContext context)
+        public SymbolNode VisitInterface_definition([NotNull] CSharpParser.Interface_definitionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitChildren(IRuleNode node)
+        public SymbolNode VisitEnum_definition([NotNull] CSharpParser.Enum_definitionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitTerminal(ITerminalNode node)
+        public SymbolNode VisitDelegate_definition([NotNull] CSharpParser.Delegate_definitionContext context)
         {
             throw new NotImplementedException();
         }
 
-        public ISymbolNode VisitErrorNode(IErrorNode node)
+        public SymbolNode VisitEvent_declaration([NotNull] CSharpParser.Event_declarationContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitProperty_declaration([NotNull] CSharpParser.Property_declarationContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitConstant_declaration([NotNull] CSharpParser.Constant_declarationContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitIndexer_declaration([NotNull] CSharpParser.Indexer_declarationContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitDestructor_definition([NotNull] CSharpParser.Destructor_definitionContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitConstructor_declaration([NotNull] CSharpParser.Constructor_declarationContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitOperator_declaration([NotNull] CSharpParser.Operator_declarationContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public SymbolNode VisitMethod_invocation([NotNull] CSharpParser.Method_invocationContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitObject_creation_expression([NotNull] CSharpParser.Object_creation_expressionContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitChildren(IRuleNode node)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitTerminal(ITerminalNode node)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SymbolNode VisitErrorNode(IErrorNode node)
         {
             throw new NotImplementedException();
         }

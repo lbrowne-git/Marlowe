@@ -11,12 +11,12 @@ namespace Marlowe.Utilities
     /// </summary>
     public class SymbolFunctionNode : SymbolNode
     {
-        public IDictionary<string, ISymbolNode> Paramaters = new Dictionary<string, ISymbolNode>();
+        public IDictionary<string, SymbolNode> Paramaters = new Dictionary<string, SymbolNode>();
 
         public override string ToString()
         {
             string buffer = "Paramaters:\n(";
-            foreach (KeyValuePair<string, ISymbolNode> param in this.Paramaters)
+            foreach (KeyValuePair<string, SymbolNode> param in this.Paramaters)
             {
                 buffer += param.Value.Type.Name + " " + param.Key + ",";
                 if(param.Value.Variable != null)
