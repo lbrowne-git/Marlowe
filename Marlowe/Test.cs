@@ -1,21 +1,25 @@
 ﻿using System;
 
-namespace Tester {
-
-	public class program
+namespace Tester
+{
+	public class SampleClass
 	{
-		public string greeting = "hello";
-		public string name = " world";
-		public double y = 2.23;
+		private string x = "hello ";
+		private string y = "harry";
 
+		public string z = x + y;
 
+		public void Main(string args, int test)
+		{
+			string args = "hello";
+			if(x == "fdfd" || y == "harry"){
+				return "goodbye " + y;
 
-		public int x = 4;
-		private int z = x + y;
-
-		public string example(){
-			return "hello";
+			}
+            
+            {
+				return "hello ";
+            }
 		}
 	}
-
 }

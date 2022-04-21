@@ -7,10 +7,7 @@ using CommandLine;
 using System.Collections.Generic;
 
 
-namespace Marlowe
-{
-    
-    
+namespace Marlowe{
      ///<summary>
      ///      The entry point of this application. Reads HLL 
      ///      source code and passes it onto the Analyser.
@@ -25,10 +22,12 @@ namespace Marlowe
         private static readonly List<SymbolTable> symbolTables = new List<SymbolTable>();
         private readonly List<object> NodeObjects = new List<object>();
 
+
         private static void Main(string[] args){
             List<string> files = new List<string>();
-            #region CLI Handler
             Timer.Start();
+
+            #region CLI Handler
             Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>{
                        // Logging
@@ -71,17 +70,34 @@ namespace Marlowe
                    });
             #endregion
 
-            Execute(files);
+
+            ExecuteAnalyser(files);
+
+            Interpeter interpeter = new Interpeter(symbolTables,Logger);
+            interpeter.Execute();
+            //List<object> test = interpeter.GenerateClassContext();
+            //foreach (var item in test.GetType().GetProperties())
+            //{
+            //    Console.WriteLine(item.Name + "\t" + item.PropertyType);
+            //}
+            TimeSpan timeSpan = Timer.Elapsed;
+            Console.WriteLine($"the application took {timeSpan.Milliseconds}ms to complete this run");
+
+
+
         }
 
         /// <summary>
-        ///     Generates A list of class objects that can be gotten using <see cref="GetClassObject(string)"/> or <see cref="GetClassObjects(List{string})"/>.
-        ///     By reading the files content at a directory that shave been passed to it. This is <see langword="static"/> so it can be used with <see cref="Main(string[])"/>.
-        /// </summary>
+        ///     Generates a list of class objects that can be gotten using <see cref="GetClassObject(string)"/> or <see cref="GetClassObjects(List{string})"/>.
+        ///     This is done by making use of the concrete implementation of <see cref="Analyser"/>, and its analyser type can be changed.</summary>
+        ///     
+        /// <remarks>
+        ///     This is <see langword="static"/> so it can be used with <see cref="Main(string[])"/>.
+        /// </remarks>
         /// <param name="files">A collection of files that will analysed by the system</param>.
-        public static void Execute(List<string> files)
+        public static void ExecuteAnalyser(List<string> files)
         {
-            foreach (string file in files)
+            foreach (string file in files)  // passes through each file in a directory
             {
                 try{
                     string FileContents = File.ReadAllText(file);
@@ -89,19 +105,19 @@ namespace Marlowe
                     Analyser analyser = new CSharpAnalyser(FileContents);
                     analyser.CommonTokenStream.Fill();
 
-           
+                    // Casts the abstract Analyser types to their CSharp implementation.
                     CSharpParser codeParser = (CSharpParser)analyser.Parser;
                     codeParser.RemoveErrorListeners();
                     CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
                     cSharpVisitor.VisitCompilation_unit(codeParser.compilation_unit());
-                    if (Logger != null)
-                    {
-                        if (ShowSymbolTable)
-                        {
+                    if (Logger != null){
+                        if (ShowSymbolTable){
                             Logger.LogSymbolTable(cSharpVisitor);
                         }
 
                     }
+
+                    //Populates with a file's SymbolTable.
                     symbolTables.Add(cSharpVisitor);
 
                 }
@@ -110,29 +126,20 @@ namespace Marlowe
                     Console.WriteLine("Error: " + ex);
                 }
             }
-            foreach (SymbolTable symbolTable in symbolTables){
-                object test = SymbolNodeToClassBuilder.CreateNewObject(symbolTable);
-                Console.WriteLine("Sucessfully created class \t" + test.GetType() + " \nIt has the following properities:");
-                foreach (var item in test.GetType().GetProperties())
-                {
-                    Console.WriteLine(item.Name + "\t" + item.PropertyType);
-                }
-            }
-            TimeSpan timeSpan = Timer.Elapsed;
-            Console.WriteLine($"the application took {timeSpan.Milliseconds}ms to complete this run");
 
+   
         }
 
 
         public List<object> GetClassObjects(List<string> files)
         {
-            Execute(files);
+            ExecuteAnalyser(files);
             return NodeObjects;
         }
 
         public List<object> GetClassObject(string file)
         {
-            Execute(new List<string>() { file });
+            ExecuteAnalyser(new List<string>() { file });
             return NodeObjects;
         }
 
