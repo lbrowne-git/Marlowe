@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Marlowe.Utilities;
 
-namespace Marlowe.Utilities
+namespace Marlowe.Logger
 {
 
     /// <summary>

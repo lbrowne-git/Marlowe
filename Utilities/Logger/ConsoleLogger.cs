@@ -1,9 +1,8 @@
 ﻿using Marlowe.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 
-namespace Marlowe.Utilities
+namespace Marlowe.Logger
 {
 
     /// <summary>
@@ -46,14 +45,14 @@ namespace Marlowe.Utilities
         public void LogSymbolTable(SymbolTable symbolTable)
         {
             WriteSymbolNode(symbolTable.Variables, "Variables");
-            //WriteSymbolNode(symbolTable.Functions, "Functions");
-            WriteSymbolNode(symbolTable.Directives, "");
+            WriteFunctionNode(symbolTable.Functions, "Functions");
+            WriteSymbolNode(symbolTable.Directives, "Directives");
         }
 
         public void LogSymbolTable(SymbolTable symbolTable, string heading)
         {
             WriteSymbolNode(symbolTable.Variables, heading);
-           // WriteSymbolNode((SymbolNode)symbolTable.Functions, "Functions");
+            WriteFunctionNode(symbolTable.Functions, "Functions");
             WriteSymbolNode(symbolTable.Directives, "");
         }
 
@@ -66,7 +65,15 @@ namespace Marlowe.Utilities
             }
         }
 
-     
+        public void WriteFunctionNode(IDictionary<string, SymbolFunctionNode> dictonary, string header = "")
+        {
+            WriteHeader(header);
+            Console.WriteLine($"Total:\t {dictonary.Count}");
+            foreach(KeyValuePair<string, SymbolFunctionNode> node in dictonary)
+            {
+                WriteContent($"{node.Key}\t:" + $"\t{node.Value}");
+            }
+        }
 
     }
 }

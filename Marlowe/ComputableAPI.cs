@@ -1,4 +1,5 @@
 ﻿using Marlowe.Utilities;
+using Marlowe.Logger;
 using System.Collections.Generic;
 
 namespace Marlowe

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using Marlowe.Utilities;
 
-namespace Marlowe.Utilities
+namespace Marlowe.Logger
 {
     /// <summary>
     ///     Acts as a controller for both <see cref="ConsoleLogger"/> and <see cref="WriteLogger"/>.

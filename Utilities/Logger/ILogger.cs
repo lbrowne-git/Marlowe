@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-
-namespace Marlowe.Utilities
+using Marlowe.Utilities;
+namespace Marlowe.Logger
 {
     /// <summary>
     /// Logging <see langword="interface"/>, extendable for use by different logging systems. Provides access to the <see cref="ILogger.Levels"/> for debug purposes.

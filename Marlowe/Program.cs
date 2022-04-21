@@ -1,6 +1,7 @@
 ﻿using System;
 using Marlowe.CSharp;
 using Marlowe.Utilities;
+using Marlowe.Logger;
 using System.IO;
 using System.Diagnostics;
 using CommandLine;
