@@ -56,6 +56,111 @@ namespace Marlowe.Logger
             WriteSymbolNode(symbolTable.Directives, "");
         }
 
+        public void WriteClassTable(SymbolTable symbolTable)
+        {
+  
+            foreach (string Namespace in symbolTable.GatherNamespaces())
+            {
+                bool NamespaceExists = false;
+                bool ClassExists = false;
+                foreach (KeyValuePair<string,SymbolNode> item in symbolTable.Variables)
+                {
+                    try
+                    {
+
+                        if (item.Value.Namespace == Namespace)
+                        {
+                            if (!NamespaceExists)
+                            {
+                                NamespaceExists = true;
+                                WriteHeader(Namespace);
+                            }
+                            foreach (string classes in symbolTable.GatherClasses())
+                            {
+                                try
+                                {
+
+                                    if (item.Value.ClassName == classes)
+                                    {
+                                        if (!ClassExists)
+                                        {
+                                            ClassExists = true;
+                                            WriteHeader(classes);
+                                            WriteContent($"{item.Key}\t:" + $"\t{item.Value}");
+
+                                        }
+                                    }
+                                    else if (ClassExists)   //If the Namespace has moved to another class
+                                    {
+                                        WriteContent($"{item.Key}\t:" + $"\t{item.Value}");
+                                    }
+                                }
+                                catch
+                                {
+                                    Console.WriteLine("we have gone here");
+
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //throw new Exception($"A Class is Missing a Namespace");
+                    }
+                }
+
+
+
+                foreach (KeyValuePair<string, SymbolFunctionNode> functions in symbolTable.Functions)
+                {
+                    try
+                    {
+                        if (functions.Value.Namespace == Namespace)
+                        {
+                            if (!NamespaceExists)
+                            {
+                                NamespaceExists = true;
+                                WriteHeader(Namespace);
+                            }
+                            foreach (string classes in symbolTable.GatherClasses())
+                            {
+                                try
+                                {
+                                    if (functions.Value.ClassName == classes)
+                                    {
+                                        if (!ClassExists)
+                                        {
+                                            ClassExists = true;
+                                            WriteHeader(classes);
+                                        }
+                                        WriteContent($"{functions.Key}\t:" + $"\t{functions.Value}");
+                                    }
+                                }
+                                catch
+                                {
+                                    Console.WriteLine("we have gone here");
+                                }
+             
+                            }
+
+
+
+                        }
+
+                    }
+                    catch(Exception ex)
+                    {
+
+                    }
+                    
+                    }
+
+            }
+        }
+
+      
+
+
         public void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = ""){
             WriteHeader(header);
             Console.WriteLine($"Total:\t {dictonary.Count}");
@@ -64,7 +169,6 @@ namespace Marlowe.Logger
                 WriteContent($"{node.Key}\t:" + $"\t{node.Value}");
             }
         }
-
         public void WriteFunctionNode(IDictionary<string, SymbolFunctionNode> dictonary, string header = "")
         {
             WriteHeader(header);

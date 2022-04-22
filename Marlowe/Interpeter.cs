@@ -49,7 +49,7 @@ namespace Marlowe
 
                         if (Logger != null)
                         {
-                            Logger.LogSymbolTable(visitor);
+                            Logger.WriteClassTable(visitor);
                         }
                         break;
                     }

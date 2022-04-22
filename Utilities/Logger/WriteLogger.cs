@@ -66,5 +66,9 @@ namespace Marlowe.Logger
             }
         }
 
+        public void WriteClassTable(SymbolTable symbolTable)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

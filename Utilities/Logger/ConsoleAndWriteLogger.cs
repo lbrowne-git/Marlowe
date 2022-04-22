@@ -25,6 +25,12 @@ namespace Marlowe.Logger
             fileLogger.LogSymbolTable(symbolTable);
         }
 
+        public void WriteClassTable(SymbolTable symbolTable)
+        {
+            consoleLogger.WriteClassTable(symbolTable);
+            fileLogger.WriteClassTable(symbolTable);
+        }
+
         public void WriteContent(string content)
         {
             consoleLogger.WriteContent(content);

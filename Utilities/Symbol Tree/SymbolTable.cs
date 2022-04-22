@@ -41,6 +41,88 @@ namespace Marlowe.Utilities
             }
             return null;
         }
+        public List<string> GatherNamespaces()
+        {
+            List<string> Namespaces = new List<string>();
+            foreach (var variables in Variables)
+            {
+                try
+                {       //Exists to catch variables without a namespace
+                    if (!Namespaces.Contains(variables.Value.Namespace))
+                    {
+                        Namespaces.Add(variables.Value.Namespace);
+                    }
+                }
+                catch
+                {
+
+                }
+                
+            }
+            foreach (var function in Functions)
+            {
+                if (!Namespaces.Contains(function.Value.Namespace))
+                {
+                    Namespaces.Add(function.Value.Namespace);
+                }
+            }
+            return Namespaces;
+        }
+        public List<string> GatherClasses()
+        {
+            List<string> Classes = new List<string>();
+            foreach (var variables in Variables)
+            {
+                try
+                {       // Exists to catch Variables without classes
+                    if (!Classes.Contains(variables.Value.ClassName))
+                    {
+                        Classes.Add(variables.Value.ClassName);
+                    }
+                }
+                catch
+                {
+
+                }
+                
+            }
+
+            foreach (var functions in Functions)
+            {
+                if (!Classes.Contains(functions.Value.ClassName))
+                {
+                    Classes.Add(functions.Value.ClassName);
+                }
+            }
+            return Classes;
+        }
+
+        public List<SymbolTable> SortSymbolTableToClassTables()
+        {
+            List<string> Namespaces = GatherNamespaces();
+            List<string> Classes = GatherClasses();
+            List<SymbolTable> symbolTables = new List<SymbolTable>();
+            foreach (var bufferSymbolTable in Variables)
+            {
+                foreach (string Class in Classes)
+                {
+                    foreach (var variables in Variables)
+                    {
+                        if (variables.Value.ClassName == Class)
+                        {
+                        }
+                    }
+                    foreach (var function in Functions)
+                    {
+
+                    }
+
+                }
+            }
+            return symbolTables;
+        }
+
+
     }
 
     /// <summary>
@@ -73,4 +155,5 @@ namespace Marlowe.Utilities
             }
         }
     }
+
 }

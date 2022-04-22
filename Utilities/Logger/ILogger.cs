@@ -20,5 +20,6 @@ namespace Marlowe.Logger
         abstract void WriteContent(string content, Levels level);
         abstract void LogSymbolTable(SymbolTable symbolTable);
         abstract void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = "");
+        abstract void WriteClassTable(SymbolTable symbolTable);
     }
 }
