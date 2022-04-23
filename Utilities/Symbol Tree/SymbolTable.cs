@@ -41,6 +41,35 @@ namespace Marlowe.Utilities
             }
             return null;
         }
+
+        public SymbolNode SearchSymbolTable(string key, string className)
+        {
+            foreach (KeyValuePair<string, SymbolNode> symbols in Variables)
+            {
+                if (symbols.Key == key && symbols.Value.ClassName == className)
+                {
+                    return symbols.Value;
+                }
+            }
+            foreach (KeyValuePair<string, SymbolFunctionNode> symbolFunctions in Functions)
+            {
+                if (symbolFunctions.Key == key && symbolFunctions.Value.ClassName == className)
+                {
+                    return symbolFunctions.Value;
+                }
+                else
+                {
+                    foreach (KeyValuePair<string, SymbolNode> param in symbolFunctions.Value.Paramaters)
+                    {
+                        if (param.Key == key && symbolFunctions.Value.ClassName == className)
+                        {
+                            return param.Value;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
         public List<string> GatherNamespaces()
         {
             List<string> Namespaces = new List<string>();
