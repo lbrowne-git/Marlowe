@@ -32,7 +32,7 @@ namespace Marlowe.Logger
         }
         public void WriteContent(string content){
 
-            Console.WriteLine($"{content}");
+            Console.WriteLine($"{content}\n");
         }
 
         public void WriteContent(string content, ILogger.Levels level){
@@ -56,9 +56,14 @@ namespace Marlowe.Logger
             WriteSymbolNode(symbolTable.Directives, "");
         }
 
+
+        /// <summary>
+        ///     Analyses a <see cref="SymbolTable"/> and ouputs class information about a class.
+        /// </summary>
+        /// <param name="symbolTable"></param>
         public void WriteClassTable(SymbolTable symbolTable)
         {
-  
+            Dictionary<string,string> WrittenClassContent = new Dictionary<string,string>();
             foreach (string Namespace in symbolTable.GatherNamespaces())
             {
                 bool NamespaceExists = false;
@@ -75,31 +80,15 @@ namespace Marlowe.Logger
                                 NamespaceExists = true;
                                 WriteHeader(Namespace);
                             }
-                            foreach (string classes in symbolTable.GatherClasses())
+
+                            if (!WrittenClassContent.ContainsKey(item.Value.ClassName))
                             {
-                                try
-                                {
-
-                                    if (item.Value.ClassName == classes)
-                                    {
-                                        if (!ClassExists)
-                                        {
-                                            ClassExists = true;
-                                            WriteHeader(classes);
-                                            WriteContent($"{item.Key}\t:" + $"\t{item.Value}");
-
-                                        }
-                                    }
-                                    else if (ClassExists)   //If the Namespace has moved to another class
-                                    {
-                                        WriteContent($"{item.Key}\t:" + $"\t{item.Value}");
-                                    }
-                                }
-                                catch
-                                {
-                                    Console.WriteLine("we have gone here");
-
-                                }
+                                ClassExists = true;
+                                WrittenClassContent[item.Value.ClassName] = $"{item.Value.Type.Name} {item.Key}: \t{item.Value}";
+                            }
+                            else
+                            {
+                                WrittenClassContent[item.Value.ClassName] += $"{item.Value.Type.Name} {item.Key}\t:" + $"\t{item.Value}";
                             }
                         }
                     }
@@ -122,39 +111,31 @@ namespace Marlowe.Logger
                                 NamespaceExists = true;
                                 WriteHeader(Namespace);
                             }
-                            foreach (string classes in symbolTable.GatherClasses())
+
+                            if (!WrittenClassContent.ContainsKey(functions.Value.ClassName))
                             {
-                                try
-                                {
-                                    if (functions.Value.ClassName == classes)
-                                    {
-                                        if (!ClassExists)
-                                        {
-                                            ClassExists = true;
-                                            WriteHeader(classes);
-                                        }
-                                        WriteContent($"{functions.Key}\t:" + $"\t{functions.Value}");
-                                    }
-                                }
-                                catch
-                                {
-                                    Console.WriteLine("we have gone here");
-                                }
-             
+                                ClassExists = true;
+                                WrittenClassContent[functions.Value.ClassName] = $"{functions.Key}\t:" + $"\t{functions.Value}";
+                            }
+                            else
+                            {
+                                WrittenClassContent[functions.Value.ClassName] += $"({functions.Value.Type.Name}) {functions.Key}\t:" + $"\t{functions.Value}";
                             }
 
-
-
                         }
-
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
 
                     }
                     
-                    }
+                }
 
+                foreach (var item in WrittenClassContent)
+                {
+                    WriteHeader(item.Key);
+                    WriteContent(item.Value);
+                }
             }
         }
 
@@ -166,7 +147,14 @@ namespace Marlowe.Logger
             Console.WriteLine($"Total:\t {dictonary.Count}");
             foreach (KeyValuePair<string, SymbolNode> node in dictonary)
             {
-                WriteContent($"{node.Key}\t:" + $"\t{node.Value}");
+                try
+                {
+                    WriteContent($"{node.Value.Type.Name} {node.Key} :\n{node.Value}");
+                }
+                catch
+                {// used for directives.
+                    WriteContent($"{node.Key}");
+                }
             }
         }
         public void WriteFunctionNode(IDictionary<string, SymbolFunctionNode> dictonary, string header = "")
@@ -175,7 +163,7 @@ namespace Marlowe.Logger
             Console.WriteLine($"Total:\t {dictonary.Count}");
             foreach(KeyValuePair<string, SymbolFunctionNode> node in dictonary)
             {
-                WriteContent($"{node.Key}\t:" + $"\t{node.Value}");
+                WriteContent($"{node.Key} :\n{node.Value}");
             }
         }
 
