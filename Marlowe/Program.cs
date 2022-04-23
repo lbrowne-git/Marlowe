@@ -74,8 +74,6 @@ namespace Marlowe{
 
             ExecuteAnalyser(files);
 
-            Interpeter interpeter = new Interpeter(symbolTables,Logger);
-             interpeter.Execute();
             //List<object> test = interpeter.GenerateClassContext();
             //foreach (var item in test.GetType().GetProperties())
             //{
@@ -123,8 +121,6 @@ namespace Marlowe{
                     Console.WriteLine("Error: " + ex);
                 }
             }
-
-   
         }
 
 

@@ -57,7 +57,7 @@ namespace Marlowe
                     //foreach (var item in newClassObjects.GetType().GetProperties()){
                     //    Console.WriteLine(item);
                     
-                    //Logger.LogSymbolTable(visitor);
+                    Logger.LogSymbolTable(visitor);
 
 
                 }

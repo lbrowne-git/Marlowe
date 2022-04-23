@@ -5,6 +5,7 @@ using Marlowe.Utilities;
 using System.Reflection;
 using System.Linq;
 using Antlr4.Runtime;
+using System.Collections.Generic;
 
 namespace Marlowe.CSharp
 {
@@ -25,6 +26,9 @@ namespace Marlowe.CSharp
         public EntryPointCriteria criteria = new EntryPointCriteria();
         private SymbolNode VisitorSymbolNode;
         private bool FunctionCall = false;
+        private Dictionary<string, SymbolNode> ParamaterSymbolNodes;
+
+        public int OverFlowCounter { get; private set; }
 
         public SymbolNode Visit(IParseTree tree){return null;}
 
@@ -576,7 +580,6 @@ namespace Marlowe.CSharp
                             ClassName = ClassName,
                             Namespace = Namespace,
                             Type = VarType,
-                            Variable = null
                         };
                     }
                     return paramaterSymbol;
@@ -641,7 +644,8 @@ namespace Marlowe.CSharp
             {
                 foreach (var statement_context in context.statement())
                 {
-                    if (FunctionCall){      //This is required for function calls to return a SymbolNode.
+                    if (FunctionCall){ 
+                        //This is required for function calls to return a SymbolNode.
                         return VisitStatement(statement_context);
                     }
                     VisitStatement(statement_context);
@@ -989,7 +993,21 @@ namespace Marlowe.CSharp
         public SymbolNode VisitExpression([NotNull] CSharpParser.ExpressionContext context){
             if(context.assignment() != null){
 
+        
+
+
+
                 VisitorSymbolNode = VisitAssignment(context.assignment());
+                if (FunctionCall)
+                {
+                    if (ParamaterSymbolNodes.Count > 0) {
+                        var firstParam = ParamaterSymbolNodes.First();
+                        Variables.Add(firstParam.Key, firstParam.Value);
+                        ParamaterSymbolNodes.Remove(firstParam.Key);
+                        Variables[firstParam.Key].Variable = context.Start.Text;
+                    }
+                    Console.WriteLine(VisitorSymbolNode);
+                }
                 // Function Calls are stored for execution when entrypoint is found.
                 if (VisitorSymbolNode is SymbolFunctionNode && criteria.EntryPointFound())
                 {
@@ -1004,11 +1022,46 @@ namespace Marlowe.CSharp
             }
             if (context.non_assignment_expression() != null){
 
+                // The paramaters in the function call are stored in the context
+
+
+
                 VisitorSymbolNode = VisitNon_assignment_expression(context.non_assignment_expression());
                 if (VisitorSymbolNode is SymbolFunctionNode && criteria.EntryPointFound())
                 {
+
+
+
+                    //      This catches infinte method calling that may occur when
+                    //          a variable and a function share the same name.
+                    if (FunctionCall)
+                    {
+                        if (OverFlowCounter >= 100)
+                        {
+                            OverFlowCounter = 0;
+                            return VisitorSymbolNode;
+                        }
+                        else
+                        {
+                            OverFlowCounter++;
+                        }
+                    }
+
                     VisitorSymbolNode.Variable = HandleFunctionCall((SymbolFunctionNode)VisitorSymbolNode);
                 }
+                else if (FunctionCall && criteria.EntryPointFound())
+                {
+                    if (ParamaterSymbolNodes != null)
+                    {
+                        var firstParam = ParamaterSymbolNodes.First();
+                        Variables.Add(firstParam.Key, firstParam.Value);
+                        ParamaterSymbolNodes.Remove(firstParam.Key);
+                        Variables[firstParam.Key] = VisitNon_assignment_expression(context.non_assignment_expression());
+                    }
+                    Console.WriteLine(VisitorSymbolNode);
+
+                }
+
                 return VisitorSymbolNode;
             }
             return null;    
@@ -1023,9 +1076,10 @@ namespace Marlowe.CSharp
         private object HandleFunctionCall(SymbolFunctionNode methodCall)
         {
             FunctionCall = true;
+            ParamaterSymbolNodes = new Dictionary<string, SymbolNode>();
             foreach (var item in methodCall.Paramaters)
             {
-                Variables[item.Key] = item.Value;
+                ParamaterSymbolNodes[item.Key] = item.Value;
             }
             VisitorSymbolNode = VisitMethod_body((CSharpParser.Method_bodyContext)methodCall.RuleContext);
             FunctionCall = false;
@@ -1623,6 +1677,15 @@ namespace Marlowe.CSharp
                     }
             }
         }
+
+        public SymbolNode VisitParenthesisExpressions([NotNull] CSharpParser.ParenthesisExpressionsContext context)
+        {
+            if(context.expression() != null)
+            {
+                VisitExpression(context.expression());
+            }
+            return null;
+        }
         public SymbolNode VisitSimpleNameExpression([NotNull] CSharpParser.SimpleNameExpressionContext context)
         {
             if (context.identifier()!= null)
@@ -2182,10 +2245,7 @@ namespace Marlowe.CSharp
             throw new NotImplementedException();
         }
 
-        public SymbolNode VisitParenthesisExpressions([NotNull] CSharpParser.ParenthesisExpressionsContext context)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public SymbolNode VisitMemberAccessExpression([NotNull] CSharpParser.MemberAccessExpressionContext context)
         {
