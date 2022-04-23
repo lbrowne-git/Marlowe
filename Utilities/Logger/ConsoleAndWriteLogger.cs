@@ -1,9 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using Marlowe.Utilities;
 
-namespace Marlowe.Utilities
+namespace Marlowe.Logger
 {
+    /// <summary>
+    ///     Acts as a controller for both <see cref="ConsoleLogger"/> and <see cref="WriteLogger"/>.
+    ///     Implements <seealso cref="ILogger"/>.
+    /// </summary>
     public class ConsoleAndWriteLogger : ILogger
     {
         private readonly ConsoleLogger consoleLogger;
@@ -20,6 +23,12 @@ namespace Marlowe.Utilities
         {
             consoleLogger.LogSymbolTable(symbolTable);
             fileLogger.LogSymbolTable(symbolTable);
+        }
+
+        public void WriteClassTable(SymbolTable symbolTable)
+        {
+            consoleLogger.WriteClassTable(symbolTable);
+            fileLogger.WriteClassTable(symbolTable);
         }
 
         public void WriteContent(string content)
@@ -46,7 +55,7 @@ namespace Marlowe.Utilities
             fileLogger.WriteHeader(heading, level);
         }
 
-        public void WriteSymbolNode(IDictionary<string, ISymbolNode> dictonary, string header = "")
+        public void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = "")
         {
             consoleLogger.WriteSymbolNode(dictonary, header);
             fileLogger.WriteSymbolNode(dictonary, header);

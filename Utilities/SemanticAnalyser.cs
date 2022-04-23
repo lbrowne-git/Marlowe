@@ -3,11 +3,13 @@ using System;
 
 namespace Marlowe.Utilities
 {
-    public static class SyntaxAnalyser
+    public static class SemanticAnalyser
     {
 
         public enum Operators { PLUS, MINUS, MOD, MULT, DIV, FLOAT };
-        private static ISymbolNode symbolNode;
+        public enum Logical { EQ, NEQ, OR, AND , DIV, FLOAT };
+
+        private static SymbolNode symbolNode;
 
         /// <summary>
         ///  Using LR parsing this function check if two nodes are off the same primative type and performs an operation merging both of these expressions.
@@ -15,9 +17,9 @@ namespace Marlowe.Utilities
         /// <param name="LNode">The Left-hand expression, which the operation is happening to.</param>
         /// <param name="RNode"> The Right-hand expression, which is performing an action against the left-hand node.</param>
         /// <param name="OP"> A Operation provided by the SemanticAnalyser to be used by this function.</param>
-        /// <returns>A SymbolNode comprising of the input Left and Right SymbolNode.</returns>
-        public static ISymbolNode OperationExpression(ISymbolNode LNode, ISymbolNode RNode, Operators OP){
-            symbolNode = new SymbolNode{// Node must be created this way to eliminate object referencing.
+        /// <returns>A new <see cref="SymbolNode"/> comprising of the input Left and Right <see cref="SymbolNode"/></returns>
+        public static SymbolNode OperationExpression(SymbolNode LNode, SymbolNode RNode, Operators OP){
+            symbolNode = new SymbolVariableNode{// Node must be created this way to eliminate object referencing.
                                 ClassName = LNode.ClassName,
                                 Namespace = LNode.Namespace, 
                                 Type = LNode.Type, 
@@ -49,7 +51,7 @@ namespace Marlowe.Utilities
                 {// concatenates two strings
                     if (OP == Operators.PLUS)
                     {
-                        symbolNode.Variable = "" + LNode.Variable + RNode.Variable.ToString();
+                        symbolNode.Variable = "" + LNode.Variable.ToString().TrimEnd('"') + RNode.Variable.ToString().TrimStart('"');
                     }
                     else
                     {
@@ -59,7 +61,17 @@ namespace Marlowe.Utilities
                 else if (LNode.Type == typeof(string) || RNode.Type == typeof(string))
                 {// concatenates a string and another type
                     if(OP == Operators.PLUS){
-                        symbolNode.Variable = "" + LNode.Variable + RNode.Variable.ToString();
+                        if(LNode.Type == typeof(string))
+                        {
+                            LNode.Variable = LNode.Variable.ToString().TrimEnd('"');
+                            symbolNode.Variable = "" + LNode.Variable + RNode.Variable.ToString() + '"';
+                        }
+                        else
+                        {
+                            RNode.Variable = RNode.Variable.ToString().TrimStart('"');
+                            symbolNode.Variable = "\"" + LNode.Variable + RNode.Variable.ToString();
+
+                        }
                     }
                     else
                     {
@@ -86,9 +98,19 @@ namespace Marlowe.Utilities
             }
             catch (Exception e)
             {
-                throw e;
+                Console.WriteLine("Error handling semantic analysis assuming problem with left or right node");
+                if(LNode != null)
+                {
+                    return LNode;
+                }
+                else if(RNode != null)
+                {
+                    return RNode;
+                }
+                return null;
             }
         }
+
 
 
         /// <summary>
@@ -98,7 +120,7 @@ namespace Marlowe.Utilities
         /// </summary>
         /// <param name="t">An object of generic type.</param>
         /// <returns>True if the input object is capable of numeric computation False if it is not or if null</returns>
-        private static bool IsNumericType(object t)
+        public static bool IsNumericType(object t)
         {
             double doubleOutput;
             try
@@ -120,7 +142,7 @@ namespace Marlowe.Utilities
         /// <param name="sn">A SymbolNode with a variable and type.</param>
         /// <returns><see langword="True"/> if the input object is the specified type. <see langword="False"/> if it is not or if null.</returns>
 
-        public static bool IsCorrectVariableType(ISymbolNode sn)
+        public static bool IsCorrectVariableType(SymbolNode sn)
         {
             try{
                 Convert.ChangeType(sn.Variable, sn.Type);
@@ -129,6 +151,40 @@ namespace Marlowe.Utilities
             catch
             {
                 Console.WriteLine($"{sn.Variable} is not an object of type {sn.Type}");
+                return false;
+            }
+        }
+
+        public static SymbolNode LogicalOperationExpression(SymbolNode lNode, SymbolNode rNode, Logical logic)
+        {
+            SymbolVariableNode bufferNode = new SymbolVariableNode()
+            {
+                ClassName = lNode.ClassName,
+                Variable = lNode.Variable,
+                Namespace = lNode.Namespace,
+                Type = typeof(bool)
+            };
+            switch (logic)
+            {
+                case Logical.EQ:
+                    bufferNode.Variable = (string)lNode.Variable == (string)rNode.Variable;
+                    break;
+                case Logical.NEQ:
+                    bufferNode.Variable = lNode.Variable != rNode.Variable;
+                    break;
+                default:
+                    break;
+            }
+            return bufferNode;
+        }
+
+        public static bool isStringLiteral(string text)
+        {
+            if (text.StartsWith('"') && text.EndsWith('"')){
+                return true;
+            }
+            else
+            {
                 return false;
             }
         }

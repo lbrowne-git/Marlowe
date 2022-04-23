@@ -1,16 +1,14 @@
 ﻿using System;
 using Marlowe.CSharp;
 using Marlowe.Utilities;
+using Marlowe.Logger;
 using System.IO;
 using System.Diagnostics;
 using CommandLine;
 using System.Collections.Generic;
 
 
-namespace Marlowe
-{
-    
-    
+namespace Marlowe{
      ///<summary>
      ///      The entry point of this application. Reads HLL 
      ///      source code and passes it onto the Analyser.
@@ -19,14 +17,18 @@ namespace Marlowe
     public class Program
     {
         private static readonly Stopwatch Timer = new Stopwatch();
-        private static ILogger.Levels Level = ILogger.Levels.Error;
-        private static ILogger Logger;
-        private static bool ShowSymbolTable = false;
-        private static List<string> Files;
+        public static ILogger.Levels Level = ILogger.Levels.Error;
+        public static ILogger Logger;
+        public static bool ShowSymbolTable = false;
+        private static readonly List<SymbolTable> symbolTables = new List<SymbolTable>();
+        private readonly List<object> NodeObjects = new List<object>();
 
-        public static void Main(string[] args){
-            #region CLI Handler
+
+        private static void Main(string[] args){
+            List<string> files = new List<string>();
             Timer.Start();
+
+            #region CLI Handler
             Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>{
                        // Logging
@@ -54,60 +56,90 @@ namespace Marlowe
 
                        // File Handling
                        if(o.File != null){
-                           Files.Add(o.File);
+                           files.Add(o.File);
                        }
                        else if(o.Directory != null){
-                           foreach (string file in Directory.GetFiles(@o.Directory, "*.cs"))
+                           foreach (string file in Directory.GetFiles(o.Directory, "*.cs"))
                            {
                                if (File.Exists(file))
                                {
-                                   Files.Add(file);
+                                   files.Add(file);
                                }
                            }
                        }
 
                    });
             #endregion
-            
-            string fileName = "Test.cs";
 
 
-            string FileContents = File.ReadAllText(fileName);
+            ExecuteAnalyser(files);
 
-            Analyser analyser = new CSharpAnalyser(FileContents);
-            try
+            Interpeter interpeter = new Interpeter(symbolTables,Logger);
+             interpeter.Execute();
+            //List<object> test = interpeter.GenerateClassContext();
+            //foreach (var item in test.GetType().GetProperties())
+            //{
+            //    Console.WriteLine(item.Name + "\t" + item.PropertyType);
+            //}
+            TimeSpan timeSpan = Timer.Elapsed;
+            Console.WriteLine($"the application took {timeSpan.Milliseconds}ms to complete this run");
+
+
+
+        }
+
+        /// <summary>
+        ///     Generates a list of class objects that can be gotten using <see cref="GetClassObject(string)"/> or <see cref="GetClassObjects(List{string})"/>.
+        ///     This is done by making use of the concrete implementation of <see cref="Analyser"/>, and its analyser type can be changed.</summary>
+        ///     
+        /// <remarks>
+        ///     This is <see langword="static"/> so it can be used with <see cref="Main(string[])"/>.
+        /// </remarks>
+        /// <param name="files">A collection of files that will analysed by the system</param>.
+        public static void ExecuteAnalyser(List<string> files)
+        {
+            foreach (string file in files)  // passes through each file in a directory
             {
+                try{
+                    string FileContents = File.ReadAllText(file);
 
-                analyser.CommonTokenStream.Fill();
+                    Analyser analyser = new CSharpAnalyser(FileContents);
+                    analyser.CommonTokenStream.Fill();
 
-                /** Accesses abstract parser generator and casts to CSharp implemenation.
-                 *  Allowing for substituion with other  parsers and visitors.
-                 *  
-                 */
-                CSharpParser codeParser = (CSharpParser)analyser.Parser;
-                codeParser.RemoveErrorListeners();
-                CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
-                cSharpVisitor.VisitCompilation_unit(codeParser.compilation_unit());
+                    // Casts the abstract Analyser types to their CSharp implementation.
+                    CSharpParser codeParser = (CSharpParser)analyser.Parser;
+                    codeParser.RemoveErrorListeners();
+                    CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
+                    cSharpVisitor.VisitCompilation_unit(codeParser.compilation_unit());
+         
 
-                if(Logger != null)
-                {
-                    if (ShowSymbolTable)
-                    {
-                        Logger.LogSymbolTable(cSharpVisitor);
-                    }
+                    //Populates with a file's SymbolTable.
+                    cSharpVisitor.Analyser = analyser;
+                    symbolTables.Add(cSharpVisitor);
 
                 }
-                SymbolTable symbolTable = cSharpVisitor;
-                TimeSpan timeSpan = Timer.Elapsed;
-                Console.WriteLine($"the application took {timeSpan.Milliseconds}ms to complete this run");
-                object test = SymbolNodeToClassBuilder.CreateNewObject(symbolTable.Variables);
-                Console.WriteLine(test.GetType());
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex);
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: " + ex);
-            }
+
+   
         }
+
+
+        public List<object> GetClassObjects(List<string> files)
+        {
+            ExecuteAnalyser(files);
+            return NodeObjects;
+        }
+
+        public List<object> GetClassObject(string file)
+        {
+            ExecuteAnalyser(new List<string>() { file });
+            return NodeObjects;
+        }
+
 
         /// <summary>
         ///Handles the CLI of this applicaiton

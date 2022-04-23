@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-
-namespace Marlowe.Utilities
+using Marlowe.Utilities;
+namespace Marlowe.Logger
 {
     /// <summary>
-    /// Abstract logging <see langword="interface"/>, extended for use by different logging systems. Provides access to the <see cref="ILogger.Levels"/> for debug purposes.
+    /// Logging <see langword="interface"/>, extendable for use by different logging systems. Provides access to the <see cref="ILogger.Levels"/> for debug purposes.
     /// </summary>
     public interface ILogger
     {
@@ -19,6 +19,7 @@ namespace Marlowe.Utilities
         abstract void WriteContent(string content);
         abstract void WriteContent(string content, Levels level);
         abstract void LogSymbolTable(SymbolTable symbolTable);
-        abstract void WriteSymbolNode(IDictionary<string, ISymbolNode> dictonary, string header = "");
+        abstract void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = "");
+        abstract void WriteClassTable(SymbolTable symbolTable);
     }
 }

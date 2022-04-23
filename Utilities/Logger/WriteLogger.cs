@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Marlowe.Utilities;
 
-namespace Marlowe.Utilities
+namespace Marlowe.Logger
 {
+
+    /// <summary>
+    ///     Allows For the writing of logging information to a specified file or defaults to a file in the build location.
+    ///     Implements <seealso cref="ILogger"/>.
+    /// </summary>
     public class WriteLogger : ILogger
     {
 
@@ -47,18 +53,22 @@ namespace Marlowe.Utilities
         public void LogSymbolTable(SymbolTable symbolTable)
         {
             WriteSymbolNode(symbolTable.Variables, "Variables");
-            WriteSymbolNode(symbolTable.Functions, "Functions");
+           // WriteSymbolNode(symbolTable.Functions, "Functions");
             WriteSymbolNode(symbolTable.Directives, "");
         }
 
-        public void WriteSymbolNode(IDictionary<string, ISymbolNode> dictonary, string header = ""){
+        public void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = ""){
             WriteHeader(header);
             Console.WriteLine($"Total:\t {dictonary.Count}");
-            foreach (KeyValuePair<string, ISymbolNode> node in dictonary)
+            foreach (KeyValuePair<string, SymbolNode> node in dictonary)
             {
                 WriteContent($"{node.Key}\t:" + $"\t{node.Value}");
             }
         }
 
+        public void WriteClassTable(SymbolTable symbolTable)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

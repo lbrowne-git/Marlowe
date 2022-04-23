@@ -9,7 +9,7 @@ namespace Marlowe.Utilities
 
         public ISymbolNode GetSymbolNode()
         {
-            return new SymbolNode();
+            return new SymbolVariableNode();
         }
     }
 }

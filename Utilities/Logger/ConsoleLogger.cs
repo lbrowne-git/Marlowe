@@ -1,10 +1,14 @@
 ﻿using Marlowe.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 
-namespace Marlowe.Utilities
+namespace Marlowe.Logger
 {
+
+    /// <summary>
+    ///     Allows For the writing of logging information to the console.
+    ///     Implements <seealso cref="ILogger"/>.
+    /// </summary>
     public class ConsoleLogger : ILogger
     {
 
@@ -28,7 +32,7 @@ namespace Marlowe.Utilities
         }
         public void WriteContent(string content){
 
-            Console.WriteLine($"{content}");
+            Console.WriteLine($"{content}\n");
         }
 
         public void WriteContent(string content, ILogger.Levels level){
@@ -41,27 +45,127 @@ namespace Marlowe.Utilities
         public void LogSymbolTable(SymbolTable symbolTable)
         {
             WriteSymbolNode(symbolTable.Variables, "Variables");
-            WriteSymbolNode(symbolTable.Functions, "Functions");
-            WriteSymbolNode(symbolTable.Directives, "");
+            WriteFunctionNode(symbolTable.Functions, "Functions");
+            WriteSymbolNode(symbolTable.Directives, "Directives");
         }
 
         public void LogSymbolTable(SymbolTable symbolTable, string heading)
         {
             WriteSymbolNode(symbolTable.Variables, heading);
-            WriteSymbolNode(symbolTable.Functions, "Functions");
+            WriteFunctionNode(symbolTable.Functions, "Functions");
             WriteSymbolNode(symbolTable.Directives, "");
         }
 
-        public void WriteSymbolNode(IDictionary<string, ISymbolNode> dictonary, string header = ""){
-            WriteHeader(header);
-            Console.WriteLine($"Total:\t {dictonary.Count}");
-            foreach (KeyValuePair<string, ISymbolNode> node in dictonary)
+
+        /// <summary>
+        ///     Analyses a <see cref="SymbolTable"/> and ouputs class information about a class.
+        /// </summary>
+        /// <param name="symbolTable"></param>
+        public void WriteClassTable(SymbolTable symbolTable)
+        {
+            Dictionary<string,string> WrittenClassContent = new Dictionary<string,string>();
+            foreach (string Namespace in symbolTable.GatherNamespaces())
             {
-                WriteContent($"{node.Key}\t:" + $"\t{node.Value}");
+                bool NamespaceExists = false;
+                bool ClassExists = false;
+                foreach (KeyValuePair<string,SymbolNode> item in symbolTable.Variables)
+                {
+                    try
+                    {
+
+                        if (item.Value.Namespace == Namespace)
+                        {
+                            if (!NamespaceExists)
+                            {
+                                NamespaceExists = true;
+                                WriteHeader(Namespace);
+                            }
+
+                            if (!WrittenClassContent.ContainsKey(item.Value.ClassName))
+                            {
+                                ClassExists = true;
+                                WrittenClassContent[item.Value.ClassName] = $"{item.Value.Type.Name} {item.Key}: \t{item.Value}";
+                            }
+                            else
+                            {
+                                WrittenClassContent[item.Value.ClassName] += $"{item.Value.Type.Name} {item.Key}\t:" + $"\t{item.Value}";
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //throw new Exception($"A Class is Missing a Namespace");
+                    }
+                }
+
+
+
+                foreach (KeyValuePair<string, SymbolFunctionNode> functions in symbolTable.Functions)
+                {
+                    try
+                    {
+                        if (functions.Value.Namespace == Namespace)
+                        {
+                            if (!NamespaceExists)
+                            {
+                                NamespaceExists = true;
+                                WriteHeader(Namespace);
+                            }
+
+                            if (!WrittenClassContent.ContainsKey(functions.Value.ClassName))
+                            {
+                                ClassExists = true;
+                                WrittenClassContent[functions.Value.ClassName] = $"{functions.Key}\t:" + $"\t{functions.Value}";
+                            }
+                            else
+                            {
+                                WrittenClassContent[functions.Value.ClassName] += $"({functions.Value.Type.Name}) {functions.Key}\t:" + $"\t{functions.Value}";
+                            }
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    
+                }
+
+                foreach (var item in WrittenClassContent)
+                {
+                    WriteHeader(item.Key);
+                    WriteContent(item.Value);
+                }
             }
         }
 
-     
+      
+
+
+        public void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = ""){
+            WriteHeader(header);
+            Console.WriteLine($"Total:\t {dictonary.Count}");
+            foreach (KeyValuePair<string, SymbolNode> node in dictonary)
+            {
+                try
+                {
+                    WriteContent($"{node.Value.Type.Name} {node.Key} :\n{node.Value}");
+                }
+                catch
+                {// used for directives.
+                    WriteContent($"{node.Key}");
+                }
+            }
+        }
+        public void WriteFunctionNode(IDictionary<string, SymbolFunctionNode> dictonary, string header = "")
+        {
+            WriteHeader(header);
+            Console.WriteLine($"Total:\t {dictonary.Count}");
+            foreach(KeyValuePair<string, SymbolFunctionNode> node in dictonary)
+            {
+                WriteContent($"{node.Key} :\n{node.Value}");
+            }
+        }
 
     }
 }
