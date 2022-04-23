@@ -61,7 +61,17 @@ namespace Marlowe.Utilities
                 else if (LNode.Type == typeof(string) || RNode.Type == typeof(string))
                 {// concatenates a string and another type
                     if(OP == Operators.PLUS){
-                        symbolNode.Variable = "" + LNode.Variable + RNode.Variable.ToString();
+                        if(LNode.Type == typeof(string))
+                        {
+                            LNode.Variable = LNode.Variable.ToString().TrimEnd('"');
+                            symbolNode.Variable = "" + LNode.Variable + RNode.Variable.ToString() + '"';
+                        }
+                        else
+                        {
+                            RNode.Variable = RNode.Variable.ToString().TrimStart('"');
+                            symbolNode.Variable = "\"" + LNode.Variable + RNode.Variable.ToString();
+
+                        }
                     }
                     else
                     {
@@ -88,7 +98,16 @@ namespace Marlowe.Utilities
             }
             catch (Exception e)
             {
-                throw e;
+                Console.WriteLine("Error handling semantic analysis assuming problem with left or right node");
+                if(LNode != null)
+                {
+                    return LNode;
+                }
+                else if(RNode != null)
+                {
+                    return RNode;
+                }
+                return null;
             }
         }
 
@@ -101,7 +120,7 @@ namespace Marlowe.Utilities
         /// </summary>
         /// <param name="t">An object of generic type.</param>
         /// <returns>True if the input object is capable of numeric computation False if it is not or if null</returns>
-        private static bool IsNumericType(object t)
+        public static bool IsNumericType(object t)
         {
             double doubleOutput;
             try
@@ -157,6 +176,17 @@ namespace Marlowe.Utilities
                     break;
             }
             return bufferNode;
+        }
+
+        public static bool isStringLiteral(string text)
+        {
+            if (text.StartsWith('"') && text.EndsWith('"')){
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
