@@ -1,4 +1,5 @@
-﻿using Marlowe.CSharp;
+﻿using Antlr4.Runtime;
+using Marlowe.CSharp;
 using Marlowe.Logger;
 using Marlowe.Utilities;
 using System;
@@ -17,6 +18,7 @@ namespace Marlowe
         private static List<SymbolTable> SymbolTables = new List<SymbolTable>();
         private readonly EntryPointCriteria Criteria;
         private SymbolTable EntryPoint;
+        private SymbolFunctionNode MainFunction;
 
         public Interpeter(List<SymbolTable> symbolTables)
         {
@@ -38,33 +40,37 @@ namespace Marlowe
         {
             if (HasEntryPoint())
             {
-                foreach (KeyValuePair<string, SymbolFunctionNode> functions in EntryPoint.Functions)
+
+                AddUsingDirective();
+                // Executes Entrypoint methods.
+                CSharpVisitor visitor = (CSharpVisitor)EntryPoint.Analyser.Visitor;
+                visitor.criteria = Criteria;
+                visitor.ClassName = MainFunction.ClassName;
+                visitor.Namespace = MainFunction.Namespace;
+                visitor.VisitMethod_body((CSharpParser.Method_bodyContext)MainFunction.RuleContext);
+                if (Logger != null)
                 {
-                    if (functions.Key.ToUpper().Contains("MAIN"))
-                    {
-                        // Executes Entrypoint methods.
-                        CSharpVisitor visitor = (CSharpVisitor)EntryPoint.Analyser.Visitor;
-                        visitor.criteria = Criteria;
-                        visitor.VisitMethod_body((CSharpParser.Method_bodyContext)functions.Value.RuleContext);
+                    List<object> newClassObjects = new List<object>();
+                    object newType = SymbolNodeToClassBuilder.CreateNewObject(visitor);
+                    newClassObjects.Add(newType);
+                    //Console.WriteLine("Sucessfully created class \t" + newType.GetType() + " \nIt has the following properities:");
+                    //foreach (var item in newClassObjects.GetType().GetProperties()){
+                    //    Console.WriteLine(item);
+                    
+                    //Logger.LogSymbolTable(visitor);
 
-                        if (Logger != null)
-                        {
-                            Logger.WriteClassTable(visitor);
-                        }
-                        break;
-                    }
+
                 }
+                
 
-
-
-
-                //foreach(KeyValuePair<string, SymbolNode> directives in EntryPoint.Directives)
+                //foreach (KeyValuePair<string, SymbolNode> directives in EntryPoint.Directives)
                 //{
                 //    SearchSymbolTable(directives.Key);
 
                 //}
 
             }
+
             else
             {
                 if (Logger != null)
@@ -81,6 +87,31 @@ namespace Marlowe
             }
 
         }
+
+        private void AddUsingDirective()
+        {
+            foreach (var directive in EntryPoint.Directives)
+            {
+                foreach (var SymbolTable in SymbolTables)
+                {
+                    foreach (var item in SymbolTable.Variables)
+                    {
+                        if(item.Value.Namespace == directive.Key)
+                        {
+                            EntryPoint.Variables.Add(item.Key, item.Value);
+                        }
+                    }
+                    foreach (var item in SymbolTable.Functions)
+                    {
+                        if (item.Value.Namespace == directive.Key)
+                        {
+                            EntryPoint.Functions.Add(item.Key, item.Value);
+                        }
+                    }
+                }
+            }
+        }
+
         public List<object> GenerateClassContext()
         {
             List<object> newClassObjects = new List<object>();
@@ -108,6 +139,7 @@ namespace Marlowe
                             if (param.Key.ToUpper().Equals("ARGS") && param.Value.Type == typeof(string))   // Checks for string args array
                             {
                                 Criteria.SetMainArgs(true);
+                                MainFunction = functions.Value;
                                 break;
                             }
                             else
