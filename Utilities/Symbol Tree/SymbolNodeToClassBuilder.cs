@@ -49,12 +49,16 @@ namespace Marlowe.Utilities
             string typeSignature = "";
             foreach (KeyValuePair<string, SymbolNode> keyValuePair in symbolTable.Variables)
             {
-                if (typeSignature != keyValuePair.Value.ClassName)
+                if(keyValuePair.Value != null)
                 {
-                    typeSignature = keyValuePair.Value.ClassName;
-                    tb = GetTypeBuilder(typeSignature);
+                    if (typeSignature != keyValuePair.Value.ClassName)
+                    {
+                        typeSignature = keyValuePair.Value.ClassName;
+                        tb = GetTypeBuilder(typeSignature);
+                    }
+                    CreateProperty(tb, keyValuePair.Key, keyValuePair.Value.Type);
                 }
-                CreateProperty(tb, keyValuePair.Key, keyValuePair.Value.Type);
+
 
             }
             if (tb != null){
@@ -102,7 +106,7 @@ namespace Marlowe.Utilities
 
         private static void CreateSetterFromProperty(TypeBuilder tb, string propertyName, Type propertyType)
         {
-            MethodBuilder getPropMthdBldr = tb.DefineMethod("get_" + propertyName,
+            MethodBuilder getPropMthdBldr = tb.DefineMethod("get" + propertyName,
                                                 MethodAttributes.Public |
                                                 MethodAttributes.SpecialName |
                                                 MethodAttributes.HideBySig,
@@ -120,7 +124,7 @@ namespace Marlowe.Utilities
         {
 
             MethodBuilder setPropMthdBldr =
-             tb.DefineMethod("set_" + propertyName,
+             tb.DefineMethod("set" + propertyName,
                MethodAttributes.Public |
                MethodAttributes.SpecialName |
                MethodAttributes.HideBySig,

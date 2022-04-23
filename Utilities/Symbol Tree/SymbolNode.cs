@@ -43,10 +43,9 @@ namespace Marlowe.Utilities
 
         public override string ToString()
         {
-            return $"Value:\t{Variable}\n" +
-                   $"Class:\t{ClassName}\n" +
-                   $"Namespace:\t\t{Namespace}\n" +
-                   $"Type:\t{Type}"; 
+            return $"Value:\t\t{Variable}\n" +
+                   $"Class:\t\t{ClassName}\n" +
+                   $"Namespace:\t{Namespace}";
         }
     }
 }

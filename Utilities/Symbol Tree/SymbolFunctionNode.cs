@@ -15,9 +15,14 @@ namespace Marlowe.Utilities
 
         public override string ToString()
         {
-            string buffer = "Paramaters:(";
+            string buffer = "Paramaters(";
+            foreach (KeyValuePair<string, SymbolNode> item in Paramaters)
+            {
+                buffer += $"{item.Value.Type.Name} {item.Key} , ";
+            }
+            buffer = buffer.TrimEnd();
             buffer = buffer.TrimEnd(',');
-            buffer += ")\n"+base.ToString()+"\n";
+            buffer += ")\n"+base.ToString();
             return buffer;
         }
     }
