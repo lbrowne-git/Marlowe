@@ -1,6 +1,7 @@
 using Antlr4.Runtime.Misc;
+using Marlowe.Utilities;
 
-namespace Marlowe.CSharp
+namespace Marlowe.Visitors
 {
 
     /// <summary>
@@ -46,5 +47,7 @@ namespace Marlowe.CSharp
         /// <param name="context">The parse tree.</param>
         /// <return>The visitor result.</return>
         Result VisitQualified_identifier([NotNull] CSharpParser.Qualified_identifierContext context);
+        Result VisitUsing_directives([NotNull] CSharpParser.Using_directivesContext context);
+        Result VisitUsingNamespaceDirective([NotNull] CSharpParser.UsingNamespaceDirectiveContext context);
     }
 }
