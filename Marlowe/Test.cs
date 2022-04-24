@@ -1,16 +1,33 @@
 ﻿using System;
+using Tester2;
 
 namespace Tester
 {
 	public class SampleClass
 	{
-		private static string y = "hello";
-		private int x = 1;
-		public static void Main(string args)
+		private static int = z = 4;
+		public void Main(string args)
 		{
-			int z = MyAge();
-			y = "Lewis";
+			string exampleMonth = "january";
+			Console.WriteLine(ExampleTestFile2.App + exampleMonth);
+            switch (exampleMonth)
+            {
+				case "january":
+					break;
+				default:
+					break;
+            }
 		}
+
+		public bool Yes()
+        {
+			return true;
+        }
+
+		public string FindMonth(string month, string age)
+        {
+			return age;
+        }
 
 		public string MyName()
         {
@@ -21,5 +38,5 @@ namespace Tester
         {
 			return 23;
         }
-	}
+    }
 }

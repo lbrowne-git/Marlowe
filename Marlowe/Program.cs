@@ -72,17 +72,18 @@ namespace Marlowe{
             #endregion
 
 
+            // Populates SymbolTables
             ExecuteAnalyser(files);
+            
+            //Entry point into interpetation.
+            Interpeter interpeter = new Interpeter(symbolTables, Logger);
+            interpeter.Execute();
 
-            //List<object> test = interpeter.GenerateClassContext();
-            //foreach (var item in test.GetType().GetProperties())
-            //{
-            //    Console.WriteLine(item.Name + "\t" + item.PropertyType);
-            //}
+
+
             TimeSpan timeSpan = Timer.Elapsed;
             Console.WriteLine($"the application took {timeSpan.Milliseconds}ms to complete this run");
-
-
+  
 
         }
 
@@ -112,7 +113,6 @@ namespace Marlowe{
          
 
                     //Populates with a file's SymbolTable.
-                    cSharpVisitor.Analyser = analyser;
                     symbolTables.Add(cSharpVisitor);
 
                 }
