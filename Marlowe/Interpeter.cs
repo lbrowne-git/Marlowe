@@ -48,27 +48,6 @@ namespace Marlowe
                 EntryPoint.Namespace = MainFunction.Namespace;
                 EntryPoint.criteria = Criteria;
                 EntryPoint.VisitMethod_body((CSharpParser.Method_bodyContext)MainFunction.RuleContext);
-                if (Logger != null)
-                {
-                    List<object> newClassObjects = new List<object>();
-                    object newType = SymbolNodeToClassBuilder.CreateNewObject(EntryPoint);
-                    newClassObjects.Add(newType);
-                    //Console.WriteLine("Sucessfully created class \t" + newType.GetType() + " \nIt has the following properities:");
-                    //foreach (var item in newClassObjects.GetType().GetProperties()){
-                    //    Console.WriteLine(item);
-                    
-                 //   Logger.LogSymbolTable(EntryPoint);
-
-
-                }
-                
-
-                //foreach (KeyValuePair<string, SymbolNode> directives in EntryPoint.Directives)
-                //{
-                //    SearchSymbolTable(directives.Key);
-
-                //}
-
             }
 
             else
@@ -85,9 +64,37 @@ namespace Marlowe
                     }
                 }
             }
+        }
+
+
+        /// <summary>
+        ///     Logs a class table representation of the code post execution.
+        /// </summary>
+        /// <param name="logger"></param>
+        public void LogExecutedSymbolTable(ILogger? logger)
+        {
+            if(logger != null)
+            {
+                Logger = logger;
+            }
+            LogExecutedSymbolTable();
+        }
+
+
+        /// <summary>
+        ///     Logs a class table representation of the code post execution.
+        /// </summary>
+        public void LogExecutedSymbolTable()
+        {
+
+            Logger.WriteSymbolNode(EntryPoint.Variables, "Variables");
+            Logger.WriteFunctionNode(EntryPoint.Functions, "Functions");
 
         }
 
+        /// <summary>
+        ///     Adds using directives to <see cref="EntryPoint"/>.
+        /// </summary>
         private void AddUsingDirective()
         {
             foreach (var directive in EntryPoint.Directives)
@@ -105,13 +112,24 @@ namespace Marlowe
                     {
                         if (item.Value.Namespace == directive.Key)
                         {
-                            EntryPoint.Functions.Add(item.Key, item.Value);
+                            try
+                            {
+                                EntryPoint.Functions.Add(item.Key, item.Value);
+                            }
+                            catch
+                            {
+
+                            }
                         }
                     }
                 }
             }
         }
 
+        /// <summary>
+        ///     Uses the <see cref="SymbolTable"/> to generate dynamic classs which will have the properities of the class files.
+        /// </summary>
+        /// <returns>a collection of dynamically created classes</returns>
         public List<object> GenerateClassContext()
         {
             List<object> newClassObjects = new List<object>();
@@ -124,6 +142,11 @@ namespace Marlowe
             }
             return newClassObjects;
         }
+
+        /// <summary>
+        ///     Parses through <see cref="SymbolTables"/> to find static void Main(string[] args) entry point.
+        /// </summary>
+        /// <returns></returns>
         private bool HasEntryPoint()
         {
             foreach (SymbolTable symbolTable in SymbolTables)

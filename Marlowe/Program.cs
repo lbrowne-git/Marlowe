@@ -59,18 +59,18 @@ namespace Marlowe{
                            files.Add(o.File);
                        }
                        else if(o.Directory != null){
-                           foreach (string file in Directory.GetFiles(o.Directory, "*.cs"))
-                           {
-                               if (File.Exists(file))
-                               {
-                                   files.Add(file);
-                               }
-                           }
+
+                            foreach (string file in Directory.GetFiles(o.Directory, "*.cs"))
+                            {
+                                if (File.Exists(file))
+                                {
+                                    files.Add(file);
+                                }
+                            }
                        }
 
                    });
             #endregion
-
 
             // Populates SymbolTables
             ExecuteAnalyser(files);
@@ -78,7 +78,10 @@ namespace Marlowe{
             //Entry point into interpetation.
             Interpeter interpeter = new Interpeter(symbolTables, Logger);
             interpeter.Execute();
-
+            if (ShowSymbolTable)
+            {
+                interpeter.LogExecutedSymbolTable();
+            }
 
 
             TimeSpan timeSpan = Timer.Elapsed;
@@ -193,7 +196,7 @@ namespace Marlowe{
                         return Level;
                     }
                 }
-                catch(Exception ex)
+                catch
                 {
                     return Level;
                 }
