@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace Marlowe.CSharp
 {
-    internal class ErrorLogger : ILogger
+    public class ErrorLogger : ILogger
     {
-        private ConsoleLogger ConsoleLogger = new ConsoleLogger();
+        private readonly ConsoleLogger ConsoleLogger = new ConsoleLogger();
         private readonly ILogger.Levels LogLevel;
 
         public ErrorLogger(ILogger.Levels logLevel)
@@ -61,7 +61,10 @@ namespace Marlowe.CSharp
         public void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = "")
         {
             ConsoleLogger?.WriteSymbolNode(dictonary, header);
-        
+        }
+        public void WriteFunctionNode(IDictionary<string, SymbolFunctionNode> dictonary, string header = "")
+        {
+            ConsoleLogger?.WriteFunctionNode(dictonary, header);
         }
     }
 }
