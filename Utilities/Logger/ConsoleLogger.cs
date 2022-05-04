@@ -68,6 +68,9 @@ namespace Marlowe.Logger
             {
                 bool NamespaceExists = false;
                 bool ClassExists = false;
+
+
+                WriteHeader("Variables");
                 foreach (KeyValuePair<string,SymbolNode> item in symbolTable.Variables)
                 {
                     try
@@ -99,6 +102,7 @@ namespace Marlowe.Logger
                 }
 
 
+                WriteHeader("Functions");
 
                 foreach (KeyValuePair<string, SymbolFunctionNode> functions in symbolTable.Functions)
                 {

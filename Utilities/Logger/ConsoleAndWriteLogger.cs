@@ -43,6 +43,11 @@ namespace Marlowe.Logger
             fileLogger.WriteContent(content, level);
         }
 
+        public void WriteFunctionNode(IDictionary<string, SymbolFunctionNode> dictonary, string header = "")
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void WriteHeader(string heading)
         {
             consoleLogger.WriteHeader(heading);
