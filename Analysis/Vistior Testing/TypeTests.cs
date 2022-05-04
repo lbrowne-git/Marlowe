@@ -2,7 +2,8 @@
 
 namespace Marlowe.Tests{
     [TestClass]
-    internal class TypeTests : TestAnalyser{ 
+    internal class TypeTests : InterpeterStub
+    { 
 
 
     }

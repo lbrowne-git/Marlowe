@@ -3,7 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Marlowe.Tests{
     [TestClass]
-    internal class OperationalTests : TestAnalyser{ 
+    internal class OperationalTests : InterpeterStub
+    { 
 
 
     }

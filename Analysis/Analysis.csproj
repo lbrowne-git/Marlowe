@@ -7,18 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="dummy.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
+    <ProjectReference Include="..\CSharp\CSharp.csproj" />
     <ProjectReference Include="..\Marlowe\Marlowe.csproj" />
     <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="dummy.ss">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Folder Include="Testing Files\" />
   </ItemGroup>
 
 </Project>

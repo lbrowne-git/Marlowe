@@ -3,8 +3,7 @@
 namespace Marlowe.Tests
 {
     [TestClass]
-    internal class SemanticTesting : TestAnalyser{ 
-
+    internal class SemanticTesting : InterpeterStub{ 
 
     }
 }
