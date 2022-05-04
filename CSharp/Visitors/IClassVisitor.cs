@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Marlowe.Visitors
 {
-    public interface IClassVisitor<Result>{
+    public interface IClassVisitor<Result> : IGlobalVisitor<Result>
+    {
         //class_definition
         //: CLASS identifier type_parameter_list? class_base? type_parameter_constraints_clauses?
         //class_body ';'?
