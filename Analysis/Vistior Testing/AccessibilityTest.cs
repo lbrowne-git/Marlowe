@@ -4,16 +4,17 @@ using Marlowe.Visitors;
 using Marlowe.Utilities;
 using Marlowe.CSharp;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Marlowe.Tests{
     [TestClass()]
-    public class ClassTests : AnalyserStub
+    public class AccessibilityTest : AnalyserStub
     {
         IClassVisitor<SymbolNode> ClassVisitor;
         CSharpParser CSharpParser;
 
 
-        public ClassTests()
+        public AccessibilityTest()
         {
             Setup(SourceConstructor.GenerateClass("dummyClass"));
         }
@@ -31,14 +32,15 @@ namespace Marlowe.Tests{
             Assert.IsTrue(ClassName == "dummyClass");
         }
         [TestMethod()]
-        public void CheckClassVariblesAreStoredInSymbolTable()
+        public void CheckIfVariableIsPublic()
         {
-            ClassVisitor.VisitClass_body(CSharpParser.class_body());
-            Assert.IsTrue(((CSharpVisitor)ClassVisitor).Variables.Count == 3);
+            ClassVisitor.VisitClass_definition(CSharpParser.class_definition());
+            var visitor = ((CSharpVisitor)ClassVisitor).Variables.ToArray();
+            Assert.IsTrue(visitor[0].Value.Accessibility == "public");
         }
 
         [TestMethod()]
-        public void CheckClassFunctionsAreStoredInSymbolTable()
+        public void CheckIfFunctionIsPublic()
         {
             ClassVisitor.VisitClass_body(CSharpParser.class_body());
             Assert.IsTrue(((CSharpVisitor)ClassVisitor).Functions.Count > 0);
