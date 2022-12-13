@@ -2,7 +2,7 @@
 
 namespace Marlowe.Visitors
 {
-    public interface IVaraibleVisitor<Result> : IGlobalVisitor<Result>
+    public interface IVariableVisitor<Result> : IGlobalVisitor<Result>
     {
         public Result VisitBoolean_literal([NotNull] CSharpParser.Boolean_literalContext context);
         public Result VisitField_declaration([NotNull] CSharpParser.Field_declarationContext context);

@@ -12,8 +12,8 @@ namespace Marlowe.Tests
         }
         public override void Setup()
         {
-            Logger = new StubLogger();
-            base.Setup();
+            files.Add(SourceConstructor.GenerateNamespaceWithUsingDirectives("dummyNamesapce", "dummyClass", "system"));
+            ExecuteAnalyser(files);
         }
 
 

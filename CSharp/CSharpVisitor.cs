@@ -226,7 +226,6 @@ namespace Marlowe.CSharp
                 }
 
             }
-            ClassName = " "; // End of Class
 
             return default;
         }

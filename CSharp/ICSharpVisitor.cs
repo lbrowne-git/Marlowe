@@ -10,7 +10,7 @@ namespace Marlowe.Visitors
     ///     Acts an intermediary point for all the decoupled visitors.
     /// </summary>
     public interface ICSharpVisitor<Result> : ILogicalOperationsVisitor<Result>, ITypeVisitor<Result>, 
-                                              IVaraibleVisitor<Result>,          IAssignmentVisitor<Result>,
+                                              IVariableVisitor<Result>,          IAssignmentVisitor<Result>,
                                               IAccessVisitor<Result>,            INamespaceVisitor<Result>, 
                                               IClassVisitor<Result>,             IGlobalVisitor<Result>,
                                               IMethodVisitor<Result>,            IParseTreeVisitor<Result>
