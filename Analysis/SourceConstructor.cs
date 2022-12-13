@@ -8,13 +8,31 @@ namespace Marlowe.Tests
     {
         public static string NamespaceName(string Namespace)
         {
-            return "\r\nnamespace "+Namespace+"{\n";
+            return "\r\nnamespace "+Namespace+" {\r\n";
         }
-
-        public static string GenerateClass(string Namespace, string NameOfClass)
+        public static string GenerateNamespace(string Namespace, string NameOfClass)
         {
             return NamespaceName(Namespace)
                 + ClassName(NameOfClass)
+                + ClassBody()
+                + ClosingBrace();
+
+        }
+
+        public static string GenerateNamespaceWithUsingDirectives(string Namespace, string NameofClass,string directive)
+        {
+            return UsingDirectives(directive)
+                + GenerateNamespace(Namespace, NameofClass);
+        }
+
+        private static string UsingDirectives(string directive)
+        {
+            return $"using {directive};\r\n";
+        }
+
+        public static string GenerateClass(string NameOfClass)
+        {
+            return ClassName(NameOfClass)
                 + ClassBody()
                 + ClosingBrace();
         }
@@ -29,9 +47,27 @@ namespace Marlowe.Tests
         public static string ClassBody()
         {
             return DeclareString("greeting", "hello world")
-                   + DeclareInt("x", 4)
-                   + DeclareInt("y", 25)
+                   + "public "+ DeclareInt("x", 4)
+                   + "public " + DeclareInt("y", 25)
+                   + "private " + DeclareFunction("void","TestFunction")
                    + ClosingBrace();
+        }
+
+        public static string DeclareFunction(string returnType, string Name)
+        {
+            if(returnType.ToLower() != "void")
+            {
+                return "public static " + returnType + " Name() {\r\n"
+                    + DeclareInt("testInt", 5)
+                    + "return null"
+                    +ClosingBrace();
+            }
+            else
+            {
+                return "public static " + returnType + " Name() {\r\n"
+                    + DeclareInt("testInt", 5)
+                    + ClosingBrace();
+            }
         }
 
         public static string ClosingBrace()
@@ -41,7 +77,7 @@ namespace Marlowe.Tests
 
         public static string ClassName(string Classname)
         {
-            return "\r\npublic class "+Classname+"{\r\n";
+            return "\r\n class "+Classname+"{\r\n";
         }
 
         public static string DeclareString(string? variable, string value)

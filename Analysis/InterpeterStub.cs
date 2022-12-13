@@ -12,7 +12,7 @@ namespace Marlowe.Tests
     public  class InterpeterStub : ComputableAPI
     {
         private static readonly string dir = "F:\\Libraries\\Libraries\\College\\FYP\\Marlowe\\Testing Files";
-        private static List<string> files = new List<string>();
+        public static List<string> files = new List<string>();
         public InterpeterStub(){            
             Setup();
         }
@@ -35,9 +35,9 @@ namespace Marlowe.Tests
             {
                 try
                 {
-                    string FileContents = File.ReadAllText(file);
+                    //string FileContents = File.ReadAllText(file);
 
-                    Analyser analyser = new AnalyserStub(FileContents);
+                    Analyser analyser = new AnalyserStub(file);
                     analyser.CommonTokenStream.Fill();
 
                     // Casts the abstract Analyser types to their CSharp implementation.
