@@ -10,9 +10,6 @@ namespace Marlowe.Utilities
         public  Dictionary<string, SymbolNode> Variables = new Dictionary<string, SymbolNode>();
         public  Dictionary<string, SymbolFunctionNode> Functions = new Dictionary<string, SymbolFunctionNode>();
         public  Dictionary<string, SymbolNode> Directives = new Dictionary<string,SymbolNode>();
-
-        public Analyser Analyser;
-
         public SymbolNode SearchSymbolTable(string key)
         {
             foreach (KeyValuePair<string, SymbolNode> symbols in Variables)

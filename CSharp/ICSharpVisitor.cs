@@ -1,13 +1,18 @@
-﻿namespace Marlowe.CSharp
+﻿using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
+using Marlowe.Utilities;
+
+namespace Marlowe.Visitors
 {
 
     ///
     /// <summary>
-    ///     Acts a layer of abstraction for the CSharpVistor.
-    ///     which allows for the seamless conversion of generic types between
-    ///     the generated antlr visitor and Marlowe's implementation.
+    ///     Acts an intermediary point for all the decoupled visitors.
     /// </summary>
-    public interface ICSharpVisitor<Result> : INamespaceVisitor<Result>, ICSharpParserVisitor<Result>
-    {
-    }
+    public interface ICSharpVisitor<Result> : ILogicalOperationsVisitor<Result>, ITypeVisitor<Result>, 
+                                              IVariableVisitor<Result>,          IAssignmentVisitor<Result>,
+                                              IAccessVisitor<Result>,            INamespaceVisitor<Result>, 
+                                              IClassVisitor<Result>,             IGlobalVisitor<Result>,
+                                              IMethodVisitor<Result>,            IParseTreeVisitor<Result>
+    { }
 }

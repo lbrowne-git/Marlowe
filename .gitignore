@@ -372,3 +372,5 @@ FodyWeavers.xsd
 /Cobol/Cobol85BaseVisitor.cs
 /Cobol/ICobol85Visitor.cs
 /nuget.exe
+/ProjectReferenceExample
+/Testing Files

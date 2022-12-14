@@ -70,5 +70,9 @@ namespace Marlowe.Logger
         {
             throw new NotImplementedException();
         }
+        public void WriteFunctionNode(IDictionary<string, SymbolFunctionNode> dictonary, string header = "")
+        {
+            throw new NotImplementedException();
+        }
     }
 }

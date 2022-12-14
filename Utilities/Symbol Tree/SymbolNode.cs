@@ -7,7 +7,7 @@ namespace Marlowe.Utilities
 {
 
     /// <summary>
-    ///  An element containg properties about variables and methods calls. Allows for extension by different languages to meet their syntax. 
+    ///  An <see langword="abstract"/> node element containg properties about variables and methods calls. Allows for extension by different languages to meet their syntax. 
     /// </summary>
     /// <remarks>
     ///     Extends <see cref="ISymbolNode"/>
@@ -22,6 +22,7 @@ namespace Marlowe.Utilities
         public object Variable { get; set; }
         public string Namespace { get; set; }
         public string ClassName { get; set; }
+        public string Accessibility { get; set; }
         public Type Type { get; set; }
 
         public ParserRuleContext RuleContext { get; set; }

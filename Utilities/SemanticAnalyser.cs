@@ -7,7 +7,7 @@ namespace Marlowe.Utilities
     {
 
         public enum Operators { PLUS, MINUS, MOD, MULT, DIV, FLOAT };
-        public enum Logical { EQ, NEQ, OR, AND , DIV, FLOAT };
+        public enum Logical { EQ, NEQ, OR, AND , DIV, FLOAT,GT, LS,GTE,LSE };
 
         private static SymbolNode symbolNode;
 
@@ -69,6 +69,9 @@ namespace Marlowe.Utilities
                         else
                         {
                             RNode.Variable = RNode.Variable.ToString().TrimStart('"');
+
+                            //symbolMode is made of LNode passed into this method, this converts it type to a string.
+                            symbolNode.Type = typeof(string);
                             symbolNode.Variable = "\"" + LNode.Variable + RNode.Variable.ToString();
 
                         }
@@ -96,7 +99,7 @@ namespace Marlowe.Utilities
                 }
                 return symbolNode;
             }
-            catch (Exception e)
+            catch 
             {
                 Console.WriteLine("Error handling semantic analysis assuming problem with left or right node");
                 if(LNode != null)
@@ -141,7 +144,6 @@ namespace Marlowe.Utilities
         /// </summary>
         /// <param name="sn">A SymbolNode with a variable and type.</param>
         /// <returns><see langword="True"/> if the input object is the specified type. <see langword="False"/> if it is not or if null.</returns>
-
         public static bool IsCorrectVariableType(SymbolNode sn)
         {
             try{
@@ -157,33 +159,143 @@ namespace Marlowe.Utilities
 
         public static SymbolNode LogicalOperationExpression(SymbolNode lNode, SymbolNode rNode, Logical logic)
         {
-            SymbolVariableNode bufferNode = new SymbolVariableNode()
+            try
             {
-                ClassName = lNode.ClassName,
-                Variable = lNode.Variable,
-                Namespace = lNode.Namespace,
-                Type = typeof(bool)
-            };
-            switch (logic)
-            {
-                case Logical.EQ:
-                    bufferNode.Variable = (string)lNode.Variable == (string)rNode.Variable;
-                    break;
-                case Logical.NEQ:
-                    bufferNode.Variable = lNode.Variable != rNode.Variable;
-                    break;
-                default:
-                    break;
+
+                SymbolVariableNode bufferNode = new SymbolVariableNode()
+                {
+                    ClassName = lNode.ClassName,
+                    Variable = lNode.Variable,
+                    Namespace = lNode.Namespace,
+                    Type = typeof(bool)
+                };
+                if (lNode.Type == rNode.Type)
+                {
+                    switch (logic)
+                    {
+                        case Logical.EQ:
+                            bufferNode.Variable = lNode.Variable.Equals(rNode.Variable);
+                            break;
+                        case Logical.NEQ:
+                            if (!lNode.Variable.Equals(rNode.Variable))
+                            {
+                                bufferNode.Variable = true;
+                            }
+                            else
+                            {
+                                bufferNode.Variable = false;
+                            }
+                            break;
+                        case Logical.GT:
+                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable))
+                            {
+                                double rn = Convert.ToDouble(rNode.Variable);
+                                double ln = Convert.ToDouble(lNode.Variable);
+                                bufferNode.Variable = ln > rn;
+                            }
+                            break;
+                        case Logical.LS:
+                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable))
+                            {
+                                double rn = Convert.ToDouble(rNode.Variable);
+                                double ln = Convert.ToDouble(lNode.Variable);
+                                bufferNode.Variable = ln < rn;
+                            }
+                            break;
+                        case Logical.GTE:
+                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable))
+                            {
+                                double rn = Convert.ToDouble(rNode.Variable);
+                                double ln = Convert.ToDouble(lNode.Variable);
+                                bufferNode.Variable = ln >= rn;
+                            }
+                            break;
+                        case Logical.LSE:
+                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable))
+                            {
+                                double rn = Convert.ToDouble(rNode.Variable);
+                                double ln = Convert.ToDouble(lNode.Variable);
+                                bufferNode.Variable = ln <= rn;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Logical operation of {lNode.Variable} and {rNode.Variable} as they are not the same type {lNode.Type.Name}, {rNode.Type.Name}");
+                }
+                return bufferNode;
             }
-            return bufferNode;
+            catch
+            {
+                if(lNode == null && rNode == null)
+                {
+                    Console.WriteLine("There are no paramaters in a logical operations");
+                }
+                else if(lNode == null)
+                {
+                    Console.WriteLine($"The left logical operation relating to '{logic} {rNode.Variable}' is empty.");
+                }
+                else
+                {
+                    Console.WriteLine($"The right logical operation relating to '{lNode.Variable} {logic}' is empty.");
+                }
+                return new SymbolVariableNode();
+            }
         }
 
-        public static bool isStringLiteral(string text)
+        public static bool IsStringLiteral(string text)
         {
             if (text.StartsWith('"') && text.EndsWith('"')){
                 return true;
             }
             else
+            {
+                return false;
+            }
+        }
+
+
+
+        /// <summary>
+        ///     Determines if a value is number, bool or string and returns that type.
+        /// </summary>
+        /// 
+        /// <remarks>This isn't really an concrete solution to determining a type on the fly but it works as an error handler.</remarks>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public static Type GatherContextType(string expression)
+        {
+            Type type;
+            if (IsNumericType(expression))
+            {
+                type = typeof(double);
+            }
+            if (IsBooleanLiteral(expression))
+            {
+                type = typeof(bool);
+            }
+            else
+            {
+                type = typeof(string);
+            }
+            return type;
+        }
+
+        /// <summary>
+        ///     Parsers an object to determinf it is a boolean
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns>a true or false if the object is a boolean or not</returns>
+        public static bool IsBooleanLiteral(object t)
+        {
+            try
+            {
+                return Convert.ToBoolean((string)t);
+            }
+            catch
             {
                 return false;
             }

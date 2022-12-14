@@ -8,22 +8,27 @@
     <RepositoryUrl>https://github.com/lbrowne-git/Marlowe</RepositoryUrl>
     <AssemblyVersion>0.8</AssemblyVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/lbrowne-git/Marlowe</PackageProjectUrl>
+    <FileVersion>0.8</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningLevel>5</WarningLevel>
+    <WarningLevel>4</WarningLevel>
     <FileAlignment>2048</FileAlignment>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <WarningLevel>5</WarningLevel>
+    <WarningLevel>4</WarningLevel>
     <FileAlignment>2048</FileAlignment>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="res\**" />
+    <Compile Remove="Testing Files\**" />
     <EmbeddedResource Remove="res\**" />
+    <EmbeddedResource Remove="Testing Files\**" />
     <None Remove="res\**" />
+    <None Remove="Testing Files\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,10 +41,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="Test2.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Test.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,11 +54,18 @@
     <ProjectReference Include="..\CSharp\CSharp.csproj" />
     <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
-
   <ItemGroup>
-    <None Update="Test.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
