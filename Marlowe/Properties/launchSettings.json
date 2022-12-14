@@ -2,7 +2,7 @@
   "profiles": {
     "Marlowe": {
       "commandName": "Project",
-      "commandLineArgs": "--st -d  \"F:\\Libraries\\Libraries\\College\\FYP\\Marlowe\\Testing Files\""
+      "commandLineArgs": "--st -d  \"{Directory\\To\\Your\\CS Files}\""
     }
   }
 }
