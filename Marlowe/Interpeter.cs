@@ -71,7 +71,7 @@ namespace Marlowe
         ///     Logs a class table representation of the code post execution.
         /// </summary>
         /// <param name="logger"></param>
-        public void LogExecutedSymbolTable(ILogger? logger)
+        public void LogExecutedSymbolTable(ILogger logger)
         {
             if(logger != null)
             {

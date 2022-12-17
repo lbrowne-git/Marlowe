@@ -1,9 +1,10 @@
 ﻿using Antlr4.Runtime;
+using Marlowe.Logger;
 using System;
 
 namespace Marlowe.Utilities
 {
-    public static class SemanticAnalyser
+    public class SemanticAnalyser
     {
 
         public enum Operators { PLUS, MINUS, MOD, MULT, DIV, FLOAT };
@@ -11,8 +12,10 @@ namespace Marlowe.Utilities
 
         private static SymbolNode symbolNode;
 
+        public static ILogger Logger { get; set; }
+
         /// <summary>
-        ///  Using LR parsing this function check if two nodes are off the same primative type and performs an operation merging both of these expressions.
+        ///  Using LR parsing this function checks if two nodes are off the same primative type and performs an operation merging both of these expressions.
         /// </summary>
         /// <param name="LNode">The Left-hand expression, which the operation is happening to.</param>
         /// <param name="RNode"> The Right-hand expression, which is performing an action against the left-hand node.</param>
@@ -101,7 +104,7 @@ namespace Marlowe.Utilities
             }
             catch 
             {
-                Console.WriteLine("Error handling semantic analysis assuming problem with left or right node");
+                Logger.WriteContent("Error handling semantic analysis assuming problem with left or right node",ILogger.Levels.Error);
                 if(LNode != null)
                 {
                     return LNode;
@@ -152,11 +155,10 @@ namespace Marlowe.Utilities
             }
             catch
             {
-                Console.WriteLine($"{sn.Variable} is not an object of type {sn.Type}");
+                Logger.WriteContent($"{sn.Variable} is not an object of type {sn.Type}", ILogger.Levels.Warning);
                 return false;
             }
         }
-
         public static SymbolNode LogicalOperationExpression(SymbolNode lNode, SymbolNode rNode, Logical logic)
         {
             try
@@ -177,46 +179,54 @@ namespace Marlowe.Utilities
                             bufferNode.Variable = lNode.Variable.Equals(rNode.Variable);
                             break;
                         case Logical.NEQ:
-                            if (!lNode.Variable.Equals(rNode.Variable))
-                            {
+                            if (!lNode.Variable.Equals(rNode.Variable)){
                                 bufferNode.Variable = true;
+                                break;
                             }
-                            else
-                            {
-                                bufferNode.Variable = false;
-                            }
+                            bufferNode.Variable = false;
                             break;
                         case Logical.GT:
-                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable))
-                            {
+                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable)){
                                 double rn = Convert.ToDouble(rNode.Variable);
                                 double ln = Convert.ToDouble(lNode.Variable);
                                 bufferNode.Variable = ln > rn;
+                                Logger.WriteContent($"{ln} > {rn} = {bufferNode.Variable}", ILogger.Levels.Info);
                             }
                             break;
                         case Logical.LS:
-                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable))
-                            {
+                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable)){
                                 double rn = Convert.ToDouble(rNode.Variable);
                                 double ln = Convert.ToDouble(lNode.Variable);
                                 bufferNode.Variable = ln < rn;
                             }
                             break;
                         case Logical.GTE:
-                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable))
-                            {
+                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable)){
                                 double rn = Convert.ToDouble(rNode.Variable);
                                 double ln = Convert.ToDouble(lNode.Variable);
                                 bufferNode.Variable = ln >= rn;
                             }
                             break;
                         case Logical.LSE:
-                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable))
-                            {
+                            if (IsNumericType(lNode.Variable) && IsNumericType(rNode.Variable)){
                                 double rn = Convert.ToDouble(rNode.Variable);
                                 double ln = Convert.ToDouble(lNode.Variable);
                                 bufferNode.Variable = ln <= rn;
                             }
+                            break;
+                        case Logical.AND:
+                            if ((bool)lNode.Variable && (bool)rNode.Variable){
+                                bufferNode.Variable = true;
+                                break;
+                            }
+                            bufferNode.Variable = false;
+                            break;
+                        case Logical.OR:
+                            if ((bool)lNode.Variable || (bool)rNode.Variable){
+                                bufferNode.Variable = true;
+                                break;
+                            }
+                            bufferNode.Variable = false;
                             break;
                         default:
                             break;
@@ -224,7 +234,7 @@ namespace Marlowe.Utilities
                 }
                 else
                 {
-                    Console.WriteLine($"Logical operation of {lNode.Variable} and {rNode.Variable} as they are not the same type {lNode.Type.Name}, {rNode.Type.Name}");
+                    Logger.WriteContent($"Logical operation of {lNode.Variable} and {rNode.Variable} as they are not the same type {lNode.Type.Name}, {rNode.Type.Name}", ILogger.Levels.Warning);
                 }
                 return bufferNode;
             }
@@ -232,15 +242,15 @@ namespace Marlowe.Utilities
             {
                 if(lNode == null && rNode == null)
                 {
-                    Console.WriteLine("There are no paramaters in a logical operations");
+                    Logger.WriteContent("There are no paramaters in a logical operations", ILogger.Levels.Warning);
                 }
                 else if(lNode == null)
                 {
-                    Console.WriteLine($"The left logical operation relating to '{logic} {rNode.Variable}' is empty.");
+                    Logger.WriteContent($"The left logical operation relating to '{logic} {rNode.Variable}' is empty.", ILogger.Levels.Warning);
                 }
                 else
                 {
-                    Console.WriteLine($"The right logical operation relating to '{lNode.Variable} {logic}' is empty.");
+                    Logger.WriteContent($"The right logical operation relating to '{lNode.Variable} {logic}' is empty.", ILogger.Levels.Warning);
                 }
                 return new SymbolVariableNode();
             }
