@@ -51,6 +51,10 @@ namespace Marlowe
                            else
                            {
                                Files = DirectoryHandler.GatherFileInformation(o.Directory, o.SubDirectory);
+                               if (Logger != null)
+                               {
+                                   Logger.WriteContent("Directory Handler has found " + Files.Count + " files", ILogger.Levels.Info);
+                               }
                            }
                        }
                        else if (o.Directory != null)
@@ -103,7 +107,7 @@ namespace Marlowe
                                 return ILogger.Levels.Notice;
                             case "WARNING":
                             case "2":
-                                return ILogger.Levels.Warring;
+                                return ILogger.Levels.Warning;
                             case "ERROR":
                             case "3":
                                 return ILogger.Levels.Error;

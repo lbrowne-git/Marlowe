@@ -10,7 +10,7 @@ namespace Marlowe.Logger
         enum Levels : ushort{
             Info = 0,
             Notice = 1,
-            Warring = 2,
+            Warning = 2,
             Error = 3
         };
         

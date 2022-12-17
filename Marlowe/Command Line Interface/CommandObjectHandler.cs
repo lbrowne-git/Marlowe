@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Marlowe
 {
-
     /// <summary>
     ///     This is is an abstract minimanl implementation of the what is used by defaults entrypoints into 
     /// </summary>

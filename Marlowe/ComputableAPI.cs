@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Marlowe
 {
+    /// <summary>
+    ///         Acts as a form of Data Layer for objects used throughout the application.
+    /// </summary>
     public class ComputableAPI
     {
         public static readonly List<SymbolTable> symbolTables = new List<SymbolTable>();
