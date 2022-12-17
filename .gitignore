@@ -374,3 +374,4 @@ FodyWeavers.xsd
 /nuget.exe
 /ProjectReferenceExample
 /Testing Files
+/Marlowe/Properties/launchSettings.json
