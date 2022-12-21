@@ -2,7 +2,7 @@
   "profiles": {
     "Marlowe": {
       "commandName": "Project",
-      "commandLineArgs": "--log --subd --directory \"The\\Directory\\Of\\Your\\C# Files\" "
+      "commandLineArgs": "--log --directory \"F:\\Libraries\\Libraries\\Coding\\C#\\ConsoleApp1\\ConsoleApp1\""
     }
   }
 }

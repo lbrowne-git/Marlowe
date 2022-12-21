@@ -16,7 +16,7 @@ namespace Marlowe.Utilities
         /// <summary>
         /// <see langword="abstract"/> <see cref="Antlr4.Runtime.Lexer"/> to be substituted with any <see href="https://www.antlr.org/">ANTLR</see> generated Lexers.
         /// </summary>
-        public virtual Lexer Lexer { set; get ; }
+        public virtual Lexer Lexer { set; get; }
 
 
         /// <summary>
@@ -28,10 +28,10 @@ namespace Marlowe.Utilities
         /// <summary>
         /// <see langword="abstract"/> <see cref="Antlr4.Runtime.Tree.IParseTreeVisitor{Result}"/> to be substituted with any <see href="https://www.antlr.org/">ANTLR</see> generated visitors.
         /// </summary>
-        public virtual IParseTreeVisitor<object?> Visitor { set;get ; }
+        public virtual IParseTreeVisitor<object?> Visitor { set; get; }
 
 
-        public virtual CommonTokenStream CommonTokenStream { set; get ; }
+        public virtual CommonTokenStream CommonTokenStream { set; get; }
 
     }
 }

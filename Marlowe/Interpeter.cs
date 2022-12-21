@@ -1,5 +1,4 @@
-﻿using Antlr4.Runtime;
-using Marlowe.CSharp;
+﻿using Marlowe.CSharp;
 using Marlowe.Logger;
 using Marlowe.Utilities;
 using System;
@@ -55,7 +54,7 @@ namespace Marlowe
                 if (Logger != null)
                 {
                     Logger.WriteContent("No EntryPoint exists in this code.");
-                    if(SymbolTables.Count > 0)
+                    if (SymbolTables.Count > 0)
                     {
                         foreach (SymbolTable symbolTable in SymbolTables)
                         {
@@ -73,7 +72,7 @@ namespace Marlowe
         /// <param name="logger"></param>
         public void LogExecutedSymbolTable(ILogger logger)
         {
-            if(logger != null)
+            if (logger != null)
             {
                 Logger = logger;
             }
@@ -93,7 +92,7 @@ namespace Marlowe
         }
 
         /// <summary>
-        ///     Adds using directives to <see cref="EntryPoint"/>.
+        ///     Adds accumalated using references throughout files<see cref="EntryPoint"/>.
         /// </summary>
         private void AddUsingDirective()
         {
@@ -103,7 +102,7 @@ namespace Marlowe
                 {
                     foreach (var item in SymbolTable.Variables)
                     {
-                        if(item.Value.Namespace == directive.Key)
+                        if (item.Value.Namespace == directive.Key)
                         {
                             EntryPoint.Variables.Add(item.Key, item.Value);
                         }
@@ -153,24 +152,27 @@ namespace Marlowe
             {
                 foreach (KeyValuePair<string, SymbolFunctionNode> functions in symbolTable.Functions)
                 {
-                    if (functions.Key.ToUpper().Equals("MAIN")) // Checks for main function in class
+                    if (!functions.Key.ToUpper().Equals("MAIN")) // Checks for main function in class
                     {
-                        SymbolFunctionNode paramatars = (SymbolFunctionNode)functions.Value;
-                        Criteria.SetMainFunctionExists(true);
-                        foreach (KeyValuePair<string, SymbolNode> param in paramatars.Paramaters)
+                        break;
+                    }
+                    SymbolFunctionNode paramatars = (SymbolFunctionNode)functions.Value;
+                    Criteria.SetMainFunctionExists(true);
+                    foreach (KeyValuePair<string, SymbolNode> param in paramatars.Paramaters)
+                    {
+                        if (param.Key.ToUpper().Equals("ARGS") && param.Value.Type == typeof(string))   // Checks for string args array
                         {
-                            if (param.Key.ToUpper().Equals("ARGS") && param.Value.Type == typeof(string))   // Checks for string args array
-                            {
-                                Criteria.SetMainArgs(true);
-                                MainFunction = functions.Value;
-                                break;
-                            }
-                            else
-                            {
-                                Criteria.SetMainFunctionExists(false);
-                            }
+                            Criteria.SetMainArgs(true);
+
+                            MainFunction = functions.Value;
+                            break;
+                        }
+                        else
+                        {
+                            Criteria.SetMainFunctionExists(false);
                         }
                     }
+
                 }
                 if (Criteria.EntryPointFound())
                 {

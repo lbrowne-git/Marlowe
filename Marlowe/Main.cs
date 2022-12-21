@@ -1,30 +1,29 @@
-﻿using System;
-using Marlowe.CSharp;
+﻿using Marlowe.CSharp;
 using Marlowe.Utilities;
-using Marlowe.Logger;
-using System.IO;
-using System.Diagnostics;
-using CommandLine;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 
-namespace Marlowe{
-     ///<summary>
-     ///      The entry point of this application. Reads HLL 
-     ///      source code and passes it onto the Analyser.
-     ///      
-     ///</summary>
+namespace Marlowe
+{
+    ///<summary>
+    ///      The entry point of this application. Reads HLL 
+    ///      source code and passes it onto the Analyser.
+    ///      
+    ///</summary>
     public class Program : CommandObjectHandler
     {
-   
-        private static void Main(string[] args){
+
+        private static void Main(string[] args)
+        {
             Timer.Start();
 
             CommandHandler.ParseArguments(args);
 
             // Populates SymbolTables
             ExecuteAnalyser(Files);
-            
+
             //Entry point into interpetation.
             Interpeter interpeter = new Interpeter(SymbolTables, Logger);
             interpeter.Execute();
@@ -36,7 +35,7 @@ namespace Marlowe{
 
             TimeSpan timeSpan = Timer.Elapsed;
             Console.WriteLine($"the application took {timeSpan.Milliseconds}ms to complete this run");
-  
+
 
         }
 
@@ -52,7 +51,8 @@ namespace Marlowe{
         {
             foreach (string file in files)  // passes through each file in a directory
             {
-                try{
+                try
+                {
                     string FileContents = File.ReadAllText(file);
 
                     Analyser analyser = new CSharpAnalyser(FileContents);
@@ -63,7 +63,7 @@ namespace Marlowe{
                     codeParser.RemoveErrorListeners();
                     CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
                     cSharpVisitor.VisitCompilation_unit(codeParser.compilation_unit());
-         
+
 
                     //Populates with a file's SymbolTable.
                     SymbolTables.Add(cSharpVisitor);
@@ -91,6 +91,6 @@ namespace Marlowe{
         /// <summary>
         ///Handles the CLI of this applicaiton
         /// </summary>
-  
+
     }
 }

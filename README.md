@@ -25,33 +25,26 @@ This application was intentionally built to be cross-platform as such to use the
 If you are running this code on VS you should be able to access the defined profile that have been created for quick launching of the application. Marlowe has a lot of commands available through its Command Line Interface how this will focus more on using Marlowe as soon as possible.
 
 ```cli
---log --subd --directory "Your\C#\Directory"
+--log --directory "Your\C#\Directory"
 ```
 <br>
 
 Alternatively you are looking to execute a sole file within a directory you can do very easily with
 
 ```cli
---write --subd --file "Your\C#\Directory\File.cs"
+--write --file "Your\C#\Directory\File.cs"
 ```
 <br>
 You are also able of displaying the Symbol Table which would provide one with the attributes of the classes or files that have been analysed.
 
 ```cli
---log --write --sub --st
+--log --write --st
 ```
 <br>
 
 _*Note:* as can been seen throughout these examples a different logging method is used by each function one can even change the location of where the log file is saved with_
 
-<br>
-This then calls the * Interpeter Engine * to discover and entry point into this code. for the C# programming language entry points should be specified as:
-
-```c#
-    public static void Main(string args){}
-```
-
-<br>
+Marlowe looks for conventional C# entry points( ```public static void Main(string[] args)``` ) as its entry point but can still output a symbol table 
 
 
 # Package Setup

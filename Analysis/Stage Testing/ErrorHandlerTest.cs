@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Marlowe.Tests
+﻿namespace Marlowe.Tests
 {
     public class ErrorHandlerTest : InterpeterStub
     {
@@ -17,6 +13,6 @@ namespace Marlowe.Tests
         }
 
 
-        
+
     }
 }

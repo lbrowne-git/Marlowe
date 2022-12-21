@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Marlowe.Utilities;
+﻿using Marlowe.Utilities;
+using System.Collections.Generic;
 namespace Marlowe.Logger
 {
     /// <summary>
@@ -7,13 +7,14 @@ namespace Marlowe.Logger
     /// </summary>
     public interface ILogger
     {
-        enum Levels : ushort{
+        enum Levels : ushort
+        {
             Info = 0,
             Notice = 1,
             Warning = 2,
             Error = 3
         };
-        
+
         abstract void WriteHeader(string heading);
         abstract void WriteHeader(string heading, Levels level);
         abstract void WriteContent(string content);

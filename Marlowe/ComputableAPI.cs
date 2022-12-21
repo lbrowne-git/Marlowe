@@ -1,5 +1,5 @@
-﻿using Marlowe.Utilities;
-using Marlowe.Logger;
+﻿using Marlowe.Logger;
+using Marlowe.Utilities;
 using System.Collections.Generic;
 
 namespace Marlowe

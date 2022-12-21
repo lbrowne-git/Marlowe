@@ -1,8 +1,8 @@
 ﻿
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Marlowe.Visitors;
-using Marlowe.Utilities;
 using Marlowe.CSharp;
+using Marlowe.Utilities;
+using Marlowe.Visitors;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Marlowe.Tests
 {
@@ -15,7 +15,7 @@ namespace Marlowe.Tests
 
         public NamespaceTests()
         {
-            Setup(SourceConstructor.GenerateNamespace("dummyNamespace","dummyClass"));
+            Setup(SourceConstructor.GenerateNamespace("dummyNamespace", "dummyClass"));
         }
         public override void Setup(string text)
         {
@@ -28,7 +28,7 @@ namespace Marlowe.Tests
         public void CheckNamespaceName()
         {
             NamespaceVisitor.VisitNamespace_declaration(CSharpParser.namespace_declaration());
-            string NameofNamespace= ((CSharpVisitor)NamespaceVisitor).Namespace;
+            string NameofNamespace = ((CSharpVisitor)NamespaceVisitor).Namespace;
             Assert.IsTrue(NameofNamespace == "dummyNamespace");
         }
         [TestMethod()]

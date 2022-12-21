@@ -20,7 +20,7 @@ namespace Marlowe
         /// <returns>A list of directories for C# files.</returns>
         public static List<string> GatherFileInformation(string path, bool checkSubDirectories = true)
         {
-            if(checkSubDirectories)
+            if (checkSubDirectories)
             {
                 GatherInformationAboutSubDirectories(path);
             }
@@ -39,7 +39,7 @@ namespace Marlowe
                 }
             }
             GatherInformationAboutFilesInFolder(path);
-            
+
         }
 
         private static void GatherInformationAboutFilesInFolder(string path)

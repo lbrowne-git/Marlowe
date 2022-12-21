@@ -1,10 +1,10 @@
 ﻿using CommandLine;
 using Marlowe.Logger;
-using System.IO;
-using static Marlowe.Program;
 
 namespace Marlowe
 {
+
+
     public abstract class CommandHandler : CommandObjectHandler
     {
 
@@ -44,7 +44,7 @@ namespace Marlowe
                        // File Handling
                        if (o.File != null || o.Directory != null)
                        {
-                           if(o.File != null)
+                           if (o.File != null)
                            {
                                Files.Add(o.File);
                            }
@@ -65,6 +65,10 @@ namespace Marlowe
                    });
 
         }
+
+        /// <summary>
+        ///     Leverages <see cref="CommandLine.OptionAttribute"/> annotations to provide <see cref="CommandHandler"/> with CLI options.
+        /// </summary>
         private partial class Options
         {
             [Option('f', "file", Required = false, HelpText = "The name of the file that will be interpeted.")]
@@ -74,7 +78,7 @@ namespace Marlowe
             public string Directory { get; set; }
 
             [Option('s', "subd", Required = false, HelpText = "Toggle sub directory reading")]
-            public bool SubDirectory { get; set; } = false;
+            public bool SubDirectory { get; set; } = true;
 
             [Option('s', "st", Required = false, HelpText = "Will output a symbol table instead of actually executing any code, can be used to view the contents of a class.")]
             public bool SymbolTable { get; set; }

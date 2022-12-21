@@ -1,5 +1,4 @@
 ﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Tree;
 using Marlowe.Utilities;
 
 namespace Marlowe.CSharp
@@ -12,17 +11,18 @@ namespace Marlowe.CSharp
     public class CSharpAnalyser : Analyser
     {
 
-        private void Setup(string text){
-            
+        private void Setup(string text)
+        {
+
             Stream = new AntlrInputStream(text);
             Lexer = new CSharpLexer(Stream);
             CommonTokenStream = new CommonTokenStream(Lexer);
             Parser = new CSharpParser(CommonTokenStream);
             Visitor = new CSharpVisitor();
         }
-        public CSharpAnalyser(string text){
+        public CSharpAnalyser(string text)
+        {
             Setup(text);
         }
     }
 }
- 

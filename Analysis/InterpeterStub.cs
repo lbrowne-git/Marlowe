@@ -1,19 +1,20 @@
-﻿using System;
+﻿using Marlowe.CSharp;
+using Marlowe.Utilities;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Marlowe.CSharp;
-using Marlowe.Utilities;
 
 namespace Marlowe.Tests
 {
     /// <summary>
     /// Stub implementation of The Interpeter Engine.
     /// </summary>
-    public  class InterpeterStub : ComputableAPI
+    public class InterpeterStub : ComputableAPI
     {
         private static readonly string dir = "F:\\Libraries\\Libraries\\College\\FYP\\Marlowe\\Testing Files";
         public static List<string> files = new List<string>();
-        public InterpeterStub(){            
+        public InterpeterStub()
+        {
             Setup();
         }
 
