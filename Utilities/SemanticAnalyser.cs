@@ -99,7 +99,7 @@ namespace Marlowe.Utilities
                     }
                     else
                     {
-                        throw new Exception($"{LNode.Variable}({LNode.Type.Name}) and {RNode.Variable}({RNode.Type.Name}) are different types");
+                        throw new Exception($"{LNode.Variable}({LNode.ClassType.Name}) and {RNode.Variable}({RNode.ClassType.Name}) are different types");
 
                     }
 
@@ -108,7 +108,7 @@ namespace Marlowe.Utilities
             }
             catch
             {
-                Logger.WriteContent("Error handling semantic analysis assuming problem with left or right node", ILogger.Levels.Error);
+                //Logger.WriteContent("Error handling semantic analysis assuming problem with left or right node", ILogger.Levels.Error);
                 if (LNode != null)
                 {
                     return LNode;
@@ -141,7 +141,16 @@ namespace Marlowe.Utilities
             }
             catch
             {
-                return false;
+                try
+                {
+                    int output = Convert.ToInt32(t);
+                    output += 1;
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
 
@@ -174,9 +183,9 @@ namespace Marlowe.Utilities
                     ClassName = lNode.ClassName,
                     Variable = lNode.Variable,
                     Namespace = lNode.Namespace,
-                    Type = typeof(bool)
+                    ClassType = typeof(bool)
                 };
-                if (lNode.Type == rNode.Type)
+                if (lNode.ClassType == rNode.ClassType || (lNode.ClassType == typeof(int) && rNode.ClassType == typeof(double) || (rNode.ClassType == typeof(double) && lNode.ClassType == typeof(int))))
                 {
                     switch (logic)
                     {
@@ -322,6 +331,11 @@ namespace Marlowe.Utilities
             {
                 return false;
             }
+        }
+
+        public static object ReturnObjectOfType(object obj, Type type)
+        {
+            return Convert.ChangeType(obj, type);
         }
     }
 }

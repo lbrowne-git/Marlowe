@@ -744,7 +744,6 @@ namespace Marlowe.CSharp
                     return VisitIfStatement(ifContext);
                 case CSharpParser.WhileStatementContext whileContext:
                     return VisitWhileStatement(whileContext);
-                    return null;
                 case CSharpParser.ReturnStatementContext returnContext:
                     return VisitReturnStatement(returnContext);
                 default:
@@ -763,6 +762,7 @@ namespace Marlowe.CSharp
                     while ((bool)WhileNode.Variable)
                     {
                         VisitEmbedded_statement(context.embedded_statement());
+                        WhileNode = VisitExpression(context.expression());
                     }
                 }
                 else
@@ -1310,14 +1310,15 @@ namespace Marlowe.CSharp
                 {
                     SymbolNode LNode = VisitRelational_expression(context.relational_expression()[0]);
                     SymbolNode RNode = VisitRelational_expression(context.relational_expression()[1]);
+                    if(context.OP_NE() != null)
+                    {
+                        return SemanticAnalyser.LogicalOperationExpression(LNode, RNode, SemanticAnalyser.Logical.NEQ);
+                    }
                     if (context.OP_EQ() != null)
                     {
                         return SemanticAnalyser.LogicalOperationExpression(LNode, RNode, SemanticAnalyser.Logical.EQ);
                     }
-                    else //OP_NE
-                    {
-                        return SemanticAnalyser.LogicalOperationExpression(LNode, RNode, SemanticAnalyser.Logical.NEQ);
-                    }
+                    return null;
                 }
                 else
                 {
@@ -2022,6 +2023,7 @@ namespace Marlowe.CSharp
                 };
                 if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode))
                 {
+                    VisitorSymbolNode.Variable = SemanticAnalyser.ReturnObjectOfType(VisitorSymbolNode.Variable, VisitorSymbolNode.ClassType);
                     return VisitorSymbolNode;
                 }
                 else
