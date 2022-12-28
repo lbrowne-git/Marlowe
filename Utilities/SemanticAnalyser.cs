@@ -26,7 +26,7 @@ namespace Marlowe.Utilities
             {// Node must be created this way to eliminate object referencing.
                 ClassName = LNode.ClassName,
                 Namespace = LNode.Namespace,
-                Type = LNode.Type,
+                ClassType = LNode.ClassType,
                 Variable = LNode.Variable
             };
             try
@@ -52,7 +52,7 @@ namespace Marlowe.Utilities
                             break;
                     }
                 }
-                else if (LNode.Type == typeof(string) && RNode.Type == typeof(string))
+                else if (LNode.ClassType == typeof(string) && RNode.ClassType == typeof(string))
                 {// concatenates two strings
                     if (OP == Operators.PLUS)
                     {
@@ -63,11 +63,11 @@ namespace Marlowe.Utilities
                         throw new Exception($"{LNode.Variable} and {RNode.Variable} are strings that can only be added together.");
                     }
                 }
-                else if (LNode.Type == typeof(string) || RNode.Type == typeof(string))
+                else if (LNode.ClassType == typeof(string) || RNode.ClassType == typeof(string))
                 {// concatenates a string and another type
                     if (OP == Operators.PLUS)
                     {
-                        if (LNode.Type == typeof(string))
+                        if (LNode.ClassType == typeof(string))
                         {
                             LNode.Variable = LNode.Variable.ToString().TrimEnd('"');
                             symbolNode.Variable = "" + LNode.Variable + RNode.Variable.ToString() + '"';
@@ -77,7 +77,7 @@ namespace Marlowe.Utilities
                             RNode.Variable = RNode.Variable.ToString().TrimStart('"');
 
                             //symbolMode is made of LNode passed into this method, this converts it type to a string.
-                            symbolNode.Type = typeof(string);
+                            symbolNode.ClassType = typeof(string);
                             symbolNode.Variable = "\"" + LNode.Variable + RNode.Variable.ToString();
 
                         }
@@ -89,11 +89,11 @@ namespace Marlowe.Utilities
                 }
                 else
                 {
-                    if (LNode.Type == typeof(bool) && RNode.Type == typeof(bool))
+                    if (LNode.ClassType == typeof(bool) && RNode.ClassType == typeof(bool))
                     {
                         throw new Exception($"{LNode.Variable} and {RNode.Variable} are both booleans and cannot be added together");
                     }
-                    else if (LNode.Type == typeof(object) && RNode.Type == typeof(object))
+                    else if (LNode.ClassType == typeof(object) && RNode.ClassType == typeof(object))
                     {
                         throw new Exception($"{LNode.Variable} and {RNode.Variable} are both objects of generic type and cannot be added together");
                     }
@@ -155,12 +155,12 @@ namespace Marlowe.Utilities
         {
             try
             {
-                Convert.ChangeType(sn.Variable, sn.Type);
+                Convert.ChangeType(sn.Variable, sn.ClassType);
                 return true;
             }
             catch
             {
-                Logger.WriteContent($"{sn.Variable} is not an object of type {sn.Type}", ILogger.Levels.Warning);
+                Logger.WriteContent($"{sn.Variable} is not an object of type {sn.ClassType}", ILogger.Levels.Warning);
                 return false;
             }
         }
@@ -246,7 +246,7 @@ namespace Marlowe.Utilities
                 }
                 else
                 {
-                    Logger.WriteContent($"Logical operation of {lNode.Variable} and {rNode.Variable} as they are not the same type {lNode.Type.Name}, {rNode.Type.Name}", ILogger.Levels.Warning);
+                    Logger.WriteContent($"Logical operation of {lNode.Variable} and {rNode.Variable} as they are not the same type {lNode.ClassType.Name}, {rNode.ClassType.Name}", ILogger.Levels.Warning);
                 }
                 return bufferNode;
             }

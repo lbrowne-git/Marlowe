@@ -160,7 +160,7 @@ namespace Marlowe
                     Criteria.SetMainFunctionExists(true);
                     foreach (KeyValuePair<string, SymbolNode> param in paramatars.Paramaters)
                     {
-                        if (param.Key.ToUpper().Equals("ARGS") && param.Value.Type == typeof(string))   // Checks for string args array
+                        if (param.Key.ToUpper().Equals("ARGS") && param.Value.ClassType == typeof(string))   // Checks for string args array
                         {
                             Criteria.SetMainArgs(true);
 
