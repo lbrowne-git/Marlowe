@@ -28,7 +28,7 @@ namespace Marlowe.Utilities
         /// <summary>
         /// <see langword="abstract"/> <see cref="Antlr4.Runtime.Tree.IParseTreeVisitor{Result}"/> to be substituted with any <see href="https://www.antlr.org/">ANTLR</see> generated visitors.
         /// </summary>
-        public virtual IParseTreeVisitor<object?> Visitor { set; get; }
+        public virtual IParseTreeVisitor<object> Visitor { set; get; }
 
 
         public virtual CommonTokenStream CommonTokenStream { set; get; }

@@ -1,5 +1,8 @@
 ﻿namespace Marlowe.Tests
 {
+    /// <summary>
+    /// A string builder class that generates allows for the creation of
+    /// </summary>
     internal static class SourceConstructor
     {
         public static string NamespaceName(string Namespace)
@@ -76,17 +79,13 @@
             return "\r\n class " + Classname + "{\r\n";
         }
 
-        public static string DeclareString(string? variable, string value)
+        public static string DeclareString(string variable, string value)
         {
             return $"string {variable} = \"{value}\";\r\n";
         }
 
-        public static string DeclareInt(string? variable, int value)
+        public static string DeclareInt(string variable, int value)
         {
-            if (variable == null)
-            {
-
-            }
             return $"int {variable} = {value};\r\n";
         }
 

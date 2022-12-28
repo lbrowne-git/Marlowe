@@ -85,9 +85,11 @@ namespace Marlowe
         /// </summary>
         public void LogExecutedSymbolTable()
         {
-
-            Logger.WriteSymbolNode(EntryPoint.Variables, "Variables");
-            Logger.WriteFunctionNode(EntryPoint.Functions, "Functions");
+            if(Logger != null)
+            {
+                Logger.WriteSymbolNode(EntryPoint.Variables, "Variables");
+                Logger.WriteFunctionNode(EntryPoint.Functions, "Functions");
+            }
 
         }
 
