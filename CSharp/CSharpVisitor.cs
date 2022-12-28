@@ -426,7 +426,7 @@ namespace Marlowe.CSharp
                     {// Blank Symbol Value for no variable assignment
                         ClassName = ClassName,
                         Namespace = Namespace,
-                        Type = VarType,
+                        ClassType = VarType,
                         RuleContext = context.variable_initializer()
                     };
                 }
@@ -484,7 +484,7 @@ namespace Marlowe.CSharp
                             {
                                 VisitMethod_body(context.method_body());
                             }
-                            SymbolFunctionNode functionNode = null;
+                            SymbolFunctionNode functionNode = new();
                             if (context.formal_parameter_list() != null)
                             {
                                 functionNode = (SymbolFunctionNode)VisitFormal_parameter_list(context.formal_parameter_list());
@@ -1070,7 +1070,7 @@ namespace Marlowe.CSharp
                 {
                     if (ParamaterSymbolNodes.Count > 0)
                     {
-
+                        // TODO: Handle functions with parameters
                     }
                 }
                 // Function Calls are stored for execution when entrypoint is found.
@@ -1092,7 +1092,7 @@ namespace Marlowe.CSharp
 
 
                 VisitorSymbolNode = VisitNon_assignment_expression(context.non_assignment_expression());
-                if (VisitorSymbolNode is SymbolFunctionNode && criteria.EntryPointFound())
+                if (VisitorSymbolNode is SymbolFunctionNode node && criteria.EntryPointFound())
                 {
                     //      This catches infinte method calling that may occur when
                     //          a variable and a function share the same name.
@@ -1109,7 +1109,7 @@ namespace Marlowe.CSharp
                         }
                     }
 
-                    VisitorSymbolNode = HandleFunctionCall((SymbolFunctionNode)VisitorSymbolNode);
+                    VisitorSymbolNode = HandleFunctionCall(node);
                 }
 
 
@@ -1120,9 +1120,8 @@ namespace Marlowe.CSharp
 
         public SymbolNode HandleFunctionCall(SymbolNode methodCall)
         {
-            if (methodCall is SymbolFunctionNode)
+            if (methodCall is SymbolFunctionNode symbolFunctionNode)
             {
-                SymbolFunctionNode symbolFunctionNode = (SymbolFunctionNode)methodCall;
                 FunctionCall = true;
                 ParamaterSymbolNodes = new Dictionary<string, SymbolNode>();
                 foreach (var item in symbolFunctionNode.Paramaters)
@@ -1408,26 +1407,26 @@ namespace Marlowe.CSharp
                 if (context.MINUS() != null || context.PLUS() != null)
                 {
                     SymbolNode LNode = VisitMultiplicative_expression(context.multiplicative_expression()[0]);
-                    if (LNode is SymbolFunctionNode)
+                    if (LNode is SymbolFunctionNode lFuncNode)
                     {
-                        LNode = HandleFunctionCall((SymbolFunctionNode)LNode);
+                        LNode = HandleFunctionCall(lFuncNode);
                     }
                     SymbolNode RNode = VisitMultiplicative_expression(context.multiplicative_expression()[1]);
-                    if (RNode is SymbolFunctionNode)
+                    if (RNode is SymbolFunctionNode rFuncNode)
                     {
-                        RNode = HandleFunctionCall((SymbolFunctionNode)RNode);
+                        RNode = HandleFunctionCall(rFuncNode);
                     }
                     if (context.PLUS().Length > 0)
                     {
 
                         VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.PLUS);
-                        VisitorSymbolNode.Type = VarType;
+                        VisitorSymbolNode.ClassType = VarType;
                     }
                     else if (context.MINUS().Length > 0)
                     {
 
                         VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MINUS);
-                        VisitorSymbolNode.Type = VarType;
+                        VisitorSymbolNode.ClassType = VarType;
                     }
                     else
                     {
@@ -1461,14 +1460,14 @@ namespace Marlowe.CSharp
                 if (context.STAR() != null || context.PERCENT() != null || context.DIV() != null)
                 {
                     SymbolNode LNode = VisitSwitch_expression(context.switch_expression()[0]);
-                    if (LNode is SymbolFunctionNode)
+                    if (LNode is SymbolFunctionNode lFuncNode)
                     {
-                        LNode = HandleFunctionCall((SymbolFunctionNode)LNode);
+                        LNode = HandleFunctionCall(lFuncNode);
                     }
                     SymbolNode RNode = VisitSwitch_expression(context.switch_expression()[1]);
-                    if (RNode is SymbolFunctionNode)
+                    if (RNode is SymbolFunctionNode rFuncNode)
                     {
-                        RNode = HandleFunctionCall((SymbolFunctionNode)RNode);
+                        RNode = HandleFunctionCall(rFuncNode);
                     }
                     if (context.STAR().Length > 0)
                     {
@@ -1647,9 +1646,9 @@ namespace Marlowe.CSharp
                         VisitorSymbolNode = SearchSymbolTable(classFunc, funcClass);
                         if (VisitorSymbolNode != null)
                         {
-                            if (VisitorSymbolNode is SymbolFunctionNode)
+                            if (VisitorSymbolNode is SymbolFunctionNode node)
                             {
-                                return PopulateFuncParams((SymbolFunctionNode)VisitorSymbolNode, context.method_invocation()[0]);
+                                return PopulateFuncParams(node, context.method_invocation()[0]);
 
                             }
                             else
