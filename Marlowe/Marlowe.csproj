@@ -10,6 +10,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/lbrowne-git/Marlowe</PackageProjectUrl>
     <FileVersion>0.8</FileVersion>
+    <ApplicationIcon>Marlowe.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -34,6 +35,10 @@
   <ItemGroup>
     <Compile Remove="Test.cs" />
     <Compile Remove="Test2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Marlowe.ico" />
   </ItemGroup>
 
   <ItemGroup>
