@@ -57,7 +57,7 @@ namespace Marlowe.Utilities
                         typeSignature = keyValuePair.Value.ClassName;
                         tb = GetTypeBuilder(typeSignature);
                     }
-                    CreateProperty(tb, keyValuePair.Key, keyValuePair.Value.Type);
+                    CreateProperty(tb, keyValuePair.Key, keyValuePair.Value.ClassType);
                 }
 
 

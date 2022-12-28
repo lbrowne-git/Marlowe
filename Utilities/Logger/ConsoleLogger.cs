@@ -91,11 +91,11 @@ namespace Marlowe.Logger
                             if (!WrittenClassContent.ContainsKey(item.Value.ClassName))
                             {
                                 ClassExists = true;
-                                WrittenClassContent[item.Value.ClassName] = $"{item.Value.Type.Name} {item.Key}: \t{item.Value}";
+                                WrittenClassContent[item.Value.ClassName] = $"{item.Value.ClassType.Name} {item.Key}: \t{item.Value}";
                             }
                             else
                             {
-                                WrittenClassContent[item.Value.ClassName] += $"{item.Value.Type.Name} {item.Key}\t:" + $"\t{item.Value}";
+                                WrittenClassContent[item.Value.ClassName] += $"{item.Value.ClassType.Name} {item.Key}\t:" + $"\t{item.Value}";
                             }
                         }
                     }
@@ -127,7 +127,7 @@ namespace Marlowe.Logger
                             }
                             else
                             {
-                                WrittenClassContent[functions.Value.ClassName] += $"({functions.Value.Type.Name}) {functions.Key}\t:" + $"\t{functions.Value}";
+                                WrittenClassContent[functions.Value.ClassName] += $"({functions.Value.ClassType.Name}) {functions.Key}\t:" + $"\t{functions.Value}";
                             }
 
                         }
@@ -158,7 +158,7 @@ namespace Marlowe.Logger
             {
                 try
                 {
-                    WriteContent($"{node.Value.Type.Name} {node.Key} :\n{node.Value}");
+                    WriteContent($"{node.Value.ClassType.Name} {node.Key} :\n{node.Value}");
                 }
                 catch
                 {// used for directives.

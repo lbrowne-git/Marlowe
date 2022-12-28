@@ -21,7 +21,7 @@ namespace Marlowe.Utilities
         public string Namespace { get; set; }
         public string ClassName { get; set; }
         public string Accessibility { get; set; }
-        public Type Type { get; set; }
+        public Type ClassType { get; set; }
 
         public ParserRuleContext RuleContext { get; set; }
 

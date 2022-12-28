@@ -14,7 +14,7 @@ namespace Marlowe.Utilities
             string buffer = "Paramaters(";
             foreach (KeyValuePair<string, SymbolNode> item in Paramaters)
             {
-                buffer += $"{item.Value.Type.Name} {item.Key} , ";
+                buffer += $"{item.Value.ClassType.Name} {item.Key} , ";
             }
             buffer = buffer.TrimEnd();
             buffer = buffer.TrimEnd(',');

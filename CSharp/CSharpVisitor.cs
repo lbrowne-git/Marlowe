@@ -496,7 +496,7 @@ namespace Marlowe.CSharp
                                     ClassName = ClassName,
                                     Variable = null,
                                     Namespace = Namespace,
-                                    Type = VarType
+                                    ClassType = VarType
                                 };
                             }
                             functionNode.RuleContext = context.method_body();
@@ -552,7 +552,7 @@ namespace Marlowe.CSharp
                 {
                     ClassName = ClassName,
                     Namespace = Namespace,
-                    Type = VarType,
+                    ClassType = VarType,
                     Variable = null,
                 };
                 if (context.fixed_parameter().Length == 1)
@@ -618,7 +618,7 @@ namespace Marlowe.CSharp
                         {
                             ClassName = ClassName,
                             Namespace = Namespace,
-                            Type = VarType,
+                            ClassType = VarType,
                         };
                     }
                     return paramaterSymbol;
@@ -881,7 +881,7 @@ namespace Marlowe.CSharp
                 {
                     ClassName = ClassName,
                     Namespace = Namespace,
-                    Type = VarType,
+                    ClassType = VarType,
                     Variable = value,
                 };
 
@@ -1080,7 +1080,7 @@ namespace Marlowe.CSharp
                     // This must be cast back to a variable node to handled by the logger
                 }
                 VisitorSymbolNode.ClassName = ClassName;
-                VisitorSymbolNode.Type = VarType;
+                VisitorSymbolNode.ClassType = VarType;
                 VisitorSymbolNode.Namespace = Namespace;
                 return VisitorSymbolNode;
             }
@@ -1473,17 +1473,17 @@ namespace Marlowe.CSharp
                     if (context.STAR().Length > 0)
                     {
                         VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MULT);
-                        VisitorSymbolNode.Type = VarType;
+                        VisitorSymbolNode.ClassType = VarType;
                     }
                     else if (context.DIV().Length > 0)
                     {
                         VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.DIV);
-                        VisitorSymbolNode.Type = VarType;
+                        VisitorSymbolNode.ClassType = VarType;
                     }
                     else if (context.PERCENT().Length > 0)
                     {
                         VisitorSymbolNode = SemanticAnalyser.OperationExpression(LNode, RNode, SemanticAnalyser.Operators.MOD);
-                        VisitorSymbolNode.Type = VarType;
+                        VisitorSymbolNode.ClassType = VarType;
                     }
                     else
                     {// clears visitor node
@@ -1807,7 +1807,7 @@ namespace Marlowe.CSharp
                         {
                             ClassName = ClassName,
                             Namespace = Namespace,
-                            Type = VarType,
+                            ClassType = VarType,
                             Variable = value
                         };
                         if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode)) // Casts the varaible to the type it was declared as
@@ -2018,7 +2018,7 @@ namespace Marlowe.CSharp
                 {
                     ClassName = ClassName,
                     Namespace = Namespace,
-                    Type = typeof(double),
+                    ClassType = typeof(double),
                     Variable = context.Start.Text
                 };
                 if (SemanticAnalyser.IsCorrectVariableType(VisitorSymbolNode))
@@ -2058,7 +2058,7 @@ namespace Marlowe.CSharp
             {
                 ClassName = ClassName,
                 Namespace = Namespace,
-                Type = VarType,
+                ClassType = VarType,
                 Variable = boolLiteral
             };
         }
@@ -2084,7 +2084,7 @@ namespace Marlowe.CSharp
                         {
                             ClassName = ClassName,
                             Namespace = Namespace,
-                            Type = VarType,
+                            ClassType = VarType,
                             Variable = context.Start.Text
                         };
                     }
@@ -2204,7 +2204,7 @@ namespace Marlowe.CSharp
             }
             else if (Variables.ContainsKey(context.identifier().IDENTIFIER().GetText()))
             {
-                return new SymbolVariableNode { ClassName = ClassName, Variable = context.identifier().IDENTIFIER().GetText(), Namespace = Namespace, Type = VarType };
+                return new SymbolVariableNode { ClassName = ClassName, Variable = context.identifier().IDENTIFIER().GetText(), Namespace = Namespace, ClassType = VarType };
             }
             else
             {
