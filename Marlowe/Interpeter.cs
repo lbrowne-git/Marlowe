@@ -3,8 +3,7 @@ using Marlowe.Logger;
 using Marlowe.Utilities;
 using System;
 using System.Collections.Generic;
-
-
+using System.IO;
 
 namespace Marlowe
 {
@@ -30,6 +29,14 @@ namespace Marlowe
             SymbolTables = symbolTables;
             Logger = logger;
         }
+        public Interpeter(List<string> Files, ILogger logger)
+        {
+            Criteria = new EntryPointCriteria();
+            Logger = logger;
+            ExecuteAnalyser(Files);
+        }
+
+
 
         /// <summary>
         ///     Executes the Interpeter engines. discovers entrypoint into the provided code and
@@ -126,6 +133,59 @@ namespace Marlowe
                 }
             }
         }
+        /// <summary>
+        ///     Generates a list of class objects that can be gotten using <see cref="GetClassObject(string)"/> or <see cref="GetClassObjects(List{string})"/>.
+        ///     This is done by making use of the concrete implementation of <see cref="Analyser"/>, and its analyser type can be changed.</summary>
+        ///     
+        /// <remarks>
+        ///     This is <see langword="static"/> so it can be used with <see cref="Main(string[])"/>.
+        /// </remarks>
+        /// <param name="files">A collection of files that will analysed by the system</param>.
+        public void ExecuteAnalyser(List<string> files)
+        {
+            foreach (string file in files)  // passes through each file in a directory
+            {
+                try
+                {
+                    string FileContents = File.ReadAllText(file);
+
+                    Analyser analyser = new CSharpAnalyser(FileContents);
+                    analyser.CommonTokenStream.Fill();
+
+                    // Casts the abstract Analyser types to their CSharp implementation.
+                    CSharpParser codeParser = (CSharpParser)analyser.Parser;
+                    codeParser.RemoveErrorListeners();
+                    CSharpVisitor cSharpVisitor = (CSharpVisitor)analyser.Visitor;
+                    cSharpVisitor.VisitCompilation_unit(codeParser.compilation_unit());
+
+
+                    //Populates with a file's SymbolTable.
+                    SymbolTables.Add(cSharpVisitor);
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex);
+                }
+            }
+        }
+
+
+        public List<object> GetClassObjects(List<string> files)
+        {
+            ExecuteAnalyser(files);
+            return NodeObjects;
+        }
+
+        public List<object> GetClassObject(string file)
+        {
+            ExecuteAnalyser(new List<string>() { file });
+            return NodeObjects;
+        }
+        /// <summary>
+        ///Handles the CLI of this applicaiton
+        /// </summary>
+
 
         /// <summary>
         ///     Uses the <see cref="SymbolTable"/> to generate dynamic classs which will have the properities of the class files.

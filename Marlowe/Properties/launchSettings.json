@@ -2,7 +2,7 @@
   "profiles": {
     "Marlowe": {
       "commandName": "Project",
-      "commandLineArgs": "--log --directory \"Directory/To/Your/Files\""
+      "commandLineArgs": "--log --directory \"C:\\Users\\Lbrowne3\\source\\repos\\ConsoleApp1\\ConsoleApp1\""
     }
   }
 }
