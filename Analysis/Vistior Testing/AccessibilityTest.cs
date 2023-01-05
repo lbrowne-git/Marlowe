@@ -1,12 +1,12 @@
 ﻿
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Marlowe.Visitors;
-using Marlowe.Utilities;
 using Marlowe.CSharp;
-using System.Diagnostics.CodeAnalysis;
+using Marlowe.Utilities;
+using Marlowe.Visitors;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 
-namespace Marlowe.Tests{
+namespace Marlowe.Tests
+{
     [TestClass()]
     public class AccessibilityTest : AnalyserStub
     {
@@ -26,7 +26,8 @@ namespace Marlowe.Tests{
         }
 
         [TestMethod()]
-        public void CheckClassNamespace(){
+        public void CheckClassNamespace()
+        {
             ClassVisitor.VisitClass_definition(CSharpParser.class_definition());
             string ClassName = ((CSharpVisitor)ClassVisitor).ClassName;
             Assert.IsTrue(ClassName == "dummyClass");

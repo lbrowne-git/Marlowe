@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection.Emit;
 using System.Reflection;
+using System.Reflection.Emit;
 
 
 namespace Marlowe.Utilities
@@ -41,7 +41,8 @@ namespace Marlowe.Utilities
             return classObjects;
         }
 
-        private static Type CompileResultType(SymbolTable symbolTable){
+        private static Type CompileResultType(SymbolTable symbolTable)
+        {
             TypeBuilder tb = null;
 
             //ConstructorBuilder constructor = tb.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
@@ -49,19 +50,20 @@ namespace Marlowe.Utilities
             string typeSignature = "";
             foreach (KeyValuePair<string, SymbolNode> keyValuePair in symbolTable.Variables)
             {
-                if(keyValuePair.Value != null)
+                if (keyValuePair.Value != null)
                 {
                     if (typeSignature != keyValuePair.Value.ClassName)
                     {
                         typeSignature = keyValuePair.Value.ClassName;
                         tb = GetTypeBuilder(typeSignature);
                     }
-                    CreateProperty(tb, keyValuePair.Key, keyValuePair.Value.Type);
+                    CreateProperty(tb, keyValuePair.Key, keyValuePair.Value.ClassType);
                 }
 
 
             }
-            if (tb != null){
+            if (tb != null)
+            {
                 Type objectType = tb.CreateType();
                 return objectType;
             }

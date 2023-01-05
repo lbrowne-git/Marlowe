@@ -1,4 +1,3 @@
-using Antlr4.Runtime;
 using Marlowe.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
@@ -11,19 +10,20 @@ namespace Marlowe.Tests
     [TestClass()]
     public class SymbolTableTesting : InterpeterStub
     {
-        public SymbolTableTesting() : base(){}
+        public SymbolTableTesting() : base() { }
 
         public override void Setup()
         {
-            files.Add(SourceConstructor.GenerateNamespaceWithUsingDirectives("dummyNamesapce", "dummyClass","system"));
+            files.Add(SourceConstructor.GenerateNamespaceWithUsingDirectives("dummyNamesapce", "dummyClass", "system"));
             ExecuteAnalyser(files);
         }
         [TestMethod()]
-        public void TestVariableCollection(){
+        public void TestVariableCollection()
+        {
             List<Dictionary<string, SymbolNode>> variables = new List<Dictionary<string, SymbolNode>>();
             foreach (var item in symbolTables)
             {
-                if(item.Variables.Count > 0)
+                if (item.Variables.Count > 0)
                 {
                     variables.Add(item.Variables);
                 }

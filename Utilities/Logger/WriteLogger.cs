@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Marlowe.Utilities;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Marlowe.Utilities;
 
 namespace Marlowe.Logger
 {
@@ -16,34 +16,37 @@ namespace Marlowe.Logger
         private readonly ILogger.Levels Level;
         private string FileName = "log.txt";
 
-        public WriteLogger(ILogger.Levels lvl){
+        public WriteLogger(ILogger.Levels lvl)
+        {
             this.Level = lvl;
         }
-        public WriteLogger(ILogger.Levels level, string dir){
+        public WriteLogger(ILogger.Levels level, string dir)
+        {
             this.Level = level;
             FileName = dir + FileName;
         }
 
         public void WriteHeader(string heading)
         {
-            File.WriteAllText(FileName,$"|{DateTime.Now}|");
+            File.WriteAllText(FileName, $"|{DateTime.Now}|");
         }
 
         public void WriteHeader(string heading, ILogger.Levels level)
         {
-            if (level >= Level){
+            if (level >= Level)
+            {
                 Console.WriteLine($"|{DateTime.Now}|");
             }
         }
         public void WriteContent(string content)
         {
 
-            File.WriteAllText(FileName,$"{content}");
+            File.WriteAllText(FileName, $"{content}");
 
         }
         public void WriteContent(string content, ILogger.Levels level)
         {
-            if(level >= Level)
+            if (level >= Level)
             {
                 Console.WriteLine($"{content}");
             }
@@ -53,11 +56,12 @@ namespace Marlowe.Logger
         public void LogSymbolTable(SymbolTable symbolTable)
         {
             WriteSymbolNode(symbolTable.Variables, "Variables");
-           // WriteSymbolNode(symbolTable.Functions, "Functions");
+            // WriteSymbolNode(symbolTable.Functions, "Functions");
             WriteSymbolNode(symbolTable.Directives, "");
         }
 
-        public void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = ""){
+        public void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = "")
+        {
             WriteHeader(header);
             Console.WriteLine($"Total:\t {dictonary.Count}");
             foreach (KeyValuePair<string, SymbolNode> node in dictonary)

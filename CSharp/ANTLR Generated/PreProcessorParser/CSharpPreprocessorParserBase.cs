@@ -1,7 +1,6 @@
-using System;
+using Antlr4.Runtime;
 using System.Collections.Generic;
 using System.IO;
-using Antlr4.Runtime;
 
 public abstract class CSharpPreprocessorParserBase : Parser
 {
@@ -24,20 +23,20 @@ public abstract class CSharpPreprocessorParserBase : Parser
 
     protected bool AllConditions()
     {
-	    foreach (bool condition in conditions)
-	    {
-		    if (!condition)
-			    return false;
-	    }
-	    return true;
+        foreach (bool condition in conditions)
+        {
+            if (!condition)
+                return false;
+        }
+        return true;
     }
-    
+
     protected void OnPreprocessorDirectiveDefine()
     {
         ParserRuleContext c = this.Context;
         var d = c as CSharpPreprocessorParser.PreprocessorDeclarationContext;
         ConditionalSymbols.Add(d.CONDITIONAL_SYMBOL().GetText());
-	    d.value = AllConditions();
+        d.value = AllConditions();
     }
 
     protected void OnPreprocessorDirectiveUndef()
@@ -53,7 +52,7 @@ public abstract class CSharpPreprocessorParserBase : Parser
         ParserRuleContext c = this.Context;
         var d = c as CSharpPreprocessorParser.PreprocessorConditionalContext;
         d.value = d.expr.value.Equals("true") && AllConditions();
-	    conditions.Push(d.expr.value.Equals("true"));
+        conditions.Push(d.expr.value.Equals("true"));
     }
 
     protected void OnPreprocessorDirectiveElif()
@@ -177,34 +176,34 @@ public abstract class CSharpPreprocessorParserBase : Parser
     {
         ParserRuleContext c = this.Context;
         var d = c as CSharpPreprocessorParser.Preprocessor_expressionContext;
-	    d.value = d.expr.value.Equals("true") ? "false" : "true";
+        d.value = d.expr.value.Equals("true") ? "false" : "true";
     }
 
     protected void OnPreprocessorExpressionConditionalEq()
     {
         ParserRuleContext c = this.Context;
         var d = c as CSharpPreprocessorParser.Preprocessor_expressionContext;
-	    d.value = (d.expr1.value == d.expr2.value ? "true" : "false");
+        d.value = (d.expr1.value == d.expr2.value ? "true" : "false");
     }
 
     protected void OnPreprocessorExpressionConditionalNe()
     {
         ParserRuleContext c = this.Context;
         var d = c as CSharpPreprocessorParser.Preprocessor_expressionContext;
-	    d.value = (d.expr1.value != d.expr2.value ? "true" : "false");
+        d.value = (d.expr1.value != d.expr2.value ? "true" : "false");
     }
 
     protected void OnPreprocessorExpressionConditionalAnd()
     {
         ParserRuleContext c = this.Context;
         var d = c as CSharpPreprocessorParser.Preprocessor_expressionContext;
-	    d.value = (d.expr1.value.Equals("true") && d.expr2.value.Equals("true") ? "true" : "false");
+        d.value = (d.expr1.value.Equals("true") && d.expr2.value.Equals("true") ? "true" : "false");
     }
 
     protected void OnPreprocessorExpressionConditionalOr()
     {
         ParserRuleContext c = this.Context;
         var d = c as CSharpPreprocessorParser.Preprocessor_expressionContext;
-	    d.value = (d.expr1.value.Equals("true") || d.expr2.value.Equals("true") ? "true" : "false");
+        d.value = (d.expr1.value.Equals("true") || d.expr2.value.Equals("true") ? "true" : "false");
     }
 }

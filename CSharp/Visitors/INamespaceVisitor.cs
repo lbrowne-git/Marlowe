@@ -1,5 +1,4 @@
 using Antlr4.Runtime.Misc;
-using Marlowe.Utilities;
 
 namespace Marlowe.Visitors
 {
@@ -11,37 +10,37 @@ namespace Marlowe.Visitors
     public interface INamespaceVisitor<Result> : IGlobalVisitor<Result>
 
     {
-    /// <summary>
+        /// <summary>
         /// Visit a parse tree produced by <see cref="CSharpParser.namespace_or_type_name"/>.
         /// </summary>
         /// <param name="context">The parse tree.</param>
         /// <return>The visitor result.</return>
-	    public Result VisitNamespace_or_type_name([NotNull] CSharpParser.Namespace_or_type_nameContext context);
-    /// <summary>
+        public Result VisitNamespace_or_type_name([NotNull] CSharpParser.Namespace_or_type_nameContext context);
+        /// <summary>
         /// Visit a parse tree produced by <see cref="CSharpParser.namespace_member_declarations"/>.
         /// </summary>
         /// <param name="context">The parse tree.</param>
         /// <return>The visitor result.</return>
         public Result VisitNamespace_member_declarations([NotNull] CSharpParser.Namespace_member_declarationsContext context);
-	/// <summary>
+        /// <summary>
         /// Visit a parse tree produced by <see cref="CSharpParser.namespace_member_declaration"/>.
         /// </summary>
         /// <param name="context">The parse tree.</param>
         /// <return>The visitor result.</return>
         public Result VisitNamespace_member_declaration([NotNull] CSharpParser.Namespace_member_declarationContext context);
-    /// <summary>
+        /// <summary>
         /// Visit a parse tree produced by <see cref="CSharpParser.namespace_declaration"/>.
         /// </summary>
         /// <param name="context">The parse tree.</param>
         /// <return>The visitor result.</return>
         public Result VisitNamespace_declaration([NotNull] CSharpParser.Namespace_declarationContext context);
-	/// <summary>
+        /// <summary>
         /// Visit a parse tree produced by <see cref="CSharpParser.namespace_body"/>.
         /// </summary>
         /// <param name="context">The parse tree.</param>
         /// <return>The visitor result.</return>
         public Result VisitNamespace_body([NotNull] CSharpParser.Namespace_bodyContext context);
-    /// <summary>
+        /// <summary>
         /// Visit a parse tree produced by <see cref="CSharpParser.qualified_identifier"/>.
         /// </summary>
         /// <param name="context">The parse tree.</param>

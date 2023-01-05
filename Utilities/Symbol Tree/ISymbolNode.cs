@@ -1,7 +1,4 @@
-﻿using System;
-
-
-namespace Marlowe.Utilities
+﻿namespace Marlowe.Utilities
 
 {
     /// <summary>
@@ -10,6 +7,6 @@ namespace Marlowe.Utilities
     /// </summary>
     public interface ISymbolNode
     {
- 
+
     }
 }

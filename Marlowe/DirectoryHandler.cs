@@ -20,7 +20,7 @@ namespace Marlowe
         /// <returns>A list of directories for C# files.</returns>
         public static List<string> GatherFileInformation(string path, bool checkSubDirectories = true)
         {
-            if(checkSubDirectories)
+            if (checkSubDirectories)
             {
                 GatherInformationAboutSubDirectories(path);
             }
@@ -31,15 +31,23 @@ namespace Marlowe
         //recursively searches file directories for subdirectories and then adds files to list.
         private static void GatherInformationAboutSubDirectories(string path)
         {
-            if (Directory.GetDirectories(path).Length > 0)
+            try
             {
-                foreach (string directory in Directory.GetDirectories(path))
+
+                if (Directory.GetDirectories(path).Length > 0)
                 {
-                    GatherInformationAboutSubDirectories(directory);
+                    foreach (string directory in Directory.GetDirectories(path))
+                    {
+                        GatherInformationAboutSubDirectories(directory);
+                    }
                 }
+                GatherInformationAboutFilesInFolder(path);
             }
-            GatherInformationAboutFilesInFolder(path);
-            
+            catch
+            {
+                System.Console.WriteLine("no directory in provided location");
+            }
+
         }
 
         private static void GatherInformationAboutFilesInFolder(string path)

@@ -1,8 +1,4 @@
-﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Marlowe.Utilities
 {
@@ -18,11 +14,11 @@ namespace Marlowe.Utilities
             string buffer = "Paramaters(";
             foreach (KeyValuePair<string, SymbolNode> item in Paramaters)
             {
-                buffer += $"{item.Value.Type.Name} {item.Key} , ";
+                buffer += $"{item.Value.ClassType.Name} {item.Key} , ";
             }
             buffer = buffer.TrimEnd();
             buffer = buffer.TrimEnd(',');
-            buffer += ")\n"+base.ToString();
+            buffer += ")\n" + base.ToString();
             return buffer;
         }
     }

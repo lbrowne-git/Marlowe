@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Marlowe.Tests
+﻿namespace Marlowe.Tests
 {
+    /// <summary>
+    /// A string builder class that generates allows for the creation of
+    /// </summary>
     internal static class SourceConstructor
     {
         public static string NamespaceName(string Namespace)
         {
-            return "\r\nnamespace "+Namespace+" {\r\n";
+            return "\r\nnamespace " + Namespace + " {\r\n";
         }
         public static string GenerateNamespace(string Namespace, string NameOfClass)
         {
@@ -19,7 +18,7 @@ namespace Marlowe.Tests
 
         }
 
-        public static string GenerateNamespaceWithUsingDirectives(string Namespace, string NameofClass,string directive)
+        public static string GenerateNamespaceWithUsingDirectives(string Namespace, string NameofClass, string directive)
         {
             return UsingDirectives(directive)
                 + GenerateNamespace(Namespace, NameofClass);
@@ -47,20 +46,20 @@ namespace Marlowe.Tests
         public static string ClassBody()
         {
             return DeclareString("greeting", "hello world")
-                   + "public "+ DeclareInt("x", 4)
+                   + "public " + DeclareInt("x", 4)
                    + "public " + DeclareInt("y", 25)
-                   + "private " + DeclareFunction("void","TestFunction")
+                   + "private " + DeclareFunction("void", "TestFunction")
                    + ClosingBrace();
         }
 
         public static string DeclareFunction(string returnType, string Name)
         {
-            if(returnType.ToLower() != "void")
+            if (returnType.ToLower() != "void")
             {
                 return "public static " + returnType + " Name() {\r\n"
                     + DeclareInt("testInt", 5)
                     + "return null"
-                    +ClosingBrace();
+                    + ClosingBrace();
             }
             else
             {
@@ -77,24 +76,21 @@ namespace Marlowe.Tests
 
         public static string ClassName(string Classname)
         {
-            return "\r\n class "+Classname+"{\r\n";
+            return "\r\n class " + Classname + "{\r\n";
         }
 
-        public static string DeclareString(string? variable, string value)
+        public static string DeclareString(string variable, string value)
         {
             return $"string {variable} = \"{value}\";\r\n";
         }
 
-        public static string DeclareInt(string? variable, int value)
+        public static string DeclareInt(string variable, int value)
         {
-            if(variable == null)
-            {
-
-            }
             return $"int {variable} = {value};\r\n";
         }
 
-        public static string PerformAdditiveExpressionWithDeclaredVariables(string variable, string x, string y){
+        public static string PerformAdditiveExpressionWithDeclaredVariables(string variable, string x, string y)
+        {
             return $"double {variable} = {x} + {y};";
         }
     }

@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Antlr4.Runtime;
+using System.IO;
 
 public abstract class CSharpParserBase : Parser
 {

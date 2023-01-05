@@ -14,10 +14,11 @@ namespace Marlowe.Logger
 
         private readonly ILogger.Levels Level;
 
-        public ConsoleLogger(ILogger.Levels levels = ILogger.Levels.Error){
-            Level= levels;
+        public ConsoleLogger(ILogger.Levels levels = ILogger.Levels.Error)
+        {
+            Level = levels;
         }
-        
+
         public void WriteHeader(string heading = "")
         {
             Console.WriteLine($"*******************************************\n\t\t{heading}\n*******************************************");
@@ -30,13 +31,16 @@ namespace Marlowe.Logger
                 Console.WriteLine($"*******************************************\n\t\t{heading}\n*******************************************");
             }
         }
-        public void WriteContent(string content){
+        public void WriteContent(string content)
+        {
 
             Console.WriteLine($"{content}\n");
         }
 
-        public void WriteContent(string content, ILogger.Levels level){
-            if (level >= Level) {
+        public void WriteContent(string content, ILogger.Levels level)
+        {
+            if (level >= Level)
+            {
                 Console.WriteLine($"{content}");
             }
         }
@@ -63,7 +67,7 @@ namespace Marlowe.Logger
         /// <param name="symbolTable"></param>
         public void WriteClassTable(SymbolTable symbolTable)
         {
-            Dictionary<string,string> WrittenClassContent = new Dictionary<string,string>();
+            Dictionary<string, string> WrittenClassContent = new Dictionary<string, string>();
             foreach (string Namespace in symbolTable.GatherNamespaces())
             {
                 bool NamespaceExists = false;
@@ -71,7 +75,7 @@ namespace Marlowe.Logger
 
 
                 WriteHeader("Variables");
-                foreach (KeyValuePair<string,SymbolNode> item in symbolTable.Variables)
+                foreach (KeyValuePair<string, SymbolNode> item in symbolTable.Variables)
                 {
                     try
                     {
@@ -87,11 +91,11 @@ namespace Marlowe.Logger
                             if (!WrittenClassContent.ContainsKey(item.Value.ClassName))
                             {
                                 ClassExists = true;
-                                WrittenClassContent[item.Value.ClassName] = $"{item.Value.Type.Name} {item.Key}: \t{item.Value}";
+                                WrittenClassContent[item.Value.ClassName] = $"{item.Value.ClassType.Name} {item.Key}: \t{item.Value}";
                             }
                             else
                             {
-                                WrittenClassContent[item.Value.ClassName] += $"{item.Value.Type.Name} {item.Key}\t:" + $"\t{item.Value}";
+                                WrittenClassContent[item.Value.ClassName] += $"{item.Value.ClassType.Name} {item.Key}\t:" + $"\t{item.Value}";
                             }
                         }
                     }
@@ -123,7 +127,7 @@ namespace Marlowe.Logger
                             }
                             else
                             {
-                                WrittenClassContent[functions.Value.ClassName] += $"({functions.Value.Type.Name}) {functions.Key}\t:" + $"\t{functions.Value}";
+                                WrittenClassContent[functions.Value.ClassName] += $"({functions.Value.ClassType.Name}) {functions.Key}\t:" + $"\t{functions.Value}";
                             }
 
                         }
@@ -132,7 +136,7 @@ namespace Marlowe.Logger
                     {
 
                     }
-                    
+
                 }
 
                 foreach (var item in WrittenClassContent)
@@ -143,17 +147,18 @@ namespace Marlowe.Logger
             }
         }
 
-      
 
 
-        public void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = ""){
+
+        public void WriteSymbolNode(IDictionary<string, SymbolNode> dictonary, string header = "")
+        {
             WriteHeader(header);
             Console.WriteLine($"Total:\t {dictonary.Count}");
             foreach (KeyValuePair<string, SymbolNode> node in dictonary)
             {
                 try
                 {
-                    WriteContent($"{node.Value.Type.Name} {node.Key} :\n{node.Value}");
+                    WriteContent($"{node.Value.ClassType.Name} {node.Key} :\n{node.Value}");
                 }
                 catch
                 {// used for directives.
@@ -165,7 +170,7 @@ namespace Marlowe.Logger
         {
             WriteHeader(header);
             Console.WriteLine($"Total:\t {dictonary.Count}");
-            foreach(KeyValuePair<string, SymbolFunctionNode> node in dictonary)
+            foreach (KeyValuePair<string, SymbolFunctionNode> node in dictonary)
             {
                 WriteContent($"{node.Key} :\n{node.Value}");
             }

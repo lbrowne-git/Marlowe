@@ -31,7 +31,7 @@ namespace Marlowe.CSharp
 
         public void WriteContent(string content, ILogger.Levels level)
         {
-            if(level >= LogLevel)
+            if (level >= LogLevel)
             {
                 throw new System.Exception($"{content}");
             }

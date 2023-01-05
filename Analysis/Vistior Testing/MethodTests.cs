@@ -1,6 +1,5 @@
 ﻿using Marlowe.Utilities;
 using Marlowe.Visitors;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Marlowe.Tests
 {

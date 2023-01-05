@@ -7,21 +7,21 @@ namespace Marlowe.Utilities
     /// </summary>
     public abstract class SymbolTable
     {
-        public  Dictionary<string, SymbolNode> Variables = new Dictionary<string, SymbolNode>();
-        public  Dictionary<string, SymbolFunctionNode> Functions = new Dictionary<string, SymbolFunctionNode>();
-        public  Dictionary<string, SymbolNode> Directives = new Dictionary<string,SymbolNode>();
+        public Dictionary<string, SymbolNode> Variables = new Dictionary<string, SymbolNode>();
+        public Dictionary<string, SymbolFunctionNode> Functions = new Dictionary<string, SymbolFunctionNode>();
+        public Dictionary<string, SymbolNode> Directives = new Dictionary<string, SymbolNode>();
         public SymbolNode SearchSymbolTable(string key)
         {
             foreach (KeyValuePair<string, SymbolNode> symbols in Variables)
             {
-                if(symbols.Key == key)
+                if (symbols.Key == key)
                 {
                     return symbols.Value;
                 }
             }
-            foreach(KeyValuePair<string, SymbolFunctionNode> symbolFunctions in Functions)
+            foreach (KeyValuePair<string, SymbolFunctionNode> symbolFunctions in Functions)
             {
-                if(symbolFunctions.Key == key)
+                if (symbolFunctions.Key == key)
                 {
                     return symbolFunctions.Value;
                 }
@@ -29,7 +29,7 @@ namespace Marlowe.Utilities
                 {
                     foreach (KeyValuePair<string, SymbolNode> param in symbolFunctions.Value.Paramaters)
                     {
-                        if(param.Key == key)
+                        if (param.Key == key)
                         {
                             return param.Value;
                         }
@@ -83,7 +83,7 @@ namespace Marlowe.Utilities
                 {
 
                 }
-                
+
             }
             foreach (var function in Functions)
             {
@@ -110,7 +110,7 @@ namespace Marlowe.Utilities
                 {
 
                 }
-                
+
             }
 
             foreach (var functions in Functions)
@@ -171,7 +171,7 @@ namespace Marlowe.Utilities
 
         public bool EntryPointFound()
         {
-            if(MainFunctionExists && MainArgs)
+            if (MainFunctionExists && MainArgs)
             {
                 return true;
             }
