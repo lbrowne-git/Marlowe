@@ -47,28 +47,6 @@ _*Note:* as can been seen throughout these examples a different logging method i
 Marlowe looks for conventional C# entry points( ```public static void Main(string[] args)``` ) as its entry point but can still output a symbol table 
 
 
-# Package Setup
-As well as being a standalone application Marlowe is also a package library; which can be extended by other applications to interpet C# source code. A package should exist in the root of this project directory that can be added to another C# application. However should there be issues with getting this working the latest version of this package can be downloaded at the [public repository](https://github.com/lbrowne-git/Marlowe).
-
-
-An additional project solution exists within Marlowe that shows how this package can be called but using the library looks something like this:
-
-``` CSharp
-    {
-        // source file or directory handler
-        List<string> sourceFiles = new List<string>();
-        string directory = Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory);
-        foreach (string file in Directory.GetFiles(directory, "*.cs"))
-        {
-            sourceFiles.Add(file);
-        }
-
-        Interpeter interpeter = new Interpeter(sourceFiles, new ConsoleLogger());
-        interpeter.Execute();
-    }
-
-```
-
 # What can Marlowe do?
 As previously mentioned Marlowe is not only an executeable application but a package library. This is however only a miniminal implementation of the C# programming languge, currently it is able to:
 * Execute C# source code by specify a directory.
