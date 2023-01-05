@@ -46,6 +46,13 @@ _*Note:* as can been seen throughout these examples a different logging method i
 
 Marlowe looks for conventional C# entry points( ```public static void Main(string[] args)``` ) as its entry point but can still output a symbol table 
 
+## Package Setup
+The included NuGet acts as a way to leverage the API provided by this application, the easiest example of this can be seen below.
+```csharp
+    Interpeter interpet = new Interpeter(DirectoryHandler.GatherFileInformation("{Directory\To\Your\CSharp\Files), new ConsoleLogger());
+    interpet.Execute();
+```
+The code base is well commented so please feel free to read the documenation provided our simply mess around with the code and see what can be changed
 
 # What can Marlowe do?
 As previously mentioned Marlowe is not only an executeable application but a package library. This is however only a miniminal implementation of the C# programming languge, currently it is able to:
